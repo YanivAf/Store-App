@@ -7,6 +7,6 @@ var pathToFile = path.resolve(__dirname, './public');
 app.use(express.json());
 app.use(express.static(pathToFile));
 app.use(cookieParser());
-var exampleRoutes = require('./routes/exampleRoutes');
-app.use('/', exampleRoutes);
+var userRoutes = require('./routes/userRoutes');
+app.use('/user', userRoutes);
 app.listen(port, function () { console.log("Listening on port: " + port); });

@@ -9,8 +9,8 @@ app.use(express.json());
 app.use(express.static(pathToFile));
 app.use(cookieParser());
 
-const exampleRoutes = require('./routes/exampleRoutes');
+const userRoutes = require('./routes/userRoutes');
 
-app.use('/', exampleRoutes);
+app.use('/user', userRoutes);
 
 app.listen(port, () => { console.log(`Listening on port: ${port}`) });
