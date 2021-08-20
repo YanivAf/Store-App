@@ -2,7 +2,7 @@ export {};
 
 export function welcome(req, res) {
   try {
-    res.send({h1Text:`Yaniv's App`, message: "hello world" });
+    res.send({h1Text:`Yaniv's App`, message: "Welcome to Yaniv's App!"});
 
   } catch (error) {
     console.error(error);

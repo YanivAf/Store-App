@@ -4,7 +4,7 @@ async function serverAPIs() {
     const { h1Text, message } = userWelcome.data;
     const h1: HTMLElement = document.querySelector('#main-heading');
     h1.innerHTML = h1Text;
-    alert(message);
+    swal("Welcome!", message, "success");
 
     } catch (error) {
         console.error(error.message);

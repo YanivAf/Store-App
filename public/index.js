@@ -47,7 +47,7 @@ function serverAPIs() {
                     _a = userWelcome.data, h1Text = _a.h1Text, message = _a.message;
                     h1 = document.querySelector('#main-heading');
                     h1.innerHTML = h1Text;
-                    alert(message);
+                    swal("Welcome!", message, "success");
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _b.sent();
