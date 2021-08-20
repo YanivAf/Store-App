@@ -8,5 +8,5 @@ app.use(express.json());
 app.use(express.static(pathToFile));
 app.use(cookieParser());
 var exampleRoutes = require('./routes/exampleRoutes');
-app.use('/example', exampleRoutes);
+app.use('/', exampleRoutes);
 app.listen(port, function () { console.log("Listening on port: " + port); });

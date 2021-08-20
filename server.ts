@@ -11,6 +11,6 @@ app.use(cookieParser());
 
 const exampleRoutes = require('./routes/exampleRoutes');
 
-app.use('/example', exampleRoutes);
+app.use('/', exampleRoutes);
 
 app.listen(port, () => { console.log(`Listening on port: ${port}`) });
