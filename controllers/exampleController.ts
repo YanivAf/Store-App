@@ -3,7 +3,7 @@ export {};
 export function exampleControllerFunction(req, res) {
   try {
 
-    res.send({ message: "hello world" });
+    res.send(`<h1>Yaniv's App</h1>`,{ message: "hello world" });
 
   } catch (error) {
     console.error(error);
