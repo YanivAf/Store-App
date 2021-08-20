@@ -36,11 +36,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function serverAPIs() {
     return __awaiter(this, void 0, void 0, function () {
-        var userWelcome, _a, h1Text, message, h1, userRegister, register, error_1;
+        var userWelcome, _a, h1Text, message, h1, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 3, , 4]);
+                    _b.trys.push([0, 2, , 3]);
                     return [4 /*yield*/, axios.get("/user/welcome")];
                 case 1:
                     userWelcome = _b.sent();
@@ -48,19 +48,71 @@ function serverAPIs() {
                     h1 = document.querySelector('#main-heading');
                     h1.innerHTML = h1Text;
                     alert(message);
-                    return [4 /*yield*/, axios.post("/user/register")];
+                    return [3 /*break*/, 3];
                 case 2:
-                    userRegister = _b.sent();
-                    register = userRegister.data.register;
-                    alert("register: " + register);
-                    return [3 /*break*/, 4];
-                case 3:
                     error_1 = _b.sent();
                     console.error(error_1.message);
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
             }
         });
     });
 }
 serverAPIs();
+var registerForm = document.querySelector('#register-form');
+var loginForm = document.querySelector('#login-form');
+registerForm.addEventListener('submit', register);
+loginForm.addEventListener('submit', login);
+function login(ev) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _a, username, password, loginUser, error_2;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _b.trys.push([0, 2, , 3]);
+                    ev.preventDefault();
+                    _a = ev.target.elements, username = _a.username, password = _a.password;
+                    username = username.value;
+                    password = password.value;
+                    ev.target.reset();
+                    return [4 /*yield*/, axios.post('/user/login', { username: username, password: password })];
+                case 1:
+                    loginUser = _b.sent();
+                    console.log(loginUser);
+                    window.location.href = './admin-panel.html';
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_2 = _b.sent();
+                    console.error(error_2.message);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
+function register(ev) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _a, username, password, registerUser, error_3;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _b.trys.push([0, 2, , 3]);
+                    ev.preventDefault();
+                    _a = ev.target.elements, username = _a.username, password = _a.password;
+                    username = username.value;
+                    password = password.value;
+                    ev.target.reset();
+                    return [4 /*yield*/, axios.post('/user/register', { username: username, password: password })];
+                case 1:
+                    registerUser = _b.sent();
+                    console.log(registerUser);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_3 = _b.sent();
+                    console.error(error_3.message);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}

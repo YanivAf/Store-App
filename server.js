@@ -1,9 +1,9 @@
-var path = require('path');
 var cookieParser = require('cookie-parser');
+var path = require('path');
+var pathToFile = path.resolve(__dirname, './public');
 var express = require('express');
 var app = express();
 var port = process.env.PORT || 5555;
-var pathToFile = path.resolve(__dirname, './public');
 app.use(express.json());
 app.use(express.static(pathToFile));
 app.use(cookieParser());
