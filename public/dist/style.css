@@ -1,3 +1,140 @@
-#main-heading {
-  color: green;
+* {
+  font-family: "Ubuntu", sans-serif;
+  text-align: center;
+}
+
+html, body {
+  margin: 0;
+}
+
+body {
+  background-image: url("../images/cart-wp.png");
+  background-color: white;
+  background-blend-mode: normal;
+  background-repeat: repeat;
+  background-size: 120px;
+}
+
+.button {
+  background-color: #7cd1f9;
+  border: none;
+  border-radius: 5px;
+  margin: 2px;
+  color: white;
+  padding: 1vw;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: clamp(8px, 3vw, 12px);
+}
+.button:hover {
+  background-color: #77c8ee;
+}
+.button:active {
+  -moz-box-shadow: 0 0 10px #7cd1f9;
+  -webkit-box-shadow: 0 0 10px #7cd1f9;
+  box-shadow: 0 0 10px #7cd1f9;
+}
+
+.form-inputs {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+  max-width: 25vw;
+  min-width: 100px;
+}
+
+.header {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 2fr 1fr 2fr 1fr 2fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas: "h1 cart . h4 form" "h1 cart . call reg";
+  position: sticky;
+  height: fit-content;
+  height: clamp(100px, 3vh, 120px);
+  background-image: url("../images/cart-wp.png"), linear-gradient(black, gray);
+  background-blend-mode: normal;
+  background-repeat: repeat;
+  background-size: 100px;
+  top: 0;
+  color: white;
+  padding: 2.5vw;
+}
+.header__item {
+  margin: 0;
+}
+.header__item--h1 {
+  grid-area: h1;
+  font-size: 26px;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
+}
+.header__item--h1:hover {
+  color: #77c8ee;
+}
+.header__item--cart {
+  grid-area: cart;
+  position: relative;
+  width: 30px;
+}
+.header__item--cart img {
+  background-color: white;
+  padding: 5px;
+  border-radius: 50px;
+  width: 100%;
+}
+.header__item--cart img:hover {
+  background-color: #77c8ee;
+}
+.header__item--cart div {
+  background-color: orange;
+  border: 1px solid white;
+  border-radius: 50px;
+  color: white;
+  font-size: 15px;
+  text-align: center;
+  height: 15px;
+  width: 15px;
+  position: absolute;
+  right: -20px;
+  top: -5px;
+}
+.header__item--h4 {
+  grid-area: h4;
+  font-size: clamp(8px, 3vw, 12px);
+}
+.header__item--login-form {
+  grid-area: form;
+  display: flex;
+}
+.header__item--login-form .form-inputs {
+  width: 20vw;
+}
+.header__item--login-form .form-inputs__item {
+  font-size: clamp(6px, 3vw, 10px);
+}
+.header__item--call-to-register {
+  grid-area: call;
+  font-size: clamp(6px, 3vw, 10px);
+  color: lightgrey;
+}
+.header__item--register {
+  grid-area: reg;
+}
+
+.stores {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+.stores__item {
+  margin: 10px;
+  border-radius: 10px;
+  border: 1px solid black;
+  height: 100px;
+  width: 100px;
+  background-color: white;
 }

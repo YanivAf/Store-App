@@ -1,12 +1,19 @@
-var cookieParser = require('cookie-parser');
-var path = require('path');
-var pathToFile = path.resolve(__dirname, './public');
-var express = require('express');
-var app = express();
-var port = process.env.PORT || 5555;
+const cookieParser = require('cookie-parser');
+
+const path = require('path');
+const pathToFile = path.resolve(__dirname, './public');
+
+const express = require('express');
+const app = express();
+
+const port = process.env.PORT || 5555;
+
 app.use(express.json());
 app.use(express.static(pathToFile));
 app.use(cookieParser());
-var userRoutes = require('./routes/userRoutes');
+
+const userRoutes = require('./routes/dist/userRoutes');
+
 app.use('/user', userRoutes);
-app.listen(port, function () { console.log("Listening on port: " + port); });
+
+app.listen(port, () => { console.log(`Listening on port: ${port}`); });

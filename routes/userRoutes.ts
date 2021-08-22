@@ -2,8 +2,8 @@ export { };
 const express = require('express');
 const router = express.Router();
 
-const { welcome, register, login, adminPanel } = require('../controllers/userController');
-const { isAdmin } = require('../middlewares/isAdmin');
+const { welcome, register, login, adminPanel } = require('../../controllers/dist/userController');
+const { isAdmin } = require('../../middlewares/dist/isAdmin');
 
 router
     .get('/welcome', welcome)

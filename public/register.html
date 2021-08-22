@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+        integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./dist/style.min.css">
+    <title>Store Manager Registerations</title>
+</head>
+
+<body>
+    <nav class="header">
+        <a class="header__item header__item--h1" href="./index.html">Shop Shop Shop</a>
+    
+        <a class="header__item header__item--cart" href="./cart.html">
+            <img src="./images/full-cart.png" title="cart" />
+            <div>
+                1
+            </div>
+        </a>
+    </nav>
+    
+    <main class="main">
+        <h1>Sell Your Products Online, Easily!</h1>
+    
+        <form id="register-form">
+            <div class="form-inputs">
+                <label for="username">Username</label>
+                <input type="text" name="username" placeholder="Username" required />
+                <label for="password">Password</label>
+                <input type="password" name="password" placeholder="Password" required />
+            </div>
+            <input class="button" type="submit" value="Register" />
+        </form>
+    </main>
+
+    <script src="./dist/register.min.js"></script>
+</body>
+
+</html>

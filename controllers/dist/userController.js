@@ -3,7 +3,7 @@ exports.__esModule = true;
 exports.login = exports.register = exports.adminPanel = exports.welcome = void 0;
 function welcome(req, res) {
     try {
-        res.send({ h1Text: "Yaniv's App", message: "Welcome to Yaniv's App!" });
+        res.send({ h1Text: "Shop Shop Shop", message: "We wish you happy Shopping 🛒" });
     }
     catch (error) {
         console.error(error);

@@ -9,24 +9,100 @@
         integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <link rel="stylesheet" href="./dist/style.css">
-    <title>Yaniv's App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./dist/style.min.css">
+    <title>Shop Shop Shop</title>
 </head>
 
 <body>
-    <h1 id="main-heading"></h1>
+    <header class="header">
+        <h1 class="header__item header__item--h1"></h1>
+        
+        <a class="header__item header__item--cart" href="./cart.html">
+            <img src="./images/full-cart.png" title="cart" />
+            <div>
+                1
+            </div>
+        </a>
 
-    <form id="register-form">
-        <input type="text" name="username" placeholder="username">
-        <input type="text" name="password" placeholder="password">
-        <button type="submit">Register</button>
-    </form>
-    <form id="login-form">
-        <input type="text" name="username" placeholder="username">
-        <input type="password" name="password" placeholder="password">
-        <button type="submit">Login</button>
+        <h4 class="header__item header__item--h4">Store Manager Login</h4>
+                
+        <form class="header__item header__item--login-form" id="login-form">
+            <div class="form-inputs">
+                <input class="form-inputs__item" type="text" name="username" placeholder="Username" required />
+                <input class="form-inputs__item" type="password" name="password" placeholder="Password" required />
+            </div>
+            <input class="button" type="submit" value="Login" />
+        </form>
+        
+        <p class="header__item header__item--call-to-register">Not registered yet?</p>
+        <a class="header__item header__item--register button" href="./register.html">Start managing your own stroe!</a>
 
-        <script src="./index.js"></script>
+    </header>
+
+    <main class="stores">
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+        <div class="stores__item">
+            example store
+        </div>
+    </main>
+
+        <script src="./dist/index.min.js"></script>
 </body>
 
 </html>

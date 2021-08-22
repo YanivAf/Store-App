@@ -2,7 +2,7 @@ export {};
 
 export function welcome(req, res) {
   try {
-    res.send({h1Text:`Yaniv's App`, message: "Welcome to Yaniv's App!"});
+    res.send({h1Text:`Shop Shop Shop`, message: "We wish you happy Shopping 🛒"});
 
   } catch (error) {
     console.error(error);
