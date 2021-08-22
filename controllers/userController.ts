@@ -20,7 +20,7 @@ export const adminPanel = (req, res)=>{
   }
 }
 
-export function register(req, res) {
+export function adminRegister(req, res) {
   try {
     // const { username, password } = req.body;
 
@@ -36,11 +36,11 @@ export function register(req, res) {
   }
 }
 
-export function login(req, res) {
+export function adminLogin(req, res) {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    if (username && password) {
+    if (email && password) {
       res.cookie('userRole', {role: 'admin'}, {maxAge: 900000, httpOnly: true});
     }
 

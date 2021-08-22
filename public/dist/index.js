@@ -63,21 +63,21 @@ function welcome() {
     });
 }
 welcome();
-var loginForm = document.querySelector('#login-form');
-loginForm.addEventListener('submit', login);
-function login(ev) {
+var loginForm = document.querySelector('#admin-login-form');
+loginForm.addEventListener('submit', adminLogin);
+function adminLogin(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, username, password, loginUser, error_2;
+        var _a, email, password, loginUser, error_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
                     ev.preventDefault();
-                    _a = ev.target.elements, username = _a.username, password = _a.password;
-                    username = username.value;
+                    _a = ev.target.elements, email = _a.email, password = _a.password;
+                    email = email.value;
                     password = password.value;
                     ev.target.reset();
-                    return [4 /*yield*/, axios.post('/user/login', { username: username, password: password })];
+                    return [4 /*yield*/, axios.post('/user/admin/login', { email: email, password: password })];
                 case 1:
                     loginUser = _b.sent();
                     console.log(loginUser);

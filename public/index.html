@@ -20,7 +20,7 @@
     <header class="header">
         <h1 class="header__item header__item--h1"></h1>
         
-        <a class="header__item header__item--cart" href="./cart.html">
+        <a class="header__item header__item--cart hide" href="./cart.html">
             <img src="./images/full-cart.png" title="cart" />
             <div>
                 1
@@ -29,78 +29,92 @@
 
         <h4 class="header__item header__item--h4">Store Manager Login</h4>
                 
-        <form class="header__item header__item--login-form" id="login-form">
+        <form class="header__item header__item--admin-login-form" id="admin-login-form">
             <div class="form-inputs">
-                <input class="form-inputs__item" type="text" name="username" placeholder="Username" required />
+                <input class="form-inputs__item" type="email" name="email" placeholder="Email address" required />
                 <input class="form-inputs__item" type="password" name="password" placeholder="Password" required />
             </div>
             <input class="button" type="submit" value="Login" />
         </form>
         
-        <p class="header__item header__item--call-to-register">Not registered yet?</p>
-        <a class="header__item header__item--register button" href="./register.html">Start managing your own stroe!</a>
+        <p class="header__item header__item--call-to-register">Want to join our team?</p>
+        <a class="header__item header__item--register button" href="./register.html">Help us manage our store!</a>
 
     </header>
 
-    <main class="stores">
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
-        <div class="stores__item">
-            example store
-        </div>
+    <main class="main">
+        <h1>Login and Unleash The Shopper Within You!</h1>
+    
+        <form id="buyer-login-form">
+            <div class="form-inputs">
+                <label for="email">Email address</label>
+                <input type="text" name="email" placeholder="Email address" required />
+                <label for="password">Password</label>
+                <input type="password" name="password" placeholder="Password" required />
+            </div>
+            <input class="button" type="submit" value="Start Shopping" />
+        </form>
     </main>
+
+    <!-- <main class="products"> MOVE TO STORE.HTML AND ADMIN-PANEL.HTML
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+        <div class="products__item">
+            example product
+        </div>
+    </main> -->
 
         <script src="./dist/index.min.js"></script>
 </body>

@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.login = exports.register = exports.adminPanel = exports.welcome = void 0;
+exports.adminLogin = exports.adminRegister = exports.adminPanel = exports.welcome = void 0;
 function welcome(req, res) {
     try {
         res.send({ h1Text: "Shop Shop Shop", message: "We wish you happy Shopping 🛒" });
@@ -20,7 +20,7 @@ exports.adminPanel = function (req, res) {
         res.status(500).send(error.message);
     }
 };
-function register(req, res) {
+function adminRegister(req, res) {
     try {
         // const { username, password } = req.body;
         // if (username && password) {
@@ -33,11 +33,11 @@ function register(req, res) {
         res.status(500).send(error.message);
     }
 }
-exports.register = register;
-function login(req, res) {
+exports.adminRegister = adminRegister;
+function adminLogin(req, res) {
     try {
-        var _a = req.body, username = _a.username, password = _a.password;
-        if (username && password) {
+        var _a = req.body, email = _a.email, password = _a.password;
+        if (email && password) {
             res.cookie('userRole', { role: 'admin' }, { maxAge: 900000, httpOnly: true });
         }
         res.send({ login: true });
@@ -47,4 +47,4 @@ function login(req, res) {
         res.status(500).send(error.message);
     }
 }
-exports.login = login;
+exports.adminLogin = adminLogin;

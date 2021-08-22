@@ -35,6 +35,10 @@ body {
   box-shadow: 0 0 10px #7cd1f9;
 }
 
+.hide {
+  display: none;
+}
+
 .form-inputs {
   display: flex;
   flex-direction: column;
@@ -105,14 +109,14 @@ body {
   grid-area: h4;
   font-size: clamp(8px, 3vw, 12px);
 }
-.header__item--login-form {
+.header__item--admin-login-form {
   grid-area: form;
   display: flex;
 }
-.header__item--login-form .form-inputs {
+.header__item--admin-login-form .form-inputs {
   width: 20vw;
 }
-.header__item--login-form .form-inputs__item {
+.header__item--admin-login-form .form-inputs__item {
   font-size: clamp(6px, 3vw, 10px);
 }
 .header__item--call-to-register {
@@ -124,13 +128,13 @@ body {
   grid-area: reg;
 }
 
-.stores {
+.products {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
 }
-.stores__item {
+.products__item {
   margin: 10px;
   border-radius: 10px;
   border: 1px solid black;
