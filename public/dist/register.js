@@ -48,7 +48,7 @@ function register(ev) {
                     username = username.value;
                     password = password.value;
                     ev.target.reset();
-                    return [4 /*yield*/, axios.post('/user/register', { username: username, password: password })];
+                    return [4 /*yield*/, axios.post('/user/admin/register', { username: username, password: password })];
                 case 1:
                     registerUser = _b.sent();
                     console.log(registerUser);

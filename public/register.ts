@@ -10,7 +10,7 @@ async function register(ev) {
         password = password.value;
         ev.target.reset();
     
-        const registerUser = await axios.post('/user/register', {username, password});
+        const registerUser = await axios.post('/user/admin/register', {username, password});
         console.log(registerUser);    
 
     } catch (error) {
