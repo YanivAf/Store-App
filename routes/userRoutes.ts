@@ -11,7 +11,7 @@ router
     .post('/admin/login', adminLogin)
     .get('/admin/adminPanel', isAdmin, adminPanel);
 
-// router
+// router not working this way
 //     .route('/admin')
 //         .post('/register', adminRegister)
 //         .post('/login', adminLogin)
