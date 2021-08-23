@@ -41,7 +41,7 @@ function adminPanel() {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, axios.get('/user/admin/adminPanel')];
+                    return [4 /*yield*/, axios.get('/user/adminPanel')];
                 case 1:
                     adminPanelUser = _a.sent();
                     console.log(adminPanelUser);

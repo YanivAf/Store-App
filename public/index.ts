@@ -19,9 +19,9 @@ welcome();
 
 const loginForm: HTMLFormElement = document.querySelector('#admin-login-form');
 
-loginForm.addEventListener('submit',adminLogin);
+loginForm.addEventListener('submit',login);
 
-async function adminLogin(ev) {
+async function login(ev) {
     try {
         ev.preventDefault();
         let {email, password} = ev.target.elements;
@@ -29,10 +29,10 @@ async function adminLogin(ev) {
         password = password.value;
         ev.target.reset();
         
-        const loginUser = await axios.post('/user/admin/login', { email, password });
-        console.log(loginUser);
-
-        window.location.href = './admin-panel.html'
+        const login = await axios.post('/user/login', { email, password });
+        const { isAdmin } = login.data;
+        
+        window.location.href = (isAdmin) ? './admin-panel.html' : './store.html'; 
     
     } catch (error) {
         console.error(error.message);

@@ -1,3 +1,8 @@
+:root {
+    --main-color: #7cd1f9;
+    --hover-color: #77c8ee;
+  }
+
 * {
     font-family: 'Ubuntu', sans-serif;
     text-align: center;
@@ -16,8 +21,18 @@ body {
     background-size: 120px;
 }
 
+a {
+    color: var(--main-color);
+
+    &:hover {
+        color: var(--hover-color);
+    }
+}
+
+
+
 .button {
-    background-color: #7cd1f9;
+    background-color: var(--main-color);
     border: none;
     border-radius: 5px;
     margin: 2px;
@@ -28,13 +43,13 @@ body {
     font-size: clamp(8px, 3vw, 12px);
 
     &:hover {
-        background-color: #77c8ee;
+        background-color: var(--hover-color);
     }
 
     &:active {
-        -moz-box-shadow: 0 0 10px #7cd1f9;
-        -webkit-box-shadow: 0 0 10px #7cd1f9;
-        box-shadow: 0 0 10px #7cd1f9;
+        -moz-box-shadow: 0 0 10px var(--main-color);
+        -webkit-box-shadow: 0 0 10px var(--main-color);
+        box-shadow: 0 0 10px var(--main-color);
     }
   }
 
@@ -77,13 +92,13 @@ body {
 
         &--h1 {
             grid-area: h1;
-            font-size: 26px;
+            font-size: clamp(26px, 3vw, 40px);;
             font-weight: bold;
             text-decoration: none;
             color: white;
 
             &:hover {
-                color: #77c8ee;
+                color: var(--hover-color);
             }
         }
 
@@ -99,7 +114,7 @@ body {
                 width: 100%;
 
                 &:hover {
-                    background-color: #77c8ee;
+                    background-color: var(--hover-color);
                 }
             }
 
@@ -139,7 +154,7 @@ body {
         &--call-to-register {
             grid-area: call;
             font-size: clamp(6px, 3vw, 10px);
-            color: lightgrey;
+            color: white;
         }
 
         &--register {

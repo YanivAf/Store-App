@@ -1,6 +1,7 @@
 "use strict";
 exports.__esModule = true;
-exports.adminLogin = exports.adminRegister = exports.adminPanel = exports.welcome = void 0;
+exports.login = exports.register = exports.adminPanel = exports.welcome = void 0;
+var Users = require("../../models/dist/usersModel").Users;
 function welcome(req, res) {
     try {
         res.send({ h1Text: "Shop Shop Shop", message: "We wish you happy Shopping 🛒" });
@@ -20,31 +21,36 @@ exports.adminPanel = function (req, res) {
         res.status(500).send(error.message);
     }
 };
-function adminRegister(req, res) {
+function register(req, res) {
     try {
-        // const { username, password } = req.body;
-        // if (username && password) {
-        //   res.cookie('role', {role: 'admin'}, {maxAge: 900000, httpOnly: true});
-        // }
-        res.send({ register: true });
+        var _a = req.body, email = _a.email, username = _a.username, password = _a.password, isAdmin = _a.isAdmin;
+        var role = (isAdmin) ? 'admin' : 'buyer';
+        var buyerToAdminText = (isAdmin) ? '\n\nBuyer trying to become an admin? Please verify you credentials.' : '';
+        var users = new Users();
+        var userUuid = users.addUser(email, username, password, isAdmin);
+        res.cookie('isAdmin', { isAdmin: isAdmin }, { maxAge: 900000, httpOnly: true });
+        if (userUuid)
+            res.send({ title: "Cheers, " + username + "!", text: "You are our newest " + role + "!", userUuid: userUuid });
+        else
+            res.send({ title: 'Email already registered', text: "Please use a different email address." + buyerToAdminText });
     }
     catch (error) {
         console.error(error);
         res.status(500).send(error.message);
     }
 }
-exports.adminRegister = adminRegister;
-function adminLogin(req, res) {
+exports.register = register;
+function login(req, res) {
     try {
         var _a = req.body, email = _a.email, password = _a.password;
         if (email && password) {
-            res.cookie('userRole', { role: 'admin' }, { maxAge: 900000, httpOnly: true });
+            res.cookie('isAdmin', { isAdmin: isAdmin }, { maxAge: 900000, httpOnly: true }); // TODO build isAdmin logic
         }
-        res.send({ login: true });
+        res.send({ login: true, isAdmin: isAdmin });
     }
     catch (error) {
         console.error(error);
         res.status(500).send(error.message);
     }
 }
-exports.adminLogin = adminLogin;
+exports.login = login;

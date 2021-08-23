@@ -34,61 +34,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-function welcome() {
+function store() {
     return __awaiter(this, void 0, void 0, function () {
-        var userWelcome, _a, h1Text, message, h1, error_1;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    _b.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, axios.get("/user/welcome")];
-                case 1:
-                    userWelcome = _b.sent();
-                    _a = userWelcome.data, h1Text = _a.h1Text, message = _a.message;
-                    h1 = document.querySelector('.header__item--h1');
-                    h1.innerHTML = h1Text;
-                    swal({
-                        title: "Welcome to " + h1Text + "!",
-                        text: message,
-                        button: "Start Shopping!"
-                    });
-                    return [3 /*break*/, 3];
-                case 2:
-                    error_1 = _b.sent();
-                    console.error(error_1.message);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
+        return __generator(this, function (_a) {
+            try {
+                // const adminPanelUser = await axios.get('/user/adminPanel');
+                console.log('hi buyer');
             }
+            catch (error) {
+                console.error(error.message);
+            }
+            return [2 /*return*/];
         });
     });
 }
-welcome();
-var loginForm = document.querySelector('#admin-login-form');
-loginForm.addEventListener('submit', login);
-function login(ev) {
-    return __awaiter(this, void 0, void 0, function () {
-        var _a, email, password, login_1, isAdmin, error_2;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    _b.trys.push([0, 2, , 3]);
-                    ev.preventDefault();
-                    _a = ev.target.elements, email = _a.email, password = _a.password;
-                    email = email.value;
-                    password = password.value;
-                    ev.target.reset();
-                    return [4 /*yield*/, axios.post('/user/login', { email: email, password: password })];
-                case 1:
-                    login_1 = _b.sent();
-                    isAdmin = login_1.data.isAdmin;
-                    window.location.href = (isAdmin) ? './admin-panel.html' : './store.html';
-                    return [3 /*break*/, 3];
-                case 2:
-                    error_2 = _b.sent();
-                    console.error(error_2.message);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
-            }
-        });
-    });
-}
+store();

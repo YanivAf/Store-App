@@ -38,23 +38,42 @@ var registerForm = document.querySelector('#register-form');
 registerForm.addEventListener('submit', register);
 function register(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, username, password, registerUser, error_1;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var _a, email, username, password, isAdmin_1, registerUser, _b, title, text, userUuid, error_1;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
-                    _b.trys.push([0, 2, , 3]);
+                    _c.trys.push([0, 2, , 3]);
                     ev.preventDefault();
-                    _a = ev.target.elements, username = _a.username, password = _a.password;
+                    _a = ev.target.elements, email = _a.email, username = _a.username, password = _a.password;
+                    email = email.value;
                     username = username.value;
                     password = password.value;
+                    isAdmin_1 = (window.location.href.indexOf('buyer') === -1) ? true : false;
                     ev.target.reset();
-                    return [4 /*yield*/, axios.post('/user/admin/register', { username: username, password: password })];
+                    return [4 /*yield*/, axios.post('/user/register', { email: email, username: username, password: password, isAdmin: isAdmin_1 })];
                 case 1:
-                    registerUser = _b.sent();
-                    console.log(registerUser);
+                    registerUser = _c.sent();
+                    _b = registerUser.data, title = _b.title, text = _b.text, userUuid = _b.userUuid;
+                    if (userUuid) {
+                        swal({
+                            title: title,
+                            text: text,
+                            icon: "success",
+                            button: "Lets go"
+                        })
+                            .then(function () { window.location.href = (isAdmin_1) ? './admin-panel.html' : './store.html'; });
+                    }
+                    else {
+                        swal({
+                            title: "Ops.. " + title,
+                            text: text,
+                            icon: "warning",
+                            button: "Try again"
+                        });
+                    }
                     return [3 /*break*/, 3];
                 case 2:
-                    error_1 = _b.sent();
+                    error_1 = _c.sent();
                     console.error(error_1.message);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
