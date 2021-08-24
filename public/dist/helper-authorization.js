@@ -1,12 +1,24 @@
 window.axios.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
-    console.log(error.response);
-    if (401 === error.response.status) {
+    var title;
+    var text;
+    switch (error.response.status) {
+        case 401:
+            title = "Authorization Issue";
+            text = error.response.data.message;
+            break;
+        case 500:
+            title = "Server Request Issue";
+            text = error.response.data;
+            break;
+    }
+    if (error.response.status) {
         swal({
-            title: "Authorization Issue",
-            text: error.response.data.message,
+            title: title,
+            text: text,
             icon: "warning",
+            button: "Back Home",
             closeModal: false
         }).then(function () {
             window.location.href = './';

@@ -12,7 +12,7 @@ var readStoreJson = function () {
         return JSON.parse(store);
     }
     catch (error) {
-        console.error(error);
+        console.error(error.message);
     }
 };
 var Store = /** @class */ (function () {
@@ -27,7 +27,7 @@ var readUsersJson = function () {
         return JSON.parse(users);
     }
     catch (error) {
-        console.error(error);
+        console.error(error.message);
     }
 };
 var CartProduct = /** @class */ (function () {
@@ -60,7 +60,7 @@ var Users = /** @class */ (function () {
             fs.writeFileSync(usersJsonPath, JSON.stringify(this.users));
         }
         catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     };
     Users.prototype.verifyUser = function (userEmail, userPassword) {
@@ -71,7 +71,7 @@ var Users = /** @class */ (function () {
             return undefined;
         }
         catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     };
     Users.prototype.findUserIndex = function (userUuid, userEmail) {
@@ -83,7 +83,7 @@ var Users = /** @class */ (function () {
             return userIndex;
         }
         catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     };
     Users.prototype.storeUuid = function () {
@@ -101,7 +101,7 @@ var Users = /** @class */ (function () {
             return storeUuid;
         }
         catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     };
     Users.prototype.addUser = function (userEmail, userUsername, userPassword, isAdmin) {
@@ -110,15 +110,15 @@ var Users = /** @class */ (function () {
             var userIndex = this.findUserIndex(null, userEmail);
             if (isAdmin) { // admin registration attempt
                 if (userIndex !== -1) { // email exists
-                    if ((this.users[userIndex].storeUuid === null) && // if buyer + entered registered username & password
+                    if ((this.users[userIndex].storeUuid === null) && // if shopper + entered registered username & password
                         (this.users[userIndex].username === userUsername) &&
                         (this.users[userIndex].password === userPassword)) {
                         this.users[userIndex].storeUuid = this.storeUuid();
                         this.updateUsersJson();
-                        return this.users[userIndex].userUuid; // convert buyer to admin
+                        return this.users[userIndex].userUuid; // convert shopper to admin
                     }
                     else
-                        return null; // unverified buyer OR admin exists
+                        return null; // unverified shopper OR admin exists
                 }
                 else { // email doesn't exist
                     user.storeUuid = this.storeUuid();
@@ -126,84 +126,84 @@ var Users = /** @class */ (function () {
                 }
             }
             else if (userIndex !== -1)
-                return null; // buyer registration attempt + buyer exists
+                return null; // shopper registration attempt + shopper exists
             else
-                this.users.push(user); // add buyer
+                this.users.push(user); // add shopper
             this.updateUsersJson();
             return user.userUuid;
         }
         catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     };
-    Users.prototype.addCartProduct = function (buyerUuid, productUuid) {
+    Users.prototype.addCartProduct = function (shopperUuid, productUuid) {
         try {
-            var buyerIndex = this.findUserIndex(buyerUuid, null);
+            var shopperIndex = this.findUserIndex(shopperUuid, null);
             var cartProduct = new CartProduct(productUuid);
-            this.users[buyerIndex].cart.push(cartProduct);
+            this.users[shopperIndex].cart.push(cartProduct);
             this.updateUsersJson();
         }
         catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     };
-    Users.prototype.findCartProduct = function (buyerIndex, productUuid) {
+    Users.prototype.findCartProduct = function (shopperIndex, productUuid) {
         try {
-            var cartProductIndex = this.users[buyerIndex].cart.findIndex(function (cartProduct) { return cartProduct.productUuid === productUuid; });
+            var cartProductIndex = this.users[shopperIndex].cart.findIndex(function (cartProduct) { return cartProduct.productUuid === productUuid; });
             if (cartProductIndex === -1)
                 throw new Error("product " + productUuid + " wasn't found in cart");
             return cartProductIndex;
         }
         catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     };
-    Users.prototype.deleteCartProduct = function (buyerUuid, productUuid) {
+    Users.prototype.deleteCartProduct = function (shopperUuid, productUuid) {
         try {
-            var buyerIndex = this.findUserIndex(buyerUuid, null);
-            var cartProductIndex = this.findCartProduct(buyerIndex, productUuid); // used to catch error if product doesn't exist
-            this.users[buyerIndex].cart = this.users[buyerIndex].cart.filter(function (cartProduct) { return cartProduct.productUuid !== productUuid; });
+            var shopperIndex = this.findUserIndex(shopperUuid, null);
+            var cartProductIndex = this.findCartProduct(shopperIndex, productUuid); // used to catch error if product doesn't exist
+            this.users[shopperIndex].cart = this.users[shopperIndex].cart.filter(function (cartProduct) { return cartProduct.productUuid !== productUuid; });
             this.updateUsersJson();
         }
         catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     };
-    Users.prototype.updateCartProductQuantity = function (buyerUuid, productUuid, mathSign) {
+    Users.prototype.updateCartProductQuantity = function (shopperUuid, productUuid, mathSign) {
         try {
-            var buyerIndex = this.findUserIndex(buyerUuid, null);
-            var cartProductIndex = this.findCartProduct(buyerIndex, productUuid);
+            var shopperIndex = this.findUserIndex(shopperUuid, null);
+            var cartProductIndex = this.findCartProduct(shopperIndex, productUuid);
             if (mathSign === '+')
-                this.users[buyerIndex].cart[cartProductIndex].quantity++;
+                this.users[shopperIndex].cart[cartProductIndex].quantity++;
             else {
-                this.users[buyerIndex].cart[cartProductIndex].quantity--;
-                if (this.users[buyerIndex].cart[cartProductIndex].quantity === 0)
-                    this.deleteCartProduct(buyerUuid, productUuid);
+                this.users[shopperIndex].cart[cartProductIndex].quantity--;
+                if (this.users[shopperIndex].cart[cartProductIndex].quantity === 0)
+                    this.deleteCartProduct(shopperUuid, productUuid);
             }
             this.updateUsersJson();
         }
         catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     };
-    Users.prototype.emptyCart = function (buyerUuid) {
+    Users.prototype.emptyCart = function (shopperUuid) {
         try {
-            var buyerIndex = this.findUserIndex(buyerUuid, null);
-            this.updatePurcased(buyerIndex);
-            this.users[buyerIndex].cart = [];
+            var shopperIndex = this.findUserIndex(shopperUuid, null);
+            this.updatePurcased(shopperIndex);
+            this.users[shopperIndex].cart = [];
             this.updateUsersJson();
         }
         catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     };
-    Users.prototype.updatePurcased = function (buyerIndex) {
+    Users.prototype.updatePurcased = function (shopperIndex) {
         var _a;
         try {
-            (_a = this.users[buyerIndex].purchased).push.apply(_a, this.users[buyerIndex].cart);
+            (_a = this.users[shopperIndex].purchased).push.apply(_a, this.users[shopperIndex].cart);
         }
         catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     };
     return Users;

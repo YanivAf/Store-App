@@ -48,7 +48,7 @@ function register(ev) {
                     email = email.value;
                     username = username.value;
                     password = password.value;
-                    isAdmin_1 = (window.location.href.indexOf('buyer') === -1) ? true : false;
+                    isAdmin_1 = (window.location.href.indexOf('shopper') === -1) ? true : false;
                     ev.target.reset();
                     return [4 /*yield*/, axios.post('/user/register', { email: email, username: username, password: password, isAdmin: isAdmin_1 })];
                 case 1:

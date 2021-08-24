@@ -24,15 +24,16 @@ exports.adminPanel = function (req, res) {
 function register(req, res) {
     try {
         var _a = req.body, email = _a.email, username = _a.username, password = _a.password, isAdmin = _a.isAdmin;
-        var role = (isAdmin) ? 'admin' : 'buyer';
-        var buyerToAdminText = (isAdmin) ? '\n\nBuyer trying to become an admin? Please verify you credentials.' : '';
+        var role = (isAdmin) ? 'admin' : 'shopper';
+        var shopperToAdminText = (isAdmin) ? '\n\nShopper trying to become an admin? Please verify you credentials.' : '';
         var users = new Users();
         var userUuid = users.addUser(email, username, password, isAdmin);
-        res.cookie('isAdmin', { isAdmin: isAdmin }, { maxAge: 900000, httpOnly: true });
-        if (userUuid)
+        if (userUuid) {
+            res.cookie('currentUser', { userUuid: userUuid }, { maxAge: 900000, httpOnly: true });
             res.send({ title: "Cheers, " + username + "!", text: "You are our newest " + role + "!", userUuid: userUuid });
+        }
         else
-            res.send({ title: 'Email already registered', text: "Please use a different email address." + buyerToAdminText });
+            res.send({ title: 'Email already registered', text: "Please use a different email address." + shopperToAdminText });
     }
     catch (error) {
         console.error(error);

@@ -9,7 +9,7 @@ async function register(ev) {
         email = email.value;
         username = username.value;
         password = password.value;
-        const isAdmin = (window.location.href.indexOf('buyer') === -1) ? true : false;
+        const isAdmin = (window.location.href.indexOf('shopper') === -1) ? true : false;
         ev.target.reset();
 
         const registerUser = await axios.post('/user/register', {email, username, password, isAdmin});

@@ -44,7 +44,6 @@ function adminPanel() {
                     return [4 /*yield*/, axios.get('/user/adminPanel')];
                 case 1:
                     adminPanelUser = _a.sent();
-                    console.log(adminPanelUser);
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _a.sent();

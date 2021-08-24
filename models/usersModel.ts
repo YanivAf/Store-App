@@ -11,7 +11,7 @@ const readStoreJson = () => {
       const store: any = fs.readFileSync(storeJsonPath);
       return JSON.parse(store);
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
     }
 }
 
@@ -26,7 +26,7 @@ const readUsersJson = () => {
     const users: any = fs.readFileSync(usersJsonPath);
     return JSON.parse(users);
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
   }
 }
 
@@ -71,7 +71,7 @@ export class Users {
         try {
             fs.writeFileSync(usersJsonPath, JSON.stringify(this.users));
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     }
 
@@ -84,7 +84,7 @@ export class Users {
             return undefined;
 
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     }
 
@@ -97,7 +97,7 @@ export class Users {
             return userIndex;
 
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     }
 
@@ -115,7 +115,7 @@ export class Users {
             return storeUuid;
             
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     }
 
@@ -126,7 +126,7 @@ export class Users {
 
             if (isAdmin) { // admin registration attempt
                 if (userIndex !== -1) { // email exists
-                    if ((this.users[userIndex].storeUuid === null) && // if buyer + entered registered username & password
+                    if ((this.users[userIndex].storeUuid === null) && // if shopper + entered registered username & password
                         (this.users[userIndex].username === userUsername) &&
                         (this.users[userIndex].password === userPassword)) {
                         
@@ -134,103 +134,103 @@ export class Users {
                         
                         this.updateUsersJson();
 
-                        return this.users[userIndex].userUuid; // convert buyer to admin
-                    } else return null; // unverified buyer OR admin exists
+                        return this.users[userIndex].userUuid; // convert shopper to admin
+                    } else return null; // unverified shopper OR admin exists
                 } else { // email doesn't exist
                     user.storeUuid = this.storeUuid();
                     this.users.push(user); // add admin
                     
                 }
-            } else if (userIndex !== -1) return null; // buyer registration attempt + buyer exists
-            else this.users.push(user); // add buyer
+            } else if (userIndex !== -1) return null; // shopper registration attempt + shopper exists
+            else this.users.push(user); // add shopper
 
             this.updateUsersJson();
 
             return user.userUuid;
 
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     }
 
-    addCartProduct(buyerUuid: string, productUuid: string) {
+    addCartProduct(shopperUuid: string, productUuid: string) {
         try {
-            const buyerIndex: number = this.findUserIndex(buyerUuid, null);
+            const shopperIndex: number = this.findUserIndex(shopperUuid, null);
 
             const cartProduct = new CartProduct(productUuid);
-            this.users[buyerIndex].cart.push(cartProduct);
+            this.users[shopperIndex].cart.push(cartProduct);
 
             this.updateUsersJson();
 
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     }
 
-    findCartProduct(buyerIndex: number, productUuid: string) {
+    findCartProduct(shopperIndex: number, productUuid: string) {
         try {
-            const cartProductIndex: number = this.users[buyerIndex].cart.findIndex(cartProduct => cartProduct.productUuid === productUuid);
+            const cartProductIndex: number = this.users[shopperIndex].cart.findIndex(cartProduct => cartProduct.productUuid === productUuid);
             if (cartProductIndex === -1) throw new Error(`product ${productUuid} wasn't found in cart`);
             
             return cartProductIndex;
 
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     }
 
-    deleteCartProduct(buyerUuid: string, productUuid: string) { // on direct deletion or when quantity === 0
+    deleteCartProduct(shopperUuid: string, productUuid: string) { // on direct deletion or when quantity === 0
         try {
-            const buyerIndex: number = this.findUserIndex(buyerUuid, null);
-            const cartProductIndex: number = this.findCartProduct(buyerIndex, productUuid); // used to catch error if product doesn't exist
+            const shopperIndex: number = this.findUserIndex(shopperUuid, null);
+            const cartProductIndex: number = this.findCartProduct(shopperIndex, productUuid); // used to catch error if product doesn't exist
 
-            this.users[buyerIndex].cart = this.users[buyerIndex].cart.filter(cartProduct => cartProduct.productUuid !== productUuid);
+            this.users[shopperIndex].cart = this.users[shopperIndex].cart.filter(cartProduct => cartProduct.productUuid !== productUuid);
 
             this.updateUsersJson();
 
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     }
 
-    updateCartProductQuantity(buyerUuid: string, productUuid: string, mathSign: string) {
+    updateCartProductQuantity(shopperUuid: string, productUuid: string, mathSign: string) {
         try {
-            const buyerIndex: number = this.findUserIndex(buyerUuid, null);
-            const cartProductIndex: number = this.findCartProduct(buyerIndex, productUuid);
+            const shopperIndex: number = this.findUserIndex(shopperUuid, null);
+            const cartProductIndex: number = this.findCartProduct(shopperIndex, productUuid);
 
-            if (mathSign === '+') this.users[buyerIndex].cart[cartProductIndex].quantity++;
+            if (mathSign === '+') this.users[shopperIndex].cart[cartProductIndex].quantity++;
             else {
-                this.users[buyerIndex].cart[cartProductIndex].quantity--;
-                if (this.users[buyerIndex].cart[cartProductIndex].quantity === 0) this.deleteCartProduct(buyerUuid, productUuid);
+                this.users[shopperIndex].cart[cartProductIndex].quantity--;
+                if (this.users[shopperIndex].cart[cartProductIndex].quantity === 0) this.deleteCartProduct(shopperUuid, productUuid);
             }
 
             this.updateUsersJson();
 
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     }
 
-    emptyCart(buyerUuid: string) { // after payment
+    emptyCart(shopperUuid: string) { // after payment
         try {
-            const buyerIndex: number = this.findUserIndex(buyerUuid, null);
+            const shopperIndex: number = this.findUserIndex(shopperUuid, null);
 
-            this.updatePurcased(buyerIndex);
-            this.users[buyerIndex].cart = [];
+            this.updatePurcased(shopperIndex);
+            this.users[shopperIndex].cart = [];
 
             this.updateUsersJson();
 
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     }
 
-    updatePurcased(buyerIndex: number) { // seperated from emptyCart for clarity
+    updatePurcased(shopperIndex: number) { // seperated from emptyCart for clarity
         try {
-            this.users[buyerIndex].purchased.push(...this.users[buyerIndex].cart);
+            this.users[shopperIndex].purchased.push(...this.users[shopperIndex].cart);
 
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
         }
     }
 }
