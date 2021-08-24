@@ -34,16 +34,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-function adminPanel() {
+function stores() {
     return __awaiter(this, void 0, void 0, function () {
-        var adminPanelUser, error_1;
+        var storesUser, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, axios.get('/user/adminPanel')];
+                    return [4 /*yield*/, axios.get('/user/stores')];
                 case 1:
-                    adminPanelUser = _a.sent();
+                    storesUser = _a.sent();
+                    console.log('hi you');
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _a.sent();
@@ -54,4 +55,5 @@ function adminPanel() {
         });
     });
 }
-adminPanel();
+stores();
+// TODO add onclick function to redirect to store with storeUuid in URL

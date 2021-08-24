@@ -36,15 +36,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function store() {
     return __awaiter(this, void 0, void 0, function () {
+        var storeUser, error_1;
         return __generator(this, function (_a) {
-            try {
-                // const adminPanelUser = await axios.get('/user/adminPanel');
-                console.log('hi hopper');
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, axios.get('/user/store')];
+                case 1:
+                    storeUser = _a.sent();
+                    console.log('hi you');
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_1 = _a.sent();
+                    console.error(error_1.message);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
             }
-            catch (error) {
-                console.error(error.message);
-            }
-            return [2 /*return*/];
         });
     });
 }

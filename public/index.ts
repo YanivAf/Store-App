@@ -17,9 +17,11 @@ async function welcome() {
 
 welcome();
 
-const loginForm: HTMLFormElement = document.querySelector('#admin-login-form');
+const adminLoginForm: HTMLFormElement = document.querySelector('#admin-login-form');
+const shopperLoginForm: HTMLFormElement = document.querySelector('#shopper-login-form');
 
-loginForm.addEventListener('submit',login);
+adminLoginForm.addEventListener('submit',login);
+shopperLoginForm.addEventListener('submit',login);
 
 async function login(ev) {
     try {
@@ -27,12 +29,28 @@ async function login(ev) {
         let {email, password} = ev.target.elements;
         email = email.value;
         password = password.value;
+        const isAdmin: boolean = (ev.target.getAttribute('id').indexOf('shopper') === -1) ? true : false;
         ev.target.reset();
         
-        const login = await axios.post('/user/login', { email, password });
-        const { isAdmin } = login.data;
+        const loginAdminUser = await axios.post('/user/login', { email, password, isAdmin });
+        const { title, text, isLoggedIn } = loginAdminUser.data;
         
-        window.location.href = (isAdmin) ? './admin-panel.html' : './store.html'; 
+        if (isLoggedIn) {
+            swal({
+                title: title,
+                text: text,
+                icon: "success",
+                button: "Lets go",
+            })
+            .then( () => { window.location.href = (isAdmin) ? './store.html' : './stores.html'; });
+        } else {
+            swal({
+                title: `Ops.. ${title}`,
+                text: text,
+                icon: "warning",
+                button: "Try again",
+            });
+        }
     
     } catch (error) {
         console.error(error.message);

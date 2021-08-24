@@ -75,13 +75,13 @@ export class Users {
         }
     }
 
-    verifyUser(userEmail: string, userPassword: string) { // login attempt TODO - think if it should be a middleware
+    verifyUser(userEmail: string, userPassword: string): User { // login attempt TODO - think if it should be a middleware
         try {
 
-            const doesUserExist: User = this.users.find(user => user.email === userEmail && user.password === userPassword);
-            if (doesUserExist) return doesUserExist;
+            const user: User = this.users.find(user => user.email === userEmail && user.password === userPassword);
+            if (!user) throw new Error(`credentials are wrong`);
 
-            return undefined;
+            return user;
 
         } catch (error) {
             console.error(error.message);

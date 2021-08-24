@@ -63,28 +63,47 @@ function welcome() {
     });
 }
 welcome();
-var loginForm = document.querySelector('#admin-login-form');
-loginForm.addEventListener('submit', login);
+var adminLoginForm = document.querySelector('#admin-login-form');
+var shopperLoginForm = document.querySelector('#shopper-login-form');
+adminLoginForm.addEventListener('submit', login);
+shopperLoginForm.addEventListener('submit', login);
 function login(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, email, password, login_1, isAdmin, error_2;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var _a, email, password, isAdmin_1, loginAdminUser, _b, title, text, isLoggedIn, error_2;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
-                    _b.trys.push([0, 2, , 3]);
+                    _c.trys.push([0, 2, , 3]);
                     ev.preventDefault();
                     _a = ev.target.elements, email = _a.email, password = _a.password;
                     email = email.value;
                     password = password.value;
+                    isAdmin_1 = (ev.target.getAttribute('id').indexOf('shopper') === -1) ? true : false;
                     ev.target.reset();
-                    return [4 /*yield*/, axios.post('/user/login', { email: email, password: password })];
+                    return [4 /*yield*/, axios.post('/user/login', { email: email, password: password, isAdmin: isAdmin_1 })];
                 case 1:
-                    login_1 = _b.sent();
-                    isAdmin = login_1.data.isAdmin;
-                    window.location.href = (isAdmin) ? './admin-panel.html' : './store.html';
+                    loginAdminUser = _c.sent();
+                    _b = loginAdminUser.data, title = _b.title, text = _b.text, isLoggedIn = _b.isLoggedIn;
+                    if (isLoggedIn) {
+                        swal({
+                            title: title,
+                            text: text,
+                            icon: "success",
+                            button: "Lets go"
+                        })
+                            .then(function () { window.location.href = (isAdmin_1) ? './store.html' : './stores.html'; });
+                    }
+                    else {
+                        swal({
+                            title: "Ops.. " + title,
+                            text: text,
+                            icon: "warning",
+                            button: "Try again"
+                        });
+                    }
                     return [3 /*break*/, 3];
                 case 2:
-                    error_2 = _b.sent();
+                    error_2 = _c.sent();
                     console.error(error_2.message);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];

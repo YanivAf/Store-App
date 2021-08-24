@@ -65,10 +65,10 @@ var Users = /** @class */ (function () {
     };
     Users.prototype.verifyUser = function (userEmail, userPassword) {
         try {
-            var doesUserExist = this.users.find(function (user) { return user.email === userEmail && user.password === userPassword; });
-            if (doesUserExist)
-                return doesUserExist;
-            return undefined;
+            var user = this.users.find(function (user) { return user.email === userEmail && user.password === userPassword; });
+            if (!user)
+                throw new Error("credentials are wrong");
+            return user;
         }
         catch (error) {
             console.error(error.message);

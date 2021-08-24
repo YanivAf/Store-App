@@ -1,6 +1,6 @@
 export {};
 
-const { Users } = require("../../models/dist/usersModel");
+const { Users, User } = require("../../models/dist/usersModel");
 
 export function welcome(req, res) {
   try {
@@ -12,9 +12,27 @@ export function welcome(req, res) {
   }
 }
 
-export const adminPanel = (req, res)=>{
+export const showStores = (req, res)=>{
   try {
-    res.send({adminPanel:true})
+    // req.body should have userUuid
+    // send stores + username + cart + purchased
+
+    res.send({showStores:true})
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+}
+
+export const showProducts = (req, res)=>{ 
+  try {
+    // req.body should have storeUuid + userUuid
+    // req.isAdmin to know if shopper or admin
+    // for shopper - send also cart + purchased
+    // send isAdmin + storeName + store products + username
+
+    res.send({showProducts:true})
 
   } catch (error) {
     console.error(error);
@@ -31,12 +49,11 @@ export function register(req, res) {
     const users = new Users();
     const userUuid: string = users.addUser(email, username, password, isAdmin);
 
-    
     if (userUuid) {
       res.cookie('currentUser', { userUuid }, { maxAge: 900000, httpOnly: true });
-      res.send({ title: `Cheers, ${username}!`, text: `You are our newest ${role}!`, userUuid});
+      res.send({ title: `Cheers, ${username}!`, text: `You are our newest ${role}!`, isRegistered: true});
     }
-    else res.send({ title: 'Email already registered', text:`Please use a different email address.${shopperToAdminText}` });
+    else res.send({ title: 'Email already registered', text:`Please use a different email address.${shopperToAdminText}`, isRegistered: false });
 
   } catch (error) {
     console.error(error);
@@ -46,13 +63,22 @@ export function register(req, res) {
 
 export function login(req, res) {
   try {
-    const { email, password } = req.body;
+    const { email, password, isAdmin,  } = req.body;
 
-    if (email && password) {
-      res.cookie('isAdmin', { isAdmin }, { maxAge: 900000, httpOnly: true }); // TODO build isAdmin logic
+    const role: string = (isAdmin) ? 'n admin' : ' shopper';
+    const users = new Users();
+    const verifiedUser: User = users.verifyUser(email, password);
+
+    if (verifiedUser) {
+      if (((verifiedUser.storeUuid === null) && (!isAdmin)) || // check shopper uses shopper-login and admin uses admin-login
+          ((verifiedUser.storeUuid !== null) && (isAdmin))) {
+        res.cookie('currentUser', { userUuid: verifiedUser.userUuid }, { maxAge: 900000, httpOnly: true });
+        res.send({ title: `Welcome back, ${verifiedUser.username}!`, text: `Enjoy your visit!`, isLoggedIn: true});
+      } else {
+        res.send({ title: `${verifiedUser.username}, you are a${role}!`, text: `Please use the right login form!`, isLoggedIn: false});
+      }
     }
-
-    res.send({ login: true, isAdmin }); 
+    else res.send({ title: 'Credentials are wrong', text:`Please verify.`, isLoggedIn: false });
 
   } catch (error) {
     console.error(error);
