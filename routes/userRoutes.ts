@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const { welcome, register, login, showProducts, showStores } = require('../../controllers/dist/userController');
+// import { isLoggedIn, doesUserExist, isAdmin, onlyAdmin } from '../middlewares/userChecks';
 const { isLoggedIn, doesUserExist, isAdmin, onlyAdmin } = require('../../middlewares/dist/userChecks');
 
 router

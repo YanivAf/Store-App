@@ -34,7 +34,7 @@ export class CartProduct {
     productUuid: string;
     quantity: number;
     
-    constructor(productUuid) {
+    constructor(productUuid: string) {
         this.productUuid = productUuid;
         this.quantity = 1;
     }
@@ -49,7 +49,7 @@ export class User {
     cart: Array<CartProduct>;
     purchased: Array<CartProduct>; // previous carts products
     
-    constructor(email, username, password) { // isAdmin sent from register() in usersController.ts
+    constructor(email: string, username: string, password: string) {
         this.userUuid = uuidv4();
         this.email = email;
         this.username = username;
@@ -126,7 +126,7 @@ export class Users {
 
             if (isAdmin) { // admin registration attempt
                 if (userIndex !== -1) { // email exists
-                    if ((this.users[userIndex].storeUuid === null) && // if shopper + entered registered username & password
+                    if ((this.users[userIndex].storeUuid === null) && // if exist as shopper + entered registered username & password
                         (this.users[userIndex].username === userUsername) &&
                         (this.users[userIndex].password === userPassword)) {
                         
@@ -141,7 +141,8 @@ export class Users {
                     this.users.push(user); // add admin
                     
                 }
-            } else if (userIndex !== -1) return null; // shopper registration attempt + shopper exists
+            } else // shopper registration attempt
+            if (userIndex !== -1) return null; // shopper exists
             else this.users.push(user); // add shopper
 
             this.updateUsersJson();

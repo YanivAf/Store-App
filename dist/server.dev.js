@@ -14,7 +14,8 @@ app.use(express.json());
 app.use(express["static"](pathToFile));
 app.use(cookieParser());
 
-var userRoutes = require('./routes/dist/userRoutes');
+var userRoutes = require('./routes/dist/userRoutes'); // import * as userRoutes from './routes/userRoutes';
+
 
 app.use('/user', userRoutes);
 app.listen(port, function () {

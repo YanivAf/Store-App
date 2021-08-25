@@ -110,7 +110,7 @@ var Users = /** @class */ (function () {
             var userIndex = this.findUserIndex(null, userEmail);
             if (isAdmin) { // admin registration attempt
                 if (userIndex !== -1) { // email exists
-                    if ((this.users[userIndex].storeUuid === null) && // if shopper + entered registered username & password
+                    if ((this.users[userIndex].storeUuid === null) && // if exist as shopper + entered registered username & password
                         (this.users[userIndex].username === userUsername) &&
                         (this.users[userIndex].password === userPassword)) {
                         this.users[userIndex].storeUuid = this.storeUuid();
@@ -125,8 +125,9 @@ var Users = /** @class */ (function () {
                     this.users.push(user); // add admin
                 }
             }
-            else if (userIndex !== -1)
-                return null; // shopper registration attempt + shopper exists
+            else // shopper registration attempt
+             if (userIndex !== -1)
+                return null; // shopper exists
             else
                 this.users.push(user); // add shopper
             this.updateUsersJson();
