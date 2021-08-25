@@ -119,7 +119,7 @@ export class Users {
         }
     }
 
-    addUser(userEmail: string, userUsername: string, userPassword: string, isAdmin: boolean): string {
+    addUser(userEmail: string, userUsername: string, userPassword: string, isAdmin: boolean): object {
         try {
             const user = new User(userEmail, userUsername, userPassword);
             const userIndex: number = this.findUserIndex(null, userEmail);
@@ -131,10 +131,10 @@ export class Users {
                         (this.users[userIndex].password === userPassword)) {
                         
                         this.users[userIndex].storeUuid = this.storeUuid();
-                        
+
                         this.updateUsersJson();
 
-                        return this.users[userIndex].userUuid; // convert shopper to admin
+                        return { userUuid: this.users[userIndex].userUuid, storeUuid: this.users[userIndex].storeUuid }; // convert shopper to admin
                     } else return null; // unverified shopper OR admin exists
                 } else { // email doesn't exist
                     user.storeUuid = this.storeUuid();
@@ -147,7 +147,7 @@ export class Users {
 
             this.updateUsersJson();
 
-            return user.userUuid;
+            return { userUuid: user.userUuid, storeUuid: null};
 
         } catch (error) {
             console.error(error.message);

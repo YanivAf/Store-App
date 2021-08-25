@@ -41,7 +41,7 @@ function store() {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, axios.get('/user/store')];
+                    return [4 /*yield*/, axios.get('/store/:storeUuid')];
                 case 1:
                     storeUser = _a.sent();
                     console.log('hi you');

@@ -1,4 +1,7 @@
 export {};
+
+const { secret } = require('../../secret/dist/secret');
+const jwt = require('jwt-simple');
 const { Users } = require("../../models/dist/usersModel");
 
 export function isLoggedIn(req, res, next) {
@@ -6,7 +9,9 @@ export function isLoggedIn(req, res, next) {
         const { currentUser } = req.cookies;
 
         if (currentUser) {
-            req.currentUser = currentUser;
+            const decoded = jwt.decode(currentUser, secret);
+            const decodedCurrentUser = JSON.parse(decoded);    
+            req.currentUser = decodedCurrentUser;
             next();
         } else res.status(401).send({message:'The session has expired. Please log in again.'});
          

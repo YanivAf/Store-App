@@ -33,7 +33,7 @@ async function login(ev) {
         ev.target.reset();
         
         const loginAdminUser = await axios.post('/user/login', { email, password, isAdmin });
-        const { title, text, isLoggedIn } = loginAdminUser.data;
+        const { title, text, storeUuid, isLoggedIn } = loginAdminUser.data;
         
         if (isLoggedIn) {
             swal({
@@ -42,7 +42,7 @@ async function login(ev) {
                 icon: "success",
                 button: "Lets go",
             })
-            .then( () => { window.location.href = (isAdmin) ? './store.html' : './stores.html'; });
+            .then( () => { window.location.href = (isAdmin) ? `./store.html?storeUuid=${storeUuid}` : './stores.html'; });
         } else {
             swal({
                 title: `Ops.. ${title}`,

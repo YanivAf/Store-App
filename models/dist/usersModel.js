@@ -115,7 +115,7 @@ var Users = /** @class */ (function () {
                         (this.users[userIndex].password === userPassword)) {
                         this.users[userIndex].storeUuid = this.storeUuid();
                         this.updateUsersJson();
-                        return this.users[userIndex].userUuid; // convert shopper to admin
+                        return { userUuid: this.users[userIndex].userUuid, storeUuid: this.users[userIndex].storeUuid }; // convert shopper to admin
                     }
                     else
                         return null; // unverified shopper OR admin exists
@@ -131,7 +131,7 @@ var Users = /** @class */ (function () {
             else
                 this.users.push(user); // add shopper
             this.updateUsersJson();
-            return user.userUuid;
+            return { userUuid: user.userUuid, storeUuid: null };
         }
         catch (error) {
             console.error(error.message);

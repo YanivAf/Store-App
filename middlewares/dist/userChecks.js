@@ -1,12 +1,16 @@
 "use strict";
 exports.__esModule = true;
 exports.onlyAdmin = exports.isAdmin = exports.doesUserExist = exports.isLoggedIn = void 0;
+var secret = require('../../secret/dist/secret').secret;
+var jwt = require('jwt-simple');
 var Users = require("../../models/dist/usersModel").Users;
 function isLoggedIn(req, res, next) {
     try {
         var currentUser = req.cookies.currentUser;
         if (currentUser) {
-            req.currentUser = currentUser;
+            var decoded = jwt.decode(currentUser, secret);
+            var decodedCurrentUser = JSON.parse(decoded);
+            req.currentUser = decodedCurrentUser;
             next();
         }
         else

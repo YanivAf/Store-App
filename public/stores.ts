@@ -1,6 +1,6 @@
 async function stores() {
     try {
-        const storesUser = await axios.get('/user/stores');
+        const storesUser = await axios.get('/store/all');
         
         console.log('hi you');
         // on top - render `Welcome ${username}`

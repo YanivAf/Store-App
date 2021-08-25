@@ -13,8 +13,10 @@ app.use(express.static(pathToFile));
 app.use(cookieParser());
 
 const userRoutes = require('./routes/dist/userRoutes');
+const storeRoutes = require('./routes/dist/storeRoutes');
 // import * as userRoutes from './routes/userRoutes';
 
 app.use('/user', userRoutes);
+app.use('/store', storeRoutes);
 
 app.listen(port, () => { console.log(`Listening on port: ${port}`); });

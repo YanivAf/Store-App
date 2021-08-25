@@ -1,6 +1,5 @@
-async function store() {
+async function product() {
     try {
-        const storeUser = await axios.get('/store/:storeUuid');
         console.log('hi you');
         // on top - render `Welcome ${username}` + storeName
         // SHOPPER
@@ -15,4 +14,4 @@ async function store() {
     }
 }
 
-store();
+product();
