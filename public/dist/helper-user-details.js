@@ -34,17 +34,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-function showStores() {
+function getUserDetails() {
     return __awaiter(this, void 0, void 0, function () {
-        var getStoresDetails, error_1;
+        var userDetails, username, cart, purchased, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, axios.get('/store/all')];
+                    return [4 /*yield*/, axios.get('/user/details')];
                 case 1:
-                    getStoresDetails = _a.sent();
-                    console.log('hi you');
+                    userDetails = _a.sent();
+                    username = userDetails.username, cart = userDetails.cart, purchased = userDetails.purchased;
+                    // on top - render `Welcome ${username}` + storeName
+                    if (!cart) { // ADMIN
+                        // on top - render add product button 
+                        renderStoreDetails(true);
+                    }
+                    else { // SHOPPER
+                        // on top - render cart logo
+                        renderStoreDetails(false);
+                    }
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _a.sent();
@@ -55,5 +64,4 @@ function showStores() {
         });
     });
 }
-showStores();
-// TODO add onclick function to redirect to store with storeUuid in URL. get storeUuid from element id
+getUserDetails();

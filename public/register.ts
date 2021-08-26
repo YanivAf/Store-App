@@ -13,7 +13,7 @@ async function register(ev) {
         ev.target.reset();
 
         const registerUser = await axios.post('/user/register', {email, username, password, isAdmin});
-        const { title, text, isRegistered } = registerUser.data;    
+        const { title, text, storeUuid, isRegistered } = registerUser.data;    
 
         if (isRegistered) {
             swal({
@@ -22,7 +22,7 @@ async function register(ev) {
                 icon: "success",
                 button: "Lets go",
             })
-            .then( () => { window.location.href = (isAdmin) ? './store.html' : './stores.html'; });
+            .then( () => { window.location.href = (isAdmin) ? `./store.html?storeUuid=${storeUuid}` : './stores.html'; });
         } else {
             swal({
                 title: `Ops.. ${title}`,

@@ -1,9 +1,8 @@
-async function stores() {
+async function showStores() {
     try {
-        const storesUser = await axios.get('/store/all');
+        const getStoresDetails = await axios.get('/store/all');
         
         console.log('hi you');
-        // on top - render `Welcome ${username}`
         // on main - render stores (only one for this task)
 
     } catch (error) {
@@ -11,6 +10,6 @@ async function stores() {
     }
 }
 
-stores();
+showStores();
 
-// TODO add onclick function to redirect to store with storeUuid in URL
+// TODO add onclick function to redirect to store with storeUuid in URL. get storeUuid from element id

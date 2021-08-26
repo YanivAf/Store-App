@@ -1,26 +1,12 @@
 "use strict";
 exports.__esModule = true;
-exports.Users = exports.User = exports.CartProduct = exports.Store = void 0;
+exports.Users = exports.User = exports.CartProduct = void 0;
 var uuidv4 = require("uuid").v4;
 var fs = require("fs");
 var path = require("path");
 var usersJsonPath = path.resolve(__dirname, "../users.json");
 var storeJsonPath = path.resolve(__dirname, "../store.json");
-var readStoreJson = function () {
-    try {
-        var store = fs.readFileSync(storeJsonPath);
-        return JSON.parse(store);
-    }
-    catch (error) {
-        console.error(error.message);
-    }
-};
-var Store = /** @class */ (function () {
-    function Store() {
-    }
-    return Store;
-}());
-exports.Store = Store;
+var _a = require('./storeModel'), readStoreJson = _a.readStoreJson, Product = _a.Product, Store = _a.Store;
 var readUsersJson = function () {
     try {
         var users = fs.readFileSync(usersJsonPath);
@@ -182,26 +168,39 @@ var Users = /** @class */ (function () {
                     this.deleteCartProduct(shopperUuid, productUuid);
             }
             this.updateUsersJson();
+            return this.users[shopperIndex].cart[cartProductIndex].quantity;
         }
         catch (error) {
             console.error(error.message);
         }
     };
-    Users.prototype.emptyCart = function (shopperUuid) {
+    Users.prototype.updatePurcased = function (shopperIndex /*, storeUuid: string*/) {
+        var _this = this;
+        try {
+            this.users[shopperIndex].cart.forEach(function (cartProduct) {
+                var cartProductIndex = _this.users[shopperIndex].purchased.findIndex(function (cartProductPurchased) { return cartProductPurchased.productUuid == cartProduct.productUuid; });
+                if (cartProductIndex === -1)
+                    _this.users[shopperIndex].purchased.push(cartProduct);
+                else
+                    _this.users[shopperIndex].purchased[cartProductIndex].quantity += cartProduct.quantity;
+            });
+            var store_1 = readStoreJson();
+            this.users[shopperIndex].cart.forEach(function (cartProduct) {
+                var productIndex = store_1.products.findIndex(function (product) { return product.productUuid == cartProduct.productUuid; });
+                store_1.products[productIndex].inStock -= cartProduct.quantity;
+            });
+            fs.writeFileSync(storeJsonPath, JSON.stringify(store_1));
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    };
+    Users.prototype.emptyCart = function (shopperUuid /*, storeUuid: string*/) {
         try {
             var shopperIndex = this.findUserIndex(shopperUuid, null);
-            this.updatePurcased(shopperIndex);
+            this.updatePurcased(shopperIndex /*, storeUuid*/); // storeUuid will be used when there is more than 1 store
             this.users[shopperIndex].cart = [];
             this.updateUsersJson();
-        }
-        catch (error) {
-            console.error(error.message);
-        }
-    };
-    Users.prototype.updatePurcased = function (shopperIndex) {
-        var _a;
-        try {
-            (_a = this.users[shopperIndex].purchased).push.apply(_a, this.users[shopperIndex].cart);
         }
         catch (error) {
             console.error(error.message);

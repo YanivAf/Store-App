@@ -2,14 +2,14 @@ export {};
 
 const { secret } = require('../../secret/dist/secret');
 const jwt = require('jwt-simple');
-const { Users, User } = require('../../models/dist/usersModel');
+const { Product, Store } = require('../../models/dist/storeModel');
 
-export const showStores = (req, res)=> {
+export const showStores = (req, res)=> { // stores.html
   try {
-    // req.body should have userUuid
-    // send stores + username + cart + purchased
-
-    res.send({showStores:true});
+    // call additional get route to call from client: '/user/details'
+    // req.body should have storeUuid
+    const store = new Store();
+    res.send(store);
 
   } catch (error) {
     console.error(error);
@@ -17,14 +17,17 @@ export const showStores = (req, res)=> {
   }
 }
 
-export const showProducts = (req, res)=> { 
+export const showProducts = (req, res)=> { // store.html
   try {
-    // req.body should have storeUuid + userUuid
-    // req.isAdmin to know if shopper or admin
-    // for shopper - send also cart + purchased
-    // send isAdmin + storeName + store products + username
+    // call additional get route to call from client: '/user/details'
+    const isAdmin = req.isAdmin;
 
-    res.send({ showProducts:true });
+    const storeUuid: string = (isAdmin) ? req.adminStoreUuid : req.body.storeUuid // needed when database will have more than 1 store in the future
+    // if shopper- storeUuid from the id of store div in the client 
+    // if admin- storeUuid from middleware
+
+    const store = new Store();
+    res.send({ store }); // needs products + storeName for h1 
 
   } catch (error) {
     console.error(error);
@@ -32,7 +35,29 @@ export const showProducts = (req, res)=> {
   }
 }
 
-export const addProduct = (req, res)=> {
+export const showProduct = (req, res)=> { // product.html
+  try {
+
+    // res.send({ showProduct:true });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+}
+
+export const editStoreName = (req, res)=> { // store.html
+  try {
+
+    // res.send({ editStoreName:true });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+}
+
+export const addProduct = (req, res)=> { // store.html
   try {
 
     // res.send({ addProduct:true });
@@ -43,7 +68,7 @@ export const addProduct = (req, res)=> {
   }
 }
 
-export const editProduct = (req, res)=> {
+export const editProduct = (req, res)=> { // product.html
   try {
 
     // res.send({ editProduct:true });
@@ -54,7 +79,7 @@ export const editProduct = (req, res)=> {
   }
 }
 
-export const deleteProduct = (req, res)=> {
+export const deleteProduct = (req, res)=> { // store.html
   try {
 
     // res.send({ deleteProduct:true });

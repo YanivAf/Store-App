@@ -2,16 +2,18 @@ export { };
 const express = require('express');
 const router = express.Router();
 
-const { showProducts, showStores, addProduct, editProduct, deleteProduct } = require('../../controllers/dist/storeControllers');
-const { isLoggedIn, doesUserExist, isAdmin, onlyAdmin } = require('../../middlewares/dist/userChecks');
+const { showStores, showProducts, showProduct, editStoreName, addProduct, editProduct, deleteProduct } = require('../../controllers/dist/storeControllers');
+const { isLoggedIn, doesUserExist, isAdmin, onlyAdmin, adminStoreUuid } = require('../../middlewares/dist/userChecks');
 // import { isLoggedIn, doesUserExist, isAdmin, onlyAdmin } from '../middlewares/userChecks';
 
 router
-    .get('/all', isLoggedIn, doesUserExist, showStores)
+    .get('/all', isLoggedIn, doesUserExist, isAdmin, showStores)
     .get('/:storeUuid', isLoggedIn, doesUserExist, isAdmin, showProducts)
-    .get('/:productUuid', isLoggedIn, doesUserExist, isAdmin, showProducts)
-    .post('/addProduct', isLoggedIn, doesUserExist, isAdmin, onlyAdmin, addProduct)
-    .put('/:productUuid/editProduct', isLoggedIn, doesUserExist, isAdmin, onlyAdmin, editProduct)
-    .delete('/:productUuid/deleteProduct', isLoggedIn, doesUserExist, isAdmin, onlyAdmin, deleteProduct);
+    .get('/', isLoggedIn, doesUserExist, isAdmin, showProducts)
+    .get('/:productUuid', isLoggedIn, doesUserExist, isAdmin, adminStoreUuid, showProduct)
+    .put('/', isLoggedIn, doesUserExist, isAdmin, onlyAdmin, adminStoreUuid, editStoreName)
+    .post('/:productUuid', isLoggedIn, doesUserExist, isAdmin, onlyAdmin, adminStoreUuid, addProduct)
+    .put('/:productUuid', isLoggedIn, doesUserExist, isAdmin, onlyAdmin, adminStoreUuid, editProduct)
+    .delete('/:productUuid', isLoggedIn, doesUserExist, isAdmin, onlyAdmin, adminStoreUuid, deleteProduct);
 
 module.exports = router;

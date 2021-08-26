@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.onlyAdmin = exports.isAdmin = exports.doesUserExist = exports.isLoggedIn = void 0;
+exports.adminStoreUuid = exports.onlyAdmin = exports.onlyShopper = exports.isAdmin = exports.doesUserExist = exports.isLoggedIn = void 0;
 var secret = require('../../secret/dist/secret').secret;
 var jwt = require('jwt-simple');
 var Users = require("../../models/dist/usersModel").Users;
@@ -29,6 +29,7 @@ function doesUserExist(req, res, next) {
         var users = new Users();
         var userIndex = users.findUserIndex(userUuid, null);
         if (userIndex !== undefined) {
+            req.userUuid = userUuid;
             req.userIndex = userIndex;
             next();
         }
@@ -45,7 +46,6 @@ function isAdmin(req, res, next) {
     try {
         var users = new Users();
         var userIndex = req.userIndex;
-        var isAdmin_1;
         req.isAdmin = (users.users[userIndex].storeUuid !== null) ? true : false;
         next();
     }
@@ -55,6 +55,20 @@ function isAdmin(req, res, next) {
     }
 }
 exports.isAdmin = isAdmin;
+function onlyShopper(req, res, next) {
+    try {
+        var isAdmin_1 = req.isAdmin;
+        if (!isAdmin_1)
+            next();
+        else
+            res.status(401).send({ message: 'This functionality is for shoppers only.' });
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send(error.message);
+    }
+}
+exports.onlyShopper = onlyShopper;
 function onlyAdmin(req, res, next) {
     try {
         var isAdmin_2 = req.isAdmin;
@@ -69,3 +83,20 @@ function onlyAdmin(req, res, next) {
     }
 }
 exports.onlyAdmin = onlyAdmin;
+function adminStoreUuid(req, res, next) {
+    try {
+        var users = new Users();
+        var userIndex = req.userIndex;
+        var isAdmin_3 = req.isAdmin;
+        if (isAdmin_3)
+            req.adminStoreUuid = users.users[userIndex].storeUuid;
+        else
+            req.adminStoreUuid = null;
+        next();
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send(error.message);
+    }
+}
+exports.adminStoreUuid = adminStoreUuid;

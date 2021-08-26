@@ -6,20 +6,7 @@ const path = require("path");
 const usersJsonPath = path.resolve(__dirname, "../users.json");
 const storeJsonPath = path.resolve(__dirname, "../store.json");
 
-const readStoreJson = () => {
-    try {
-      const store: any = fs.readFileSync(storeJsonPath);
-      return JSON.parse(store);
-    } catch (error) {
-      console.error(error.message);
-    }
-}
-
-export class Store {
-    storeUuid: string;
-    storeName: string;
-    products: Array<any>;
-}
+const { readStoreJson, Product, Store } = require('./storeModel');
 
 const readUsersJson = () => {
   try {
@@ -147,7 +134,7 @@ export class Users {
 
             this.updateUsersJson();
 
-            return { userUuid: user.userUuid, storeUuid: null};
+            return { userUuid: user.userUuid, storeUuid: null };
 
         } catch (error) {
             console.error(error.message);
@@ -168,7 +155,7 @@ export class Users {
         }
     }
 
-    findCartProduct(shopperIndex: number, productUuid: string) {
+    findCartProduct(shopperIndex: number, productUuid: string): number {
         try {
             const cartProductIndex: number = this.users[shopperIndex].cart.findIndex(cartProduct => cartProduct.productUuid === productUuid);
             if (cartProductIndex === -1) throw new Error(`product ${productUuid} wasn't found in cart`);
@@ -194,7 +181,7 @@ export class Users {
         }
     }
 
-    updateCartProductQuantity(shopperUuid: string, productUuid: string, mathSign: string) {
+    updateCartProductQuantity(shopperUuid: string, productUuid: string, mathSign: string): number {
         try {
             const shopperIndex: number = this.findUserIndex(shopperUuid, null);
             const cartProductIndex: number = this.findCartProduct(shopperIndex, productUuid);
@@ -207,28 +194,42 @@ export class Users {
 
             this.updateUsersJson();
 
+            return this.users[shopperIndex].cart[cartProductIndex].quantity;
+
         } catch (error) {
             console.error(error.message);
         }
     }
 
-    emptyCart(shopperUuid: string) { // after payment
+    updatePurcased(shopperIndex: number/*, storeUuid: string*/) { // seperated from emptyCart for clarity
+        try {
+            this.users[shopperIndex].cart.forEach(cartProduct => { // update quantities in purchased according to shppoer purchase
+                const cartProductIndex: number = this.users[shopperIndex].purchased.findIndex(cartProductPurchased => cartProductPurchased.productUuid == cartProduct.productUuid);
+                if (cartProductIndex === -1) this.users[shopperIndex].purchased.push(cartProduct);
+                else this.users[shopperIndex].purchased[cartProductIndex].quantity += cartProduct.quantity;
+            });
+
+            const store: Store = readStoreJson();
+            this.users[shopperIndex].cart.forEach(cartProduct => { // update stock quantities in store according to shppoer purchase
+                const productIndex: number = store.products.findIndex(product => product.productUuid == cartProduct.productUuid);
+                store.products[productIndex].inStock -= cartProduct.quantity;
+            });
+
+            fs.writeFileSync(storeJsonPath, JSON.stringify(store)); 
+
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
+    emptyCart(shopperUuid: string/*, storeUuid: string*/) { // after payment.
         try {
             const shopperIndex: number = this.findUserIndex(shopperUuid, null);
 
-            this.updatePurcased(shopperIndex);
+            this.updatePurcased(shopperIndex/*, storeUuid*/); // storeUuid will be used when there is more than 1 store
             this.users[shopperIndex].cart = [];
 
             this.updateUsersJson();
-
-        } catch (error) {
-            console.error(error.message);
-        }
-    }
-
-    updatePurcased(shopperIndex: number) { // seperated from emptyCart for clarity
-        try {
-            this.users[shopperIndex].purchased.push(...this.users[shopperIndex].cart);
 
         } catch (error) {
             console.error(error.message);

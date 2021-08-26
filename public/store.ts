@@ -1,18 +1,40 @@
-async function store() {
+async function getUserDetails() {
     try {
-        const storeUser = await axios.get('/store/:storeUuid');
-        console.log('hi you');
+        const userDetails = await axios.get('/user/details');
+        const { username, cart, purchased } = userDetails;
         // on top - render `Welcome ${username}` + storeName
-        // SHOPPER
-        // on top - render cart logo        
-        // on main - render products W/O edit+delete button
-        // ADMIN
-        // on top - render also add product button 
-        // on main - render products with edit+delete button
+        
+        if (!cart) { // ADMIN
+            // on top - render add product button 
+            renderStoreDetails(true);
+        } else { // SHOPPER
+            // on top - render cart logo
+            renderStoreDetails(false);
+        }
+        
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+async function renderStoreDetails(isAdmin) {
+    try {
+        const getStoreDetails = await axios.get('/store');
+        console.log('renderStoreDetails');
+        const { store } = getStoreDetails;
+        const { storeName, products } = store;
+        
+        // on main - render storeName
+        
+        if (isAdmin) {
+            // on main - render products with edit+delete buttons
+        } else {
+            // on main - render products with cart buttons ("+" + "-")    
+        }
 
     } catch (error) {
         console.error(error.message);
     }
 }
 
-store();
+getUserDetails();

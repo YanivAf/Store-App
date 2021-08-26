@@ -1,14 +1,15 @@
 "use strict";
 exports.__esModule = true;
-exports.deleteProduct = exports.editProduct = exports.addProduct = exports.showProducts = exports.showStores = void 0;
+exports.deleteProduct = exports.editProduct = exports.addProduct = exports.editStoreName = exports.showProduct = exports.showProducts = exports.showStores = void 0;
 var secret = require('../../secret/dist/secret').secret;
 var jwt = require('jwt-simple');
-var _a = require('../../models/dist/usersModel'), Users = _a.Users, User = _a.User;
+var _a = require('../../models/dist/storeModel'), Product = _a.Product, Store = _a.Store;
 exports.showStores = function (req, res) {
     try {
-        // req.body should have userUuid
-        // send stores + username + cart + purchased
-        res.send({ showStores: true });
+        // call additional get route to call from client: '/user/details'
+        // req.body should have storeUuid
+        var store = new Store();
+        res.send(store);
     }
     catch (error) {
         console.error(error);
@@ -17,11 +18,31 @@ exports.showStores = function (req, res) {
 };
 exports.showProducts = function (req, res) {
     try {
-        // req.body should have storeUuid + userUuid
-        // req.isAdmin to know if shopper or admin
-        // for shopper - send also cart + purchased
-        // send isAdmin + storeName + store products + username
-        res.send({ showProducts: true });
+        // call additional get route to call from client: '/user/details'
+        var isAdmin = req.isAdmin;
+        var storeUuid = (isAdmin) ? req.adminStoreUuid : req.body.storeUuid; // needed when database will have more than 1 store in the future
+        // if shopper- storeUuid from the id of store div in the client 
+        // if admin- storeUuid from middleware
+        var store = new Store();
+        res.send({ store: store }); // needs products + storeName for h1 
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send(error.message);
+    }
+};
+exports.showProduct = function (req, res) {
+    try {
+        // res.send({ showProduct:true });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send(error.message);
+    }
+};
+exports.editStoreName = function (req, res) {
+    try {
+        // res.send({ editStoreName:true });
     }
     catch (error) {
         console.error(error);
