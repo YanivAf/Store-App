@@ -1,6 +1,7 @@
 :root {
   --main-color: #7cd1f9;
-  --hover-color: #77c8ee;
+  --hover-bg-color: #77c8ee;
+  --hover-color: #467a92;
 }
 
 * {
@@ -39,7 +40,7 @@ a:hover {
   font-size: clamp(8px, 3vw, 12px);
 }
 .button:hover {
-  background-color: var(--hover-color);
+  background-color: var(--hover-bg-color);
 }
 .button:active {
   -moz-box-shadow: 0 0 10px var(--main-color);
@@ -63,13 +64,13 @@ a:hover {
 .header {
   display: grid;
   align-items: center;
-  grid-template-columns: 2fr 1fr 2fr 1fr 2fr;
+  grid-template-columns: 1.5fr 0.75fr 0.75fr 2fr 1fr 2fr;
   grid-template-rows: 1fr 1fr;
-  grid-template-areas: "h1 cart . h4 form" "h1 cart . call reg";
+  grid-template-areas: "h1 cart history . h4 form" "h1 cart history . call reg";
   position: sticky;
   height: fit-content;
   height: clamp(100px, 3vh, 120px);
-  background-image: url("../images/cart-wp.png"), linear-gradient(black, gray);
+  background-image: url("../images/cart-wp.png"), black;
   background-blend-mode: normal;
   background-repeat: repeat;
   background-size: 100px;
@@ -107,15 +108,28 @@ a:hover {
 .header__item--cart div {
   background-color: orange;
   border: 1px solid white;
-  border-radius: 50px;
+  border-radius: 2px;
   color: white;
   font-size: 15px;
   text-align: center;
-  height: 15px;
-  width: 15px;
+  height: 20px;
+  width: 20px;
   position: absolute;
   right: -20px;
   top: -5px;
+}
+.header__item--history {
+  grid-area: history;
+  width: 30px;
+}
+.header__item--history img {
+  background-color: white;
+  padding: 5px;
+  border-radius: 50px;
+  width: 100%;
+}
+.header__item--history img:hover {
+  background-color: var(--hover-color);
 }
 .header__item--h4 {
   grid-area: h4;
