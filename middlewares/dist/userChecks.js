@@ -1,17 +1,21 @@
 "use strict";
 exports.__esModule = true;
-exports.adminStoreUuid = exports.onlyAdmin = exports.onlyShopper = exports.isAdmin = exports.doesUserExist = exports.isLoggedIn = void 0;
+exports.onlyAdmin = exports.onlyShopper = exports.isAdmin = exports.doesUserExist = exports.isLoggedInAndVerified = void 0;
 var secret = require('../../secret/dist/secret').secret;
-var jwt = require('jwt-simple');
+var jwt = require('jsonwebtoken');
 var Users = require("../../models/dist/usersModel").Users;
-function isLoggedIn(req, res, next) {
+function isLoggedInAndVerified(req, res, next) {
     try {
         var currentUser = req.cookies.currentUser;
         if (currentUser) {
-            var decoded = jwt.decode(currentUser, secret);
-            var decodedCurrentUser = JSON.parse(decoded);
-            req.currentUser = decodedCurrentUser;
-            next();
+            jwt.verify(currentUser, secret, function (err, decoded) {
+                if (err) {
+                    res.status(401).send({ message: 'You are not authorized to see this page.' });
+                    return;
+                }
+                req.currentUser = decoded;
+                next();
+            });
         }
         else
             res.status(401).send({ message: 'The session has expired. Please log in again.' });
@@ -21,7 +25,7 @@ function isLoggedIn(req, res, next) {
         res.status(500).send(error.message);
     }
 }
-exports.isLoggedIn = isLoggedIn;
+exports.isLoggedInAndVerified = isLoggedInAndVerified;
 function doesUserExist(req, res, next) {
     try {
         var currentUser = req.currentUser;
@@ -46,7 +50,7 @@ function isAdmin(req, res, next) {
     try {
         var users = new Users();
         var userIndex = req.userIndex;
-        req.isAdmin = (users.users[userIndex].storeUuid !== null) ? true : false;
+        req.isAdmin = (users.users[userIndex].stores.length > 0) ? true : false;
         next();
     }
     catch (error) {
@@ -61,7 +65,7 @@ function onlyShopper(req, res, next) {
         if (!isAdmin_1)
             next();
         else
-            res.status(401).send({ message: 'This functionality is for shoppers only.' });
+            res.status(403).send({ message: 'This functionality is for shoppers only.' });
     }
     catch (error) {
         console.error(error.message);
@@ -75,7 +79,7 @@ function onlyAdmin(req, res, next) {
         if (isAdmin_2)
             next();
         else
-            res.status(401).send({ message: 'You are not authorized to see this page.' });
+            res.status(403).send({ message: 'You are not authorized to see this page.' });
     }
     catch (error) {
         console.error(error.message);
@@ -83,20 +87,3 @@ function onlyAdmin(req, res, next) {
     }
 }
 exports.onlyAdmin = onlyAdmin;
-function adminStoreUuid(req, res, next) {
-    try {
-        var users = new Users();
-        var userIndex = req.userIndex;
-        var isAdmin_3 = req.isAdmin;
-        if (isAdmin_3)
-            req.adminStoreUuid = users.users[userIndex].storeUuid;
-        else
-            req.adminStoreUuid = null;
-        next();
-    }
-    catch (error) {
-        console.error(error.message);
-        res.status(500).send(error.message);
-    }
-}
-exports.adminStoreUuid = adminStoreUuid;

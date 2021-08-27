@@ -1,8 +1,9 @@
 export {};
 
 const { secret } = require('../../secret/dist/secret');
-const jwt = require('jwt-simple');
+const jwt = require('jsonwebtoken');
 const { Users, User } = require('../../models/dist/usersModel');
+const { Product, Store } = require('../../models/dist/storeModel');
 
 export function welcome(req, res) {
   try {
@@ -26,9 +27,9 @@ export function register(req, res) { // register.html + shopper-register.html
 
     if (userUuid) {
       const cookieToWrite: string = JSON.stringify({ userUuid });
-      const currentUserToken: any = jwt.encode(cookieToWrite, secret);
+      const currentUserToken: any = jwt.sign(cookieToWrite, secret, { expiresIn: '1h' });
 
-      res.cookie('currentUser', currentUserToken, { maxAge: 900000, httpOnly: true });
+      res.cookie('currentUser', currentUserToken, { maxAge: 18000000, httpOnly: true });
       res.send({ title: `Cheers, ${username}!`, text: `You are our newest ${role}!`, storeUuid, isRegistered: true});
     }
     else res.send({ title: 'Email already registered', text:`Please use a different email address.${shopperToAdminText}`, isRegistered: false });
@@ -41,20 +42,21 @@ export function register(req, res) { // register.html + shopper-register.html
 
 export function login(req, res) { // index.html
   try {
-    const { email, password, isAdmin,  } = req.body;
+    const { email, password, adminLoginForm } = req.body;
 
-    const role: string = (isAdmin) ? 'n admin' : ' shopper';
+    const role: string = (adminLoginForm) ? 'n admin' : ' shopper';
     const users = new Users();
     const verifiedUser: User = users.verifyUser(email, password);
-
+    
     if (verifiedUser) {
-      if (((verifiedUser.storeUuid === null) && (!isAdmin)) || // check shopper uses shopper-login and admin uses admin-login
-          ((verifiedUser.storeUuid !== null) && (isAdmin))) {
+      const storeUuid: string = (verifiedUser.stores.length === 0) ? null : verifiedUser.stores[0];
+      if (((!storeUuid) && (!adminLoginForm)) || // check shopper uses shopper-login and admin uses admin-login
+          ((storeUuid) && (adminLoginForm))) {
         const cookieToWrite: string = JSON.stringify({ userUuid: verifiedUser.userUuid });
-        const currentUserToken: any = jwt.encode(cookieToWrite, secret);
+        const currentUserToken: any = jwt.sign(cookieToWrite, secret);
 
-        res.cookie('currentUser', currentUserToken, { maxAge: 900000, httpOnly: true });
-        res.send({ title: `Welcome back, ${verifiedUser.username}!`, text: `Enjoy your visit!`, storeUuid: verifiedUser.storeUuid, isLoggedIn: true});
+        res.cookie('currentUser', currentUserToken, { maxAge: 18000000, httpOnly: true });
+        res.send({ title: `Welcome back, ${verifiedUser.username}!`, text: `Enjoy your visit!`, storeUuid, isLoggedIn: true});
       } else {
         res.send({ title: `${verifiedUser.username}, you are not a${role}!`, text: `Please use the right login form!`, isLoggedIn: false});
       }
@@ -69,15 +71,15 @@ export function login(req, res) { // index.html
 
 export const details = (req, res)=> { // all htmls except for index.html,  register.html, shopper-register.html
   try {
-    const userIndex: string = req.userUuid;
+    const userIndex: string = req.userIndex;
     const isAdmin: boolean = req.isAdmin;
-
+    
     const users = new Users();
-    const user = users[userIndex];
+    const user = users.users[userIndex];
     const { username, cart, purchased } = user;
-
+    
     if (!isAdmin) res.send({ username, cart, purchased });
-    else res.send({ username })
+    else res.send({ username });
 
 
   } catch (error) {

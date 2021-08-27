@@ -8,6 +8,10 @@ window.axios.interceptors.response.use(function (response) {
             title = "Authorization Issue";
             text = error.response.data.message;
             break;
+        case 403:
+            title = "Permissions Issue";
+            text = error.response.data.message;
+            break;
         case 500:
             title = "Server Request Issue";
             text = error.response.data;

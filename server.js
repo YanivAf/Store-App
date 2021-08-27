@@ -6,7 +6,7 @@ const pathToFile = path.resolve(__dirname, './public');
 const express = require('express');
 const app = express();
 
-const port = process.env.PORT || 5555;
+const port = process.env.PORT || 555;
 
 app.use(express.json());
 app.use(express.static(pathToFile));

@@ -36,27 +36,35 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function getUserDetails() {
     return __awaiter(this, void 0, void 0, function () {
-        var userDetails, username, cart, purchased, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var userDetails, _a, username, cart, purchased, usernameElement, whichHtmlFile, error_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
+                    _b.trys.push([0, 2, , 3]);
                     return [4 /*yield*/, axios.get('/user/details')];
                 case 1:
-                    userDetails = _a.sent();
-                    username = userDetails.username, cart = userDetails.cart, purchased = userDetails.purchased;
-                    // on top - render `Welcome ${username}` + storeName
-                    if (!cart) { // ADMIN
-                        // on top - render add product button 
-                        renderStoreDetails(true);
-                    }
-                    else { // SHOPPER
-                        // on top - render cart logo
-                        renderStoreDetails(false);
+                    userDetails = _b.sent();
+                    console.log(userDetails);
+                    _a = userDetails.data, username = _a.username, cart = _a.cart, purchased = _a.purchased;
+                    usernameElement = document.querySelector('.header__item--h4');
+                    usernameElement.innerText = username;
+                    whichHtmlFile = window.location.pathname;
+                    switch (whichHtmlFile) {
+                        case '/store.html':
+                            renderStoreDetails();
+                            if (!cart) { // ADMIN
+                                // on top - render add product button 
+                            }
+                            else { // SHOPPER
+                                // on top - render cart logo
+                            }
+                            break;
+                        case '/stores.html':
+                            break;
                     }
                     return [3 /*break*/, 3];
                 case 2:
-                    error_1 = _a.sent();
+                    error_1 = _b.sent();
                     console.error(error_1.message);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];

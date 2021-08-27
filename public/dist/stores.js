@@ -36,18 +36,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function showStores() {
     return __awaiter(this, void 0, void 0, function () {
-        var getStoresDetails, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var getStoresDetails, _a, storeUuid, storeName, storesElement, html, error_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
+                    _b.trys.push([0, 2, , 3]);
                     return [4 /*yield*/, axios.get('/store/all')];
                 case 1:
-                    getStoresDetails = _a.sent();
-                    console.log('hi you');
+                    getStoresDetails = _b.sent();
+                    _a = getStoresDetails.data, storeUuid = _a.storeUuid, storeName = _a.storeName;
+                    storesElement = document.querySelector('.stores');
+                    html = "\n        <div class=\"stores__item store\">\n            <a href=\"./store.html?" + storeUuid + "\">" + storeName + "</a>\n        </div>";
+                    storesElement.innerHTML = html;
                     return [3 /*break*/, 3];
                 case 2:
-                    error_1 = _a.sent();
+                    error_1 = _b.sent();
                     console.error(error_1.message);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];

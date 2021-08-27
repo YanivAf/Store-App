@@ -69,7 +69,7 @@ adminLoginForm.addEventListener('submit', login);
 shopperLoginForm.addEventListener('submit', login);
 function login(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, email, password, isAdmin_1, loginAdminUser, _b, title, text, storeUuid_1, isLoggedIn, error_2;
+        var _a, email, password, adminLoginForm_1, loginAdminUser, _b, title, text, storeUuid_1, isLoggedIn, error_2;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -78,9 +78,9 @@ function login(ev) {
                     _a = ev.target.elements, email = _a.email, password = _a.password;
                     email = email.value;
                     password = password.value;
-                    isAdmin_1 = (ev.target.getAttribute('id').indexOf('shopper') === -1) ? true : false;
+                    adminLoginForm_1 = (ev.target.getAttribute('id').indexOf('shopper') === -1) ? true : false;
                     ev.target.reset();
-                    return [4 /*yield*/, axios.post('/user/login', { email: email, password: password, isAdmin: isAdmin_1 })];
+                    return [4 /*yield*/, axios.post('/user/login', { email: email, password: password, adminLoginForm: adminLoginForm_1 })];
                 case 1:
                     loginAdminUser = _c.sent();
                     _b = loginAdminUser.data, title = _b.title, text = _b.text, storeUuid_1 = _b.storeUuid, isLoggedIn = _b.isLoggedIn;
@@ -91,7 +91,7 @@ function login(ev) {
                             icon: "success",
                             button: "Lets go"
                         })
-                            .then(function () { window.location.href = (isAdmin_1) ? "./store.html?storeUuid=" + storeUuid_1 : './stores.html'; });
+                            .then(function () { window.location.href = (adminLoginForm_1) ? "./store.html?storeUuid=" + storeUuid_1 : './stores.html'; });
                     }
                     else {
                         swal({

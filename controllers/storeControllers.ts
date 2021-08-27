@@ -1,15 +1,11 @@
 export {};
 
-const { secret } = require('../../secret/dist/secret');
-const jwt = require('jwt-simple');
 const { Product, Store } = require('../../models/dist/storeModel');
 
 export const showStores = (req, res)=> { // stores.html
   try {
-    // call additional get route to call from client: '/user/details'
-    // req.body should have storeUuid
     const store = new Store();
-    res.send(store);
+    res.send({ storeUuid: store.storeUuid, storeName: store.storeName });
 
   } catch (error) {
     console.error(error);
@@ -19,15 +15,12 @@ export const showStores = (req, res)=> { // stores.html
 
 export const showProducts = (req, res)=> { // store.html
   try {
-    // call additional get route to call from client: '/user/details'
     const isAdmin = req.isAdmin;
 
-    const storeUuid: string = (isAdmin) ? req.adminStoreUuid : req.body.storeUuid // needed when database will have more than 1 store in the future
-    // if shopper- storeUuid from the id of store div in the client 
-    // if admin- storeUuid from middleware
+    const storeUuid: string = req.params.storeUuid; // needed when database will have more than 1 store in the future
 
     const store = new Store();
-    res.send({ store }); // needs products + storeName for h1 
+    res.send({ store, isAdmin });
 
   } catch (error) {
     console.error(error);

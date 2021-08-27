@@ -1,15 +1,11 @@
 "use strict";
 exports.__esModule = true;
 exports.deleteProduct = exports.editProduct = exports.addProduct = exports.editStoreName = exports.showProduct = exports.showProducts = exports.showStores = void 0;
-var secret = require('../../secret/dist/secret').secret;
-var jwt = require('jwt-simple');
 var _a = require('../../models/dist/storeModel'), Product = _a.Product, Store = _a.Store;
 exports.showStores = function (req, res) {
     try {
-        // call additional get route to call from client: '/user/details'
-        // req.body should have storeUuid
         var store = new Store();
-        res.send(store);
+        res.send({ storeUuid: store.storeUuid, storeName: store.storeName });
     }
     catch (error) {
         console.error(error);
@@ -18,13 +14,10 @@ exports.showStores = function (req, res) {
 };
 exports.showProducts = function (req, res) {
     try {
-        // call additional get route to call from client: '/user/details'
         var isAdmin = req.isAdmin;
-        var storeUuid = (isAdmin) ? req.adminStoreUuid : req.body.storeUuid; // needed when database will have more than 1 store in the future
-        // if shopper- storeUuid from the id of store div in the client 
-        // if admin- storeUuid from middleware
+        var storeUuid = req.params.storeUuid; // needed when database will have more than 1 store in the future
         var store = new Store();
-        res.send({ store: store }); // needs products + storeName for h1 
+        res.send({ store: store, isAdmin: isAdmin });
     }
     catch (error) {
         console.error(error);

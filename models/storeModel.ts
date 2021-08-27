@@ -21,7 +21,6 @@ export class Product {
     productPrice: number;
     productImage: any; // upload file
     inStock: number; // how many in stock
-    storeUuid: string;
 
 }
 

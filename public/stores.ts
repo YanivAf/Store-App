@@ -1,9 +1,14 @@
 async function showStores() {
     try {
         const getStoresDetails = await axios.get('/store/all');
-        
-        console.log('hi you');
-        // on main - render stores (only one for this task)
+        const { storeUuid, storeName } = getStoresDetails.data;
+
+        const storesElement: HTMLElement = document.querySelector('.stores');
+        const html: string = `
+        <div class="stores__item store">
+            <a href="./store.html?${storeUuid}">${storeName}</a>
+        </div>`;
+        storesElement.innerHTML = html;
 
     } catch (error) {
         console.error(error.message);

@@ -32,7 +32,7 @@ export class User {
     email: string;
     username: string;
     password: string;
-    storeUuid: string; // for admins
+    stores: Array<string>; // for admins
     cart: Array<CartProduct>;
     purchased: Array<CartProduct>; // previous carts products
     
@@ -41,7 +41,7 @@ export class User {
         this.email = email;
         this.username = username;
         this.password = password;
-        this.storeUuid = null;
+        this.stores = [];
         this.cart = [];
         this.purchased = [];
     }
@@ -88,16 +88,16 @@ export class Users {
         }
     }
 
-    storeUuid(): string { // TODO - check if this should be a middleware
+    storeUuid(): string {
         try {
-            const firstAdminIndex: number = this.users.findIndex(user => user.storeUuid !== null); 
+            const firstAdminIndex: number = this.users.findIndex(user => user.stores.length > 0); 
             let storeUuid: string;
             if (firstAdminIndex === -1) {
                 storeUuid = uuidv4(); /// if a store doesn't exist - create it
                 const store: Store = readStoreJson();
                 store.storeUuid = storeUuid;
                 fs.writeFileSync(storeJsonPath, JSON.stringify(store)); 
-            } else storeUuid = this.users[firstAdminIndex].storeUuid; // else - assign the existing store
+            } else storeUuid = this.users[firstAdminIndex].stores[0]; // else - assign the existing store (currently only 1 exists)
 
             return storeUuid;
             
@@ -113,18 +113,18 @@ export class Users {
 
             if (isAdmin) { // admin registration attempt
                 if (userIndex !== -1) { // email exists
-                    if ((this.users[userIndex].storeUuid === null) && // if exist as shopper + entered registered username & password
+                    if ((this.users[userIndex].stores.length === 0) && // if exist as shopper + entered registered username & password
                         (this.users[userIndex].username === userUsername) &&
                         (this.users[userIndex].password === userPassword)) {
                         
-                        this.users[userIndex].storeUuid = this.storeUuid();
+                        this.users[userIndex].stores.push(this.storeUuid());
 
                         this.updateUsersJson();
 
-                        return { userUuid: this.users[userIndex].userUuid, storeUuid: this.users[userIndex].storeUuid }; // convert shopper to admin
+                        return { userUuid: this.users[userIndex].userUuid, storeUuid: this.users[userIndex].stores[0] }; // convert shopper to admin
                     } else return null; // unverified shopper OR admin exists
                 } else { // email doesn't exist
-                    user.storeUuid = this.storeUuid();
+                    user.stores.push(this.storeUuid());
                     this.users.push(user); // add admin
                     
                 }
@@ -134,7 +134,7 @@ export class Users {
 
             this.updateUsersJson();
 
-            return { userUuid: user.userUuid, storeUuid: null };
+            return { userUuid: user.userUuid, storeUuid: [] };
 
         } catch (error) {
             console.error(error.message);

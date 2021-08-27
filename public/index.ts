@@ -29,10 +29,10 @@ async function login(ev) {
         let {email, password} = ev.target.elements;
         email = email.value;
         password = password.value;
-        const isAdmin: boolean = (ev.target.getAttribute('id').indexOf('shopper') === -1) ? true : false;
+        const adminLoginForm: boolean = (ev.target.getAttribute('id').indexOf('shopper') === -1) ? true : false;
         ev.target.reset();
         
-        const loginAdminUser = await axios.post('/user/login', { email, password, isAdmin });
+        const loginAdminUser = await axios.post('/user/login', { email, password, adminLoginForm });
         const { title, text, storeUuid, isLoggedIn } = loginAdminUser.data;
         
         if (isLoggedIn) {
@@ -42,7 +42,7 @@ async function login(ev) {
                 icon: "success",
                 button: "Lets go",
             })
-            .then( () => { window.location.href = (isAdmin) ? `./store.html?storeUuid=${storeUuid}` : './stores.html'; });
+            .then( () => { window.location.href = (adminLoginForm) ? `./store.html?storeUuid=${storeUuid}` : './stores.html'; });
         } else {
             swal({
                 title: `Ops.. ${title}`,

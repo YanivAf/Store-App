@@ -34,29 +34,46 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-function getUserDetails() {
+function renderStoreDetails() {
     return __awaiter(this, void 0, void 0, function () {
-        var userDetails, username, cart, purchased, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var getStoreDetails, _a, store, isAdmin_1, storeName, products, storeNameElement, productsElement, html, AreThereProducts, error_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, axios.get('/user/details')];
+                    _b.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, axios.get('/store/:storeUuid')];
                 case 1:
-                    userDetails = _a.sent();
-                    username = userDetails.username, cart = userDetails.cart, purchased = userDetails.purchased;
-                    // on top - render `Welcome ${username}` + storeName
-                    if (!cart) { // ADMIN
-                        // on top - render add product button 
-                        renderStoreDetails(true);
-                    }
-                    else { // SHOPPER
-                        // on top - render cart logo
-                        renderStoreDetails(false);
-                    }
+                    getStoreDetails = _b.sent();
+                    _a = getStoreDetails.data, store = _a.store, isAdmin_1 = _a.isAdmin;
+                    console.log(getStoreDetails);
+                    storeName = store.storeName, products = store.products;
+                    storeNameElement = document.querySelector('#store-name');
+                    storeNameElement.innerText = storeName;
+                    productsElement = document.querySelector('.products');
+                    html = void 0;
+                    AreThereProducts = (store.products.length > 0) ? true : false;
+                    html = (!AreThereProducts) ? 'no products to show!' :
+                        store.products.map(function (product) {
+                            var buttonsByRole = (isAdmin_1) ?
+                                "<i class=\"product-buttons__item product-buttons__item--delete fas fa-trash\" title=\"Delete " + product.productName + "\"></i>\n                <i class=\"product-buttons__item product-buttons__item--edit fas fa-edit\" title=\"Edit " + product.productName + "\"></i>"
+                                :
+                                    "<div class=\"product-buttons__item product-buttons__item--cart-reduce\" title=\"Reduce quantity\">-</div>\n                <div class=\"product-buttons__item product-buttons__item--cart-total\" title=\"Reduce quantity\">CartQuantity</div>\n                <div class=\"product-buttons__item product-buttons__item--cart-add\" title=\"Add quantity\">+</div>";
+                            var inStockText;
+                            var inStockColor;
+                            if (product.inStock > 0) {
+                                inStockText = product.inStock + " left";
+                                inStockColor = (product.inStock > 5) ? 'green' : 'orange';
+                            }
+                            else {
+                                inStockText = 'Out of Stock';
+                                inStockColor = 'red';
+                            }
+                            return "<div class=\"products__item product\" id=\"" + product.productUuid + "\">\n                    <h3 class=\"product__item product__item--name\">" + product.productName + "</h3>\n                    <img class=\"product__item product__item--img\" src=\"" + product.productImage + "\" title=\"" + product.productName + "\"/>\n                    <p class=\"product__item product__item--description\">" + product.productDescription + "</p>\n                    <div class=\"product__item product__item--price\">" + (Math.round(product.productPrice * 100) / 100).toFixed(2) + "$</div>\n                    <div class=\"product__item product__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                    <div class=\"product__item product-buttons\">" + buttonsByRole + "</div>\n                    \n                </div>";
+                        }).join('');
+                    productsElement.innerHTML = html;
                     return [3 /*break*/, 3];
                 case 2:
-                    error_1 = _a.sent();
+                    error_1 = _b.sent();
                     console.error(error_1.message);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
@@ -64,34 +81,3 @@ function getUserDetails() {
         });
     });
 }
-function renderStoreDetails(isAdmin) {
-    return __awaiter(this, void 0, void 0, function () {
-        var getStoreDetails, store, storeName, products, error_2;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, axios.get('/store')];
-                case 1:
-                    getStoreDetails = _a.sent();
-                    console.log('renderStoreDetails');
-                    store = getStoreDetails.store;
-                    storeName = store.storeName, products = store.products;
-                    // on main - render storeName
-                    if (isAdmin) {
-                        // on main - render products with edit+delete buttons
-                    }
-                    else {
-                        // on main - render products with cart buttons ("+" + "-")    
-                    }
-                    return [3 /*break*/, 3];
-                case 2:
-                    error_2 = _a.sent();
-                    console.error(error_2.message);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
-            }
-        });
-    });
-}
-getUserDetails();

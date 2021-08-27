@@ -2,8 +2,9 @@
 exports.__esModule = true;
 exports.purchaseCart = exports.deleteFromCart = exports.updateQuantity = exports.addToCart = exports.details = exports.login = exports.register = exports.welcome = void 0;
 var secret = require('../../secret/dist/secret').secret;
-var jwt = require('jwt-simple');
+var jwt = require('jsonwebtoken');
 var _a = require('../../models/dist/usersModel'), Users = _a.Users, User = _a.User;
+var _b = require('../../models/dist/storeModel'), Product = _b.Product, Store = _b.Store;
 function welcome(req, res) {
     try {
         res.send({ h1Text: "Shop Shop Shop", message: 'We wish you happy Shopping 🛒' });
@@ -24,8 +25,8 @@ function register(req, res) {
         var userUuid = userBasicInfo.userUuid, storeUuid = userBasicInfo.storeUuid;
         if (userUuid) {
             var cookieToWrite = JSON.stringify({ userUuid: userUuid });
-            var currentUserToken = jwt.encode(cookieToWrite, secret);
-            res.cookie('currentUser', currentUserToken, { maxAge: 900000, httpOnly: true });
+            var currentUserToken = jwt.sign(cookieToWrite, secret, { expiresIn: '1h' });
+            res.cookie('currentUser', currentUserToken, { maxAge: 18000000, httpOnly: true });
             res.send({ title: "Cheers, " + username + "!", text: "You are our newest " + role + "!", storeUuid: storeUuid, isRegistered: true });
         }
         else
@@ -39,17 +40,18 @@ function register(req, res) {
 exports.register = register;
 function login(req, res) {
     try {
-        var _a = req.body, email = _a.email, password = _a.password, isAdmin = _a.isAdmin;
-        var role = (isAdmin) ? 'n admin' : ' shopper';
+        var _a = req.body, email = _a.email, password = _a.password, adminLoginForm = _a.adminLoginForm;
+        var role = (adminLoginForm) ? 'n admin' : ' shopper';
         var users = new Users();
         var verifiedUser = users.verifyUser(email, password);
         if (verifiedUser) {
-            if (((verifiedUser.storeUuid === null) && (!isAdmin)) || // check shopper uses shopper-login and admin uses admin-login
-                ((verifiedUser.storeUuid !== null) && (isAdmin))) {
+            var storeUuid = (verifiedUser.stores.length === 0) ? null : verifiedUser.stores[0];
+            if (((!storeUuid) && (!adminLoginForm)) || // check shopper uses shopper-login and admin uses admin-login
+                ((storeUuid) && (adminLoginForm))) {
                 var cookieToWrite = JSON.stringify({ userUuid: verifiedUser.userUuid });
-                var currentUserToken = jwt.encode(cookieToWrite, secret);
-                res.cookie('currentUser', currentUserToken, { maxAge: 900000, httpOnly: true });
-                res.send({ title: "Welcome back, " + verifiedUser.username + "!", text: "Enjoy your visit!", storeUuid: verifiedUser.storeUuid, isLoggedIn: true });
+                var currentUserToken = jwt.sign(cookieToWrite, secret);
+                res.cookie('currentUser', currentUserToken, { maxAge: 18000000, httpOnly: true });
+                res.send({ title: "Welcome back, " + verifiedUser.username + "!", text: "Enjoy your visit!", storeUuid: storeUuid, isLoggedIn: true });
             }
             else {
                 res.send({ title: verifiedUser.username + ", you are not a" + role + "!", text: "Please use the right login form!", isLoggedIn: false });
@@ -66,10 +68,10 @@ function login(req, res) {
 exports.login = login;
 exports.details = function (req, res) {
     try {
-        var userIndex = req.userUuid;
+        var userIndex = req.userIndex;
         var isAdmin = req.isAdmin;
         var users = new Users();
-        var user = users[userIndex];
+        var user = users.users[userIndex];
         var username = user.username, cart = user.cart, purchased = user.purchased;
         if (!isAdmin)
             res.send({ username: username, cart: cart, purchased: purchased });
