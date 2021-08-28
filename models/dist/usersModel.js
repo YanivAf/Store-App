@@ -19,6 +19,7 @@ var readUsersJson = function () {
 var CartProduct = /** @class */ (function () {
     function CartProduct(productUuid) {
         this.productUuid = productUuid;
+        this.totalPrice = 0;
         this.quantity = 1;
     }
     return CartProduct;
@@ -123,12 +124,28 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
+    Users.prototype.completeCartProductDetails = function (quantity, productUuid) {
+        try {
+            var store = readStoreJson();
+            var product = store.products.find(function (product) { return product.productUuid === productUuid; });
+            var productPrice = product.productPrice;
+            var cartProduct = new CartProduct(productUuid);
+            cartProduct.productName = product.productName;
+            cartProduct.quantity = quantity;
+            cartProduct.totalPrice = productPrice * quantity;
+            return cartProduct;
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    };
     Users.prototype.addCartProduct = function (shopperUuid, productUuid) {
         try {
             var shopperIndex = this.findUserIndex(shopperUuid, null);
-            var cartProduct = new CartProduct(productUuid);
+            var cartProduct = this.completeCartProductDetails(1, productUuid);
             this.users[shopperIndex].cart.push(cartProduct);
             this.updateUsersJson();
+            return cartProduct;
         }
         catch (error) {
             console.error(error.message);
@@ -162,13 +179,18 @@ var Users = /** @class */ (function () {
             var cartProductIndex = this.findCartProduct(shopperIndex, productUuid);
             if (mathSign === '+')
                 this.users[shopperIndex].cart[cartProductIndex].quantity++;
-            else {
+            else
                 this.users[shopperIndex].cart[cartProductIndex].quantity--;
-                if (this.users[shopperIndex].cart[cartProductIndex].quantity === 0)
-                    this.deleteCartProduct(shopperUuid, productUuid);
+            var cartProductQuantity = this.users[shopperIndex].cart[cartProductIndex].quantity;
+            var cartProduct = void 0;
+            if (cartProductQuantity === 0)
+                this.deleteCartProduct(shopperUuid, productUuid);
+            else {
+                cartProduct = this.completeCartProductDetails(cartProductQuantity, productUuid);
+                this.users[shopperIndex].cart[cartProductIndex] = cartProduct;
             }
             this.updateUsersJson();
-            return this.users[shopperIndex].cart[cartProductIndex].quantity;
+            return cartProduct;
         }
         catch (error) {
             console.error(error.message);
@@ -181,12 +203,14 @@ var Users = /** @class */ (function () {
                 var cartProductIndex = _this.users[shopperIndex].purchased.findIndex(function (cartProductPurchased) { return cartProductPurchased.productUuid == cartProduct.productUuid; });
                 if (cartProductIndex === -1)
                     _this.users[shopperIndex].purchased.push(cartProduct);
-                else
+                else {
                     _this.users[shopperIndex].purchased[cartProductIndex].quantity += cartProduct.quantity;
+                    _this.users[shopperIndex].purchased[cartProductIndex].totalPrice += cartProduct.totalPrice;
+                }
             });
             var store_1 = readStoreJson();
             this.users[shopperIndex].cart.forEach(function (cartProduct) {
-                var productIndex = store_1.products.findIndex(function (product) { return product.productUuid == cartProduct.productUuid; });
+                var productIndex = store_1.products.findIndex(function (product) { return product.productUuid === cartProduct.productUuid; });
                 store_1.products[productIndex].inStock -= cartProduct.quantity;
             });
             fs.writeFileSync(storeJsonPath, JSON.stringify(store_1));

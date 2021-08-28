@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-function showStores() {
+function renderStores() {
     return __awaiter(this, void 0, void 0, function () {
         var getStoresDetails, _a, storeUuid, storeName, storesElement, html, error_1;
         return __generator(this, function (_b) {
@@ -58,5 +58,5 @@ function showStores() {
         });
     });
 }
-showStores();
+renderStores();
 // TODO add onclick function to redirect to store with storeUuid in URL. get storeUuid from element id

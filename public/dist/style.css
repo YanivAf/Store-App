@@ -1,7 +1,9 @@
 :root {
   --main-color: #7cd1f9;
-  --hover-bg-color: #77c8ee;
-  --hover-color: #518da8;
+  --main-bg-color: #dbf4ff;
+  --hover-bg-color: #7cd1f9;
+  --hover-color: darkorange;
+  --links-color: #518da8;
 }
 
 * {
@@ -14,15 +16,14 @@ html, body {
 }
 
 body {
-  background-image: url("../images/cart-wp.png");
-  background-color: white;
+  background-image: url("../images/cart-wp.png"), linear-gradient(var(--main-bg-color), var(--main-bg-color));
   background-blend-mode: normal;
   background-repeat: repeat;
-  background-size: 120px;
+  background-size: 80px;
 }
 
 a {
-  color: var(--main-color);
+  color: var(--links-color);
 }
 a:hover {
   color: var(--hover-color);
@@ -37,7 +38,7 @@ a:hover {
   padding: 1vw;
   text-decoration: none;
   font-weight: bold;
-  font-size: clamp(8px, 3vw, 12px);
+  font-size: clamp(10px, 4vw, 16px);
 }
 .button:hover {
   background-color: var(--hover-bg-color);
@@ -58,8 +59,11 @@ a:hover {
   flex-direction: column;
   justify-content: center;
   margin: auto;
-  max-width: 25vw;
-  min-width: 100px;
+  max-width: 20vw;
+  min-width: 120px;
+}
+.form-inputs input {
+  margin-bottom: 10px;
 }
 
 .header {
@@ -67,17 +71,20 @@ a:hover {
   align-items: center;
   grid-template-columns: 1.5fr 0.75fr 0.75fr 2fr 1fr 2fr;
   grid-template-rows: 1fr 1fr;
-  grid-template-areas: "h1 cart history . h4 form" "h1 cart history . call reg";
+  grid-template-areas: "h1 item1 item2 . h4 form" "h1 item1 item2 . call reg";
   position: sticky;
   height: fit-content;
   height: clamp(100px, 3vh, 120px);
   background-image: url("../images/cart-wp.png"), linear-gradient(#2c2c2c, #2c2c2c);
   background-blend-mode: normal;
   background-repeat: repeat;
-  background-size: 100px;
+  background-size: 200px;
   top: 0;
   color: white;
   padding: 2.5vw;
+  -moz-box-shadow: inset 0 -10px 10px -10px var(--main-bg-color);
+  -webkit-box-shadow: inset 0 -10px 10px -10px var(--main-bg-color);
+  box-shadow: inset 0 -10px 10px -10px var(--main-bg-color);
 }
 .header__item {
   margin: 0;
@@ -92,8 +99,22 @@ a:hover {
 .header__item--h1:hover {
   color: var(--hover-bg-color);
 }
+.header__item--add-product {
+  grid-area: item1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: clamp(8px, 4vw, 16px);
+  height: clamp(20px, 4vw, 40px);
+  width: clamp(20px, 4vw, 40px);
+  border-radius: 200px;
+  background-color: green;
+  cursor: pointer;
+}
 .header__item--cart {
-  grid-area: cart;
+  grid-area: item1;
   position: relative;
   width: clamp(20px, 4vw, 40px);
 }
@@ -121,7 +142,7 @@ a:hover {
   top: -5px;
 }
 .header__item--history {
-  grid-area: history;
+  grid-area: item2;
   width: clamp(20px, 4vw, 40px);
 }
 .header__item--history img {
@@ -146,10 +167,11 @@ a:hover {
 }
 .header__item--admin-login-form .form-inputs__item {
   font-size: clamp(6px, 4vw, 14px);
+  margin: 0;
 }
 .header__item--call-to-register {
   grid-area: call;
-  font-size: clamp(8px, 3vw, 10px);
+  font-size: clamp(8px, 3vw, 12px);
   color: white;
 }
 .header__item--register {
@@ -166,9 +188,9 @@ a:hover {
   margin: 10px;
   padding: 15px 0;
   border-radius: 10px;
-  border: 1px solid black;
-  height: 50vh;
-  width: 30vw;
+  height: 20vw;
+  width: 20vw;
+  min-height: 250px;
   min-width: 250px;
   background-color: white;
   display: flex;
@@ -176,21 +198,24 @@ a:hover {
   justify-content: space-between;
   align-items: center;
 }
-.products .product__item--name {
+.products .product__item {
   margin: 0;
 }
 .products .product__item--img {
-  width: 90%;
+  max-height: 50%;
+}
+.products .product__item--img img {
+  max-height: 100%;
 }
 .products .product__item--description {
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
-  width: 25vw;
+  -webkit-line-clamp: 1;
+  width: 70%;
   -webkit-box-orient: vertical;
 }
 .products .product .product-buttons {
-  width: 80%;
+  width: 70%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -218,5 +243,14 @@ a:hover {
   width: 20px;
   border-radius: 20px;
   background-color: darkred;
+  cursor: pointer;
+}
+.products .product .product-buttons__item--cart-quantity {
+  color: white;
+  font-weight: bold;
+  height: 25px;
+  width: 25px;
+  border-radius: 2px;
+  background-color: orange;
   cursor: pointer;
 }

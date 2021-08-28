@@ -24,8 +24,7 @@ function register(req, res) {
         var userBasicInfo = users.addUser(email, username, password, isAdmin);
         var userUuid = userBasicInfo.userUuid, storeUuid = userBasicInfo.storeUuid;
         if (userUuid) {
-            var cookieToWrite = JSON.stringify({ userUuid: userUuid });
-            var currentUserToken = jwt.sign(cookieToWrite, secret, { expiresIn: '1h' });
+            var currentUserToken = jwt.sign({ userUuid: userUuid }, secret, { expiresIn: '1h' });
             res.cookie('currentUser', currentUserToken, { maxAge: 18000000, httpOnly: true });
             res.send({ title: "Cheers, " + username + "!", text: "You are our newest " + role + "!", storeUuid: storeUuid, isRegistered: true });
         }
@@ -48,8 +47,7 @@ function login(req, res) {
             var storeUuid = (verifiedUser.stores.length === 0) ? null : verifiedUser.stores[0];
             if (((!storeUuid) && (!adminLoginForm)) || // check shopper uses shopper-login and admin uses admin-login
                 ((storeUuid) && (adminLoginForm))) {
-                var cookieToWrite = JSON.stringify({ userUuid: verifiedUser.userUuid });
-                var currentUserToken = jwt.sign(cookieToWrite, secret);
+                var currentUserToken = jwt.sign({ userUuid: verifiedUser.userUuid }, secret, { expiresIn: '1h' });
                 res.cookie('currentUser', currentUserToken, { maxAge: 18000000, httpOnly: true });
                 res.send({ title: "Welcome back, " + verifiedUser.username + "!", text: "Enjoy your visit!", storeUuid: storeUuid, isLoggedIn: true });
             }

@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function getUserDetails() {
     return __awaiter(this, void 0, void 0, function () {
-        var userDetails, _a, username, cart, purchased, usernameElement, whichHtmlFile, error_1;
+        var userDetails, _a, username, cart, purchased, usernameElement, headerTitleElement, whichHtmlFile, aOrDivPurchased, aOrDivCart, hrefPurchased, hrefCart, additionalHeaderElementsHtml, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -47,21 +47,28 @@ function getUserDetails() {
                     console.log(userDetails);
                     _a = userDetails.data, username = _a.username, cart = _a.cart, purchased = _a.purchased;
                     usernameElement = document.querySelector('.header__item--h4');
-                    usernameElement.innerText = username;
+                    usernameElement.innerText = "Logged in as " + username;
+                    headerTitleElement = document.querySelector('.header__item--h1');
                     whichHtmlFile = window.location.pathname;
+                    aOrDivPurchased = 'a';
+                    aOrDivCart = 'a';
+                    hrefPurchased = ' href="./purchased.html"';
+                    hrefCart = ' href="./cart.html"';
                     switch (whichHtmlFile) {
-                        case '/store.html':
-                            renderStoreDetails();
-                            if (!cart) { // ADMIN
-                                // on top - render add product button 
-                            }
-                            else { // SHOPPER
-                                // on top - render cart logo
-                            }
+                        case '/purchased.html':
+                            aOrDivPurchased = 'div';
+                            hrefPurchased = '';
                             break;
-                        case '/stores.html':
+                        case '/cart.html':
+                            aOrDivCart = 'div';
+                            hrefCart = '';
                             break;
                     }
+                    additionalHeaderElementsHtml = (!cart) ?
+                        "<div class=\"header__item header__item--add-product\" title=\"Add new product\">+</div>"
+                        :
+                            "<" + aOrDivCart + hrefCart + " class=\"header__item header__item--cart\">\n            <img src=\"./images/full-cart.png\" title=\"cart\" />\n            <div>\n                1\n            </div>\n        </" + aOrDivCart + ">\n\n        <" + aOrDivPurchased + hrefPurchased + " class=\"header__item header__item--history\">\n            <img src=\"./images/history-cart.png\" title=\"purchase history\" />\n        </" + aOrDivPurchased + ">";
+                    headerTitleElement.insertAdjacentHTML("afterend", additionalHeaderElementsHtml);
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _b.sent();

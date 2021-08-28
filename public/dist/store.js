@@ -34,9 +34,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-function renderStoreDetails() {
+function renderStore() {
     return __awaiter(this, void 0, void 0, function () {
-        var getStoreDetails, _a, store, isAdmin_1, storeName, products, storeNameElement, productsElement, html, AreThereProducts, error_1;
+        var getStoreDetails, _a, store, isAdmin_1, storeName, products, storeNameElement, pageTitle, productsElement, html, AreThereProducts, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -48,18 +48,21 @@ function renderStoreDetails() {
                     console.log(getStoreDetails);
                     storeName = store.storeName, products = store.products;
                     storeNameElement = document.querySelector('#store-name');
+                    pageTitle = document.querySelector('title');
                     storeNameElement.innerText = storeName;
+                    pageTitle.innerText = storeName;
                     productsElement = document.querySelector('.products');
                     html = void 0;
-                    AreThereProducts = (store.products.length > 0) ? true : false;
+                    AreThereProducts = (products.length > 0) ? true : false;
                     html = (!AreThereProducts) ? 'no products to show!' :
-                        store.products.map(function (product) {
+                        products.map(function (product) {
                             var buttonsByRole = (isAdmin_1) ?
                                 "<i class=\"product-buttons__item product-buttons__item--delete fas fa-trash\" title=\"Delete " + product.productName + "\"></i>\n                <i class=\"product-buttons__item product-buttons__item--edit fas fa-edit\" title=\"Edit " + product.productName + "\"></i>"
                                 :
-                                    "<div class=\"product-buttons__item product-buttons__item--cart-reduce\" title=\"Reduce quantity\">-</div>\n                <div class=\"product-buttons__item product-buttons__item--cart-total\" title=\"Reduce quantity\">CartQuantity</div>\n                <div class=\"product-buttons__item product-buttons__item--cart-add\" title=\"Add quantity\">+</div>";
+                                    "<div class=\"product-buttons__item product-buttons__item--cart-reduce\" title=\"Reduce quantity\">-</div>\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-quantity\" title=\"" + product.productName + " quantity\">CartQuantity</a>\n                <div class=\"product-buttons__item product-buttons__item--cart-add\" title=\"Add quantity\">+</div>";
                             var inStockText;
                             var inStockColor;
+                            var isInStock = (product.inStock > 0) ? true : false;
                             if (product.inStock > 0) {
                                 inStockText = product.inStock + " left";
                                 inStockColor = (product.inStock > 5) ? 'green' : 'orange';
@@ -68,7 +71,10 @@ function renderStoreDetails() {
                                 inStockText = 'Out of Stock';
                                 inStockColor = 'red';
                             }
-                            return "<div class=\"products__item product\" id=\"" + product.productUuid + "\">\n                    <h3 class=\"product__item product__item--name\">" + product.productName + "</h3>\n                    <img class=\"product__item product__item--img\" src=\"" + product.productImage + "\" title=\"" + product.productName + "\"/>\n                    <p class=\"product__item product__item--description\">" + product.productDescription + "</p>\n                    <div class=\"product__item product__item--price\">" + (Math.round(product.productPrice * 100) / 100).toFixed(2) + "$</div>\n                    <div class=\"product__item product__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                    <div class=\"product__item product-buttons\">" + buttonsByRole + "</div>\n                    \n                </div>";
+                            var productHtml = ((!isAdmin_1) && (!isInStock)) ? ''
+                                :
+                                    "<div class=\"products__item product\" id=\"" + product.productUuid + "\">\n                    <h3 class=\"product__item product__item--name\">" + product.productName + "</h3>\n                    <a href=\"./product.html?productUuid=" + product.productUuid + "\" class=\"product__item product__item--img\">\n                        <img src=\"" + product.productImage + "\" title=\"" + product.productName + "\"/>\n                    </a>\n                    <a href=\"./product.html?productUuid=" + product.productUuid + "\" title=\"" + product.productDescription + "\" class=\"product__item product__item--description\">" + product.productDescription + "</a>\n                    <h4 class=\"product__item product__item--price\">" + (Math.round(product.productPrice * 100) / 100).toFixed(2) + "$</h4>\n                    <div class=\"product__item product__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                    <div class=\"product__item product-buttons\">" + buttonsByRole + "</div>\n                    \n                </div>";
+                            return productHtml;
                         }).join('');
                     productsElement.innerHTML = html;
                     return [3 /*break*/, 3];
@@ -81,3 +87,4 @@ function renderStoreDetails() {
         });
     });
 }
+renderStore();

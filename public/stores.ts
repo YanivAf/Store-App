@@ -1,4 +1,4 @@
-async function showStores() {
+async function renderStores() {
     try {
         const getStoresDetails = await axios.get('/store/all');
         const { storeUuid, storeName } = getStoresDetails.data;
@@ -15,6 +15,6 @@ async function showStores() {
     }
 }
 
-showStores();
+renderStores();
 
 // TODO add onclick function to redirect to store with storeUuid in URL. get storeUuid from element id
