@@ -9,28 +9,19 @@ async function register(ev) {
         email = email.value;
         username = username.value;
         password = password.value;
-        const isAdmin: boolean = (window.location.href.indexOf('shopper') === -1) ? true : false;
+        const adminRegisterForm: boolean = (window.location.href.indexOf('shopper') === -1) ? true : false;
         ev.target.reset();
 
-        const registerUser = await axios.post('/user/register', {email, username, password, isAdmin});
+        const registerUser = await axios.post('/user/register', {email, username, password, adminRegisterForm});
         const { title, text, storeUuid, isRegistered } = registerUser.data;    
 
-        if (isRegistered) {
-            swal({
-                title: title,
-                text: text,
-                icon: "success",
-                button: "Lets go",
-            })
-            .then( () => { window.location.href = (isAdmin) ? `./store.html?storeUuid=${storeUuid}` : './stores.html'; });
-        } else {
-            swal({
-                title: `Ops.. ${title}`,
-                text: text,
-                icon: "warning",
-                button: "Try again",
-            });
-        }
+        swal({
+            title: title,
+            text: text,
+            icon: "success",
+            button: "Lets go",
+        })
+        .then( () => { window.location.href = (adminRegisterForm) ? `./store.html?storeUuid=${storeUuid}` : './stores.html'; });
 
     } catch (error) {
         console.error(error.message);

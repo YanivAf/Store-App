@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function welcome() {
     return __awaiter(this, void 0, void 0, function () {
-        var userWelcome, _a, h1Text, message, h1, error_1;
+        var userWelcome, _a, isAdmin_1, storeUuid_1, h1Text, message, h1, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -44,13 +44,18 @@ function welcome() {
                     return [4 /*yield*/, axios.get("/user/welcome")];
                 case 1:
                     userWelcome = _b.sent();
-                    _a = userWelcome.data, h1Text = _a.h1Text, message = _a.message;
+                    _a = userWelcome.data, isAdmin_1 = _a.isAdmin, storeUuid_1 = _a.storeUuid, h1Text = _a.h1Text, message = _a.message;
                     h1 = document.querySelector('.header__item--h1');
                     h1.innerHTML = h1Text;
                     swal({
-                        title: "Welcome to " + h1Text + "!",
+                        title: "\"" + h1Text + "\" shopping platform",
                         text: message,
-                        button: "Start Shopping!"
+                        button: "Great, lets go!"
+                    }).then(function () {
+                        if (isAdmin_1)
+                            window.location.href = "./store.html?storeUuid=" + storeUuid_1;
+                        else
+                            window.location.href = './stores.html';
                     });
                     return [3 /*break*/, 3];
                 case 2:
@@ -69,7 +74,7 @@ adminLoginForm.addEventListener('submit', login);
 shopperLoginForm.addEventListener('submit', login);
 function login(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, email, password, adminLoginForm_1, loginAdminUser, _b, title, text, storeUuid_1, isLoggedIn, error_2;
+        var _a, email, password, adminLoginForm_1, loginAdminUser, _b, title, text, storeUuid_2, isLoggedIn, error_2;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -83,7 +88,7 @@ function login(ev) {
                     return [4 /*yield*/, axios.post('/user/login', { email: email, password: password, adminLoginForm: adminLoginForm_1 })];
                 case 1:
                     loginAdminUser = _c.sent();
-                    _b = loginAdminUser.data, title = _b.title, text = _b.text, storeUuid_1 = _b.storeUuid, isLoggedIn = _b.isLoggedIn;
+                    _b = loginAdminUser.data, title = _b.title, text = _b.text, storeUuid_2 = _b.storeUuid, isLoggedIn = _b.isLoggedIn;
                     if (isLoggedIn) {
                         swal({
                             title: title,
@@ -91,7 +96,7 @@ function login(ev) {
                             icon: "success",
                             button: "Lets go"
                         })
-                            .then(function () { window.location.href = (adminLoginForm_1) ? "./store.html?storeUuid=" + storeUuid_1 : './stores.html'; });
+                            .then(function () { window.location.href = (adminLoginForm_1) ? "./store.html?storeUuid=" + storeUuid_2 : './stores.html'; });
                     }
                     else {
                         swal({

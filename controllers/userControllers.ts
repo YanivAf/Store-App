@@ -7,7 +7,14 @@ const { Product, Store } = require('../../models/dist/storeModel');
 
 export function welcome(req, res) {
   try {
-    res.send({h1Text:`Shop Shop Shop`, message: 'We wish you happy Shopping 🛒'});
+    const { userIndex, isAdmin } = req;
+    const users = new Users();
+    const { username, stores } = users.users[userIndex];
+
+    if (isAdmin) {
+
+    }
+    res.send({ isAdmin, storeUuid: stores[0], h1Text:`Shop Shop Shop`, message: `${username}, you're already logged in` });
 
   } catch (error) {
     console.error(error);
@@ -17,21 +24,16 @@ export function welcome(req, res) {
 
 export function register(req, res) { // register.html + shopper-register.html
   try {
-    const { email, username, password, isAdmin } = req.body;
-    
-    const role: string = (isAdmin) ? 'admin' : 'shopper';
-    const shopperToAdminText: string = (isAdmin) ? '\n\nShopper trying to become an admin? Please verify you credentials.' : '';
+    const { email, username, password } = req.body;
+    const { shopperToAdmin, userIndex, role } = req;
     const users = new Users();
-    const userBasicInfo = users.addUser(email, username, password, isAdmin);
+    const userBasicInfo = users.addUser(email, username, password, shopperToAdmin, userIndex, role);
     const { userUuid, storeUuid } = userBasicInfo;
 
-    if (userUuid) {
-      const currentUserToken: any = jwt.sign({ userUuid }, secret, { expiresIn: '1h' });
+    const currentUserToken: any = jwt.sign({ userUuid }, secret, { expiresIn: 1800 });
 
-      res.cookie('currentUser', currentUserToken, { maxAge: 18000000, httpOnly: true });
-      res.send({ title: `Cheers, ${username}!`, text: `You are our newest ${role}!`, storeUuid, isRegistered: true});
-    }
-    else res.send({ title: 'Email already registered', text:`Please use a different email address.${shopperToAdminText}`, isRegistered: false });
+    res.cookie('currentUser', currentUserToken, { maxAge: 1800000, httpOnly: true });
+    res.send({ title: `Cheers, ${username}!`, text: `You are our newest ${role}!`, storeUuid });
 
   } catch (error) {
     console.error(error);
@@ -41,25 +43,21 @@ export function register(req, res) { // register.html + shopper-register.html
 
 export function login(req, res) { // index.html
   try {
-    const { email, password, adminLoginForm } = req.body;
+    const { adminLoginForm } = req.body;
+    const { userIndex, role } = req;
 
-    const role: string = (adminLoginForm) ? 'n admin' : ' shopper';
     const users = new Users();
-    const verifiedUser: User = users.verifyUser(email, password);
-    
-    if (verifiedUser) {
-      const storeUuid: string = (verifiedUser.stores.length === 0) ? null : verifiedUser.stores[0];
-      if (((!storeUuid) && (!adminLoginForm)) || // check shopper uses shopper-login and admin uses admin-login
-          ((storeUuid) && (adminLoginForm))) {
-        const currentUserToken: any = jwt.sign({ userUuid: verifiedUser.userUuid }, secret, { expiresIn: '1h' });
+    const { username, userUuid, storeUuid } = users.users[userIndex];
 
-        res.cookie('currentUser', currentUserToken, { maxAge: 18000000, httpOnly: true });
-        res.send({ title: `Welcome back, ${verifiedUser.username}!`, text: `Enjoy your visit!`, storeUuid, isLoggedIn: true});
-      } else {
-        res.send({ title: `${verifiedUser.username}, you are not a${role}!`, text: `Please use the right login form!`, isLoggedIn: false});
-      }
-    }
-    else res.send({ title: 'Credentials are wrong', text:`Please verify.`, isLoggedIn: false });
+    const roleText: string = (role === 'admin') ? 'n admin' : ' shopper';
+    
+    if (((!adminLoginForm) && (role === 'shopper')) || // check shopper uses shopper-login
+        ((adminLoginForm) && (role === 'admin'))) { // and admin uses admin-login
+      const currentUserToken: any = jwt.sign({ userUuid }, secret, { expiresIn: 1800 });
+
+      res.cookie('currentUser', currentUserToken, { maxAge: 1800000, httpOnly: true });
+      res.send({ title: `Welcome back, ${username}!`, text: `Enjoy your visit!`, storeUuid, isLoggedIn: true});
+    } else res.send({ title: `${username}, you are not a${roleText}!`, text: `Please use the right login form!`, isLoggedIn: false});
 
   } catch (error) {
     console.error(error);

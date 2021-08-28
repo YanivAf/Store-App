@@ -7,7 +7,12 @@ var _a = require('../../models/dist/usersModel'), Users = _a.Users, User = _a.Us
 var _b = require('../../models/dist/storeModel'), Product = _b.Product, Store = _b.Store;
 function welcome(req, res) {
     try {
-        res.send({ h1Text: "Shop Shop Shop", message: 'We wish you happy Shopping 🛒' });
+        var userIndex = req.userIndex, isAdmin = req.isAdmin;
+        var users = new Users();
+        var _a = users.users[userIndex], username = _a.username, stores = _a.stores;
+        if (isAdmin) {
+        }
+        res.send({ isAdmin: isAdmin, storeUuid: stores[0], h1Text: "Shop Shop Shop", message: username + ", you're already logged in" });
     }
     catch (error) {
         console.error(error);
@@ -17,19 +22,14 @@ function welcome(req, res) {
 exports.welcome = welcome;
 function register(req, res) {
     try {
-        var _a = req.body, email = _a.email, username = _a.username, password = _a.password, isAdmin = _a.isAdmin;
-        var role = (isAdmin) ? 'admin' : 'shopper';
-        var shopperToAdminText = (isAdmin) ? '\n\nShopper trying to become an admin? Please verify you credentials.' : '';
+        var _a = req.body, email = _a.email, username = _a.username, password = _a.password;
+        var shopperToAdmin = req.shopperToAdmin, userIndex = req.userIndex, role = req.role;
         var users = new Users();
-        var userBasicInfo = users.addUser(email, username, password, isAdmin);
+        var userBasicInfo = users.addUser(email, username, password, shopperToAdmin, userIndex, role);
         var userUuid = userBasicInfo.userUuid, storeUuid = userBasicInfo.storeUuid;
-        if (userUuid) {
-            var currentUserToken = jwt.sign({ userUuid: userUuid }, secret, { expiresIn: '1h' });
-            res.cookie('currentUser', currentUserToken, { maxAge: 18000000, httpOnly: true });
-            res.send({ title: "Cheers, " + username + "!", text: "You are our newest " + role + "!", storeUuid: storeUuid, isRegistered: true });
-        }
-        else
-            res.send({ title: 'Email already registered', text: "Please use a different email address." + shopperToAdminText, isRegistered: false });
+        var currentUserToken = jwt.sign({ userUuid: userUuid }, secret, { expiresIn: 1800 });
+        res.cookie('currentUser', currentUserToken, { maxAge: 1800000, httpOnly: true });
+        res.send({ title: "Cheers, " + username + "!", text: "You are our newest " + role + "!", storeUuid: storeUuid });
     }
     catch (error) {
         console.error(error);
@@ -39,24 +39,19 @@ function register(req, res) {
 exports.register = register;
 function login(req, res) {
     try {
-        var _a = req.body, email = _a.email, password = _a.password, adminLoginForm = _a.adminLoginForm;
-        var role = (adminLoginForm) ? 'n admin' : ' shopper';
+        var adminLoginForm = req.body.adminLoginForm;
+        var userIndex = req.userIndex, role = req.role;
         var users = new Users();
-        var verifiedUser = users.verifyUser(email, password);
-        if (verifiedUser) {
-            var storeUuid = (verifiedUser.stores.length === 0) ? null : verifiedUser.stores[0];
-            if (((!storeUuid) && (!adminLoginForm)) || // check shopper uses shopper-login and admin uses admin-login
-                ((storeUuid) && (adminLoginForm))) {
-                var currentUserToken = jwt.sign({ userUuid: verifiedUser.userUuid }, secret, { expiresIn: '1h' });
-                res.cookie('currentUser', currentUserToken, { maxAge: 18000000, httpOnly: true });
-                res.send({ title: "Welcome back, " + verifiedUser.username + "!", text: "Enjoy your visit!", storeUuid: storeUuid, isLoggedIn: true });
-            }
-            else {
-                res.send({ title: verifiedUser.username + ", you are not a" + role + "!", text: "Please use the right login form!", isLoggedIn: false });
-            }
+        var _a = users.users[userIndex], username = _a.username, userUuid = _a.userUuid, storeUuid = _a.storeUuid;
+        var roleText = (role === 'admin') ? 'n admin' : ' shopper';
+        if (((!adminLoginForm) && (role === 'shopper')) || // check shopper uses shopper-login
+            ((adminLoginForm) && (role === 'admin'))) { // and admin uses admin-login
+            var currentUserToken = jwt.sign({ userUuid: userUuid }, secret, { expiresIn: 1800 });
+            res.cookie('currentUser', currentUserToken, { maxAge: 1800000, httpOnly: true });
+            res.send({ title: "Welcome back, " + username + "!", text: "Enjoy your visit!", storeUuid: storeUuid, isLoggedIn: true });
         }
         else
-            res.send({ title: 'Credentials are wrong', text: "Please verify.", isLoggedIn: false });
+            res.send({ title: username + ", you are not a" + roleText + "!", text: "Please use the right login form!", isLoggedIn: false });
     }
     catch (error) {
         console.error(error);

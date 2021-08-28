@@ -38,7 +38,7 @@ var registerForm = document.querySelector('#register-form');
 registerForm.addEventListener('submit', register);
 function register(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, email, username, password, isAdmin_1, registerUser, _b, title, text, storeUuid_1, isRegistered, error_1;
+        var _a, email, username, password, adminRegisterForm_1, registerUser, _b, title, text, storeUuid_1, isRegistered, error_1;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -48,29 +48,19 @@ function register(ev) {
                     email = email.value;
                     username = username.value;
                     password = password.value;
-                    isAdmin_1 = (window.location.href.indexOf('shopper') === -1) ? true : false;
+                    adminRegisterForm_1 = (window.location.href.indexOf('shopper') === -1) ? true : false;
                     ev.target.reset();
-                    return [4 /*yield*/, axios.post('/user/register', { email: email, username: username, password: password, isAdmin: isAdmin_1 })];
+                    return [4 /*yield*/, axios.post('/user/register', { email: email, username: username, password: password, adminRegisterForm: adminRegisterForm_1 })];
                 case 1:
                     registerUser = _c.sent();
                     _b = registerUser.data, title = _b.title, text = _b.text, storeUuid_1 = _b.storeUuid, isRegistered = _b.isRegistered;
-                    if (isRegistered) {
-                        swal({
-                            title: title,
-                            text: text,
-                            icon: "success",
-                            button: "Lets go"
-                        })
-                            .then(function () { window.location.href = (isAdmin_1) ? "./store.html?storeUuid=" + storeUuid_1 : './stores.html'; });
-                    }
-                    else {
-                        swal({
-                            title: "Ops.. " + title,
-                            text: text,
-                            icon: "warning",
-                            button: "Try again"
-                        });
-                    }
+                    swal({
+                        title: title,
+                        text: text,
+                        icon: "success",
+                        button: "Lets go"
+                    })
+                        .then(function () { window.location.href = (adminRegisterForm_1) ? "./store.html?storeUuid=" + storeUuid_1 : './stores.html'; });
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _c.sent();

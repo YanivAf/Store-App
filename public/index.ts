@@ -1,13 +1,16 @@
 async function welcome() {
     try {
     const userWelcome: any = await axios.get(`/user/welcome`);
-    const { h1Text, message } = userWelcome.data;
+    const { isAdmin, storeUuid, h1Text, message } = userWelcome.data;
     const h1: HTMLElement = document.querySelector('.header__item--h1');
     h1.innerHTML = h1Text;
     swal({
-        title: `Welcome to ${h1Text}!`,
+        title: `"${h1Text}" shopping platform`,
         text: message,
-        button: "Start Shopping!",
+        button: "Great, lets go!",
+    }).then(() => {
+        if (isAdmin) window.location.href = `./store.html?storeUuid=${storeUuid}`;
+        else window.location.href = './stores.html';
     });
 
     } catch (error) {
@@ -51,7 +54,6 @@ async function login(ev) {
                 button: "Try again",
             });
         }
-    
     } catch (error) {
         console.error(error.message);
     }

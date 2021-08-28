@@ -50,17 +50,6 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Users.prototype.verifyUser = function (userEmail, userPassword) {
-        try {
-            var user = this.users.find(function (user) { return user.email === userEmail && user.password === userPassword; });
-            if (!user)
-                throw new Error("credentials are wrong");
-            return user;
-        }
-        catch (error) {
-            console.error(error.message);
-        }
-    };
     Users.prototype.findUserIndex = function (userUuid, userEmail) {
         try {
             var userIndex = (userUuid) ? this.users.findIndex(function (user) { return user.userUuid === userUuid; })
@@ -91,34 +80,24 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Users.prototype.addUser = function (userEmail, userUsername, userPassword, isAdmin) {
+    Users.prototype.addUser = function (userEmail, userUsername, userPassword, shopperToAdmin, userIndex, role) {
         try {
             var user = new User(userEmail, userUsername, userPassword);
-            var userIndex = this.findUserIndex(null, userEmail);
-            if (isAdmin) { // admin registration attempt
-                if (userIndex !== -1) { // email exists
-                    if ((this.users[userIndex].stores.length === 0) && // if exist as shopper + entered registered username & password
-                        (this.users[userIndex].username === userUsername) &&
-                        (this.users[userIndex].password === userPassword)) {
-                        this.users[userIndex].stores.push(this.storeUuid());
-                        this.updateUsersJson();
-                        return { userUuid: this.users[userIndex].userUuid, storeUuid: this.users[userIndex].stores[0] }; // convert shopper to admin
-                    }
-                    else
-                        return null; // unverified shopper OR admin exists
+            var storeUuid = (role === 'admin') ? this.storeUuid() : undefined;
+            var userUuid = (shopperToAdmin) ? this.users[userIndex].userUuid : user.userUuid;
+            if (role === 'admin') {
+                if (shopperToAdmin) {
+                    this.users[userIndex].stores.push(storeUuid); // convert shopper to admin
                 }
-                else { // email doesn't exist
-                    user.stores.push(this.storeUuid());
+                else {
+                    user.stores.push(storeUuid);
                     this.users.push(user); // add admin
                 }
             }
-            else // shopper registration attempt
-             if (userIndex !== -1)
-                return null; // shopper exists
             else
                 this.users.push(user); // add shopper
             this.updateUsersJson();
-            return { userUuid: user.userUuid, storeUuid: [] };
+            return { userUuid: userUuid, storeUuid: storeUuid };
         }
         catch (error) {
             console.error(error.message);
