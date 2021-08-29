@@ -36,18 +36,24 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function renderStore() {
     return __awaiter(this, void 0, void 0, function () {
-        var getStoreDetails, _a, store, isAdmin_1, storeName, products, storeNameElement, pageTitle, productsElement, html, AreThereProducts, error_1;
+        var getStoreDetails, _a, store, isAdmin_1, cartProducts_1, getCartProducts, storeName, products, storeNameElement, pageTitle, productsElement, html, AreThereProducts, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 2, , 3]);
+                    _b.trys.push([0, 4, , 5]);
                     return [4 /*yield*/, axios.get('/store/:storeUuid')];
                 case 1:
                     getStoreDetails = _b.sent();
                     _a = getStoreDetails.data, store = _a.store, isAdmin_1 = _a.isAdmin;
-                    console.log(getStoreDetails);
+                    if (!!isAdmin_1) return [3 /*break*/, 3];
+                    return [4 /*yield*/, axios.get('/user/cart')];
+                case 2:
+                    getCartProducts = _b.sent();
+                    cartProducts_1 = getCartProducts.data.cartProducts;
+                    _b.label = 3;
+                case 3:
                     storeName = store.storeName, products = store.products;
-                    storeNameElement = document.querySelector('#store-name');
+                    storeNameElement = document.querySelector('.main__item--store-name');
                     pageTitle = document.querySelector('title');
                     storeNameElement.innerText = storeName;
                     pageTitle.innerText = storeName;
@@ -56,10 +62,19 @@ function renderStore() {
                     AreThereProducts = (products.length > 0) ? true : false;
                     html = (!AreThereProducts) ? 'no products to show!' :
                         products.map(function (product) {
-                            var buttonsByRole = (isAdmin_1) ?
-                                "<i class=\"product-buttons__item product-buttons__item--delete fas fa-trash\" title=\"Delete " + product.productName + "\"></i>\n                <i class=\"product-buttons__item product-buttons__item--edit fas fa-edit\" title=\"Edit " + product.productName + "\"></i>"
-                                :
-                                    "<div class=\"product-buttons__item product-buttons__item--cart-reduce\" title=\"Reduce quantity\">-</div>\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-quantity\" title=\"" + product.productName + " quantity\">CartQuantity</a>\n                <div class=\"product-buttons__item product-buttons__item--cart-add\" title=\"Add quantity\">+</div>";
+                            var buttonsByRole;
+                            if (isAdmin_1) {
+                                buttonsByRole =
+                                    "<i class=\"product-buttons__item product-buttons__item--delete fas fa-trash\" title=\"Delete " + product.productName + "\"></i>\n                    <i class=\"product-buttons__item product-buttons__item--edit fas fa-edit\" title=\"Edit " + product.productName + "\"></i>";
+                            }
+                            else {
+                                var cartProduct = cartProducts_1.find(function (cartProduct) { return cartProduct.productUuid === product.productUuid; });
+                                var cartProductQuantity = (cartProduct) ? cartProduct.quantity : 0;
+                                var reduceDisabled = (cartProductQuantity === 0) ? 'disabled' : '';
+                                var quantityZero = (cartProductQuantity === 0) ? ' style="background-color: gray;"' : '';
+                                buttonsByRole =
+                                    "<button " + reduceDisabled + " class=\"product-buttons__item product-buttons__item--cart-reduce\" title=\"Reduce quantity\">-</button>\n                    <div class=\"product-buttons__item product-buttons__item--cart-quantity\"" + quantityZero + " title=\"" + product.productName + " quantity\">" + cartProductQuantity + "</div>\n                    <button class=\"product-buttons__item product-buttons__item--cart-add\" title=\"Add quantity\">+</button>";
+                            }
                             var inStockText;
                             var inStockColor;
                             var isInStock = (product.inStock > 0) ? true : false;
@@ -77,12 +92,12 @@ function renderStore() {
                             return productHtml;
                         }).join('');
                     productsElement.innerHTML = html;
-                    return [3 /*break*/, 3];
-                case 2:
+                    return [3 /*break*/, 5];
+                case 4:
                     error_1 = _b.sent();
                     console.error(error_1.message);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
+                    return [3 /*break*/, 5];
+                case 5: return [2 /*return*/];
             }
         });
     });

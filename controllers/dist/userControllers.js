@@ -1,9 +1,9 @@
 "use strict";
 exports.__esModule = true;
-exports.purchaseCart = exports.deleteFromCart = exports.updateQuantity = exports.addToCart = exports.details = exports.login = exports.register = exports.welcome = void 0;
+exports.purchaseCart = exports.deleteFromCart = exports.updateQuantity = exports.addToCart = exports.getQuantities = exports.details = exports.login = exports.register = exports.welcome = void 0;
 var secret = require('../../secret/dist/secret').secret;
 var jwt = require('jsonwebtoken');
-var _a = require('../../models/dist/usersModel'), Users = _a.Users, User = _a.User;
+var _a = require('../../models/dist/usersModel'), Users = _a.Users, User = _a.User, CartProduct = _a.CartProduct;
 var _b = require('../../models/dist/storeModel'), Product = _b.Product, Store = _b.Store;
 function welcome(req, res) {
     try {
@@ -76,6 +76,19 @@ exports.details = function (req, res) {
         res.status(500).send(error.message);
     }
 };
+function getQuantities(req, res) {
+    try {
+        var userIndex = req.userIndex;
+        var users = new Users();
+        var cartProducts = users.users[userIndex].cart;
+        res.send({ messege: "got all user's cart products", cartProducts: cartProducts });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send(error.message);
+    }
+}
+exports.getQuantities = getQuantities;
 function addToCart(req, res) {
     try {
         var _a = req.body, productUuid = _a.productUuid, productName = _a.productName;
@@ -96,7 +109,7 @@ function updateQuantity(req, res) {
         var users = new Users();
         var userUuid = req.userUuid.userUuid;
         var productQuantity = users.updateCartProductQuantity(userUuid, productUuid, mathSign);
-        res.send({ title: "There are now " + productQuantity + " " + productName + "(s) in your cart", updateQuantity: true });
+        res.send({ message: "There are now " + productQuantity + " " + productName + "(s) in your cart", updateQuantity: true });
     }
     catch (error) {
         console.error(error);

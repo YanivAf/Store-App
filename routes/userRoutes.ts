@@ -2,7 +2,7 @@ export { };
 const express = require('express');
 const router = express.Router();
 
-const { welcome, register, login, details, addToCart, updateQuantity, deleteFromCart, purchaseCart } = require('../../controllers/dist/userControllers');
+const { welcome, register, login, details, getQuantities, addToCart, updateQuantity, deleteFromCart, purchaseCart } = require('../../controllers/dist/userControllers');
 const { isLoggedInAndAuthenticated, doesUserExist, encryptPassword, validatePassword, isAdmin, onlyShopper } = require('../../middlewares/dist/userMiddlewares');
 
 router
@@ -10,9 +10,10 @@ router
     .post('/register', doesUserExist, validatePassword, encryptPassword, register)
     .post('/login', doesUserExist, validatePassword, login)
     .get('/details', isLoggedInAndAuthenticated, doesUserExist, isAdmin, details)
-    .post('/cart/addToCart', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, addToCart)
-    .put('/cart/updateQuantity', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, updateQuantity)
-    .delete('/cart/deleteFromCart/', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, deleteFromCart)
+    .get('/cart', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, getQuantities)
+    .post('/cart', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, addToCart)
+    .put('/cart', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, updateQuantity)
+    .delete('/cart', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, deleteFromCart)
     .put('/cart/purchase', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, purchaseCart);
 
 module.exports = router;

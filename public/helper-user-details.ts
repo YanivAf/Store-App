@@ -11,8 +11,10 @@ async function getUserDetails() {
         const whichHtmlFile: string = window.location.pathname;
         let aOrDivPurchased: string = 'a';
         let aOrDivCart: string = 'a';
+        let aOrDivStores: string = 'a';
         let hrefPurchased: string = ' href="./purchased.html"';
         let hrefCart: string = ' href="./cart.html"';
+        let hrefStores: string = ' href="./stores.html"';
         switch (whichHtmlFile) {
             case '/purchased.html':
                 aOrDivPurchased = 'div';
@@ -21,6 +23,10 @@ async function getUserDetails() {
             case '/cart.html':
                 aOrDivCart = 'div';
                 hrefCart = '';
+                break;
+            case '/stores.html':
+                aOrDivStores = 'div';
+                hrefStores = '';
                 break;
         } 
 
@@ -36,7 +42,12 @@ async function getUserDetails() {
 
         <${aOrDivPurchased}${hrefPurchased} class="header__item header__item--history">
             <img src="./images/history-cart.png" title="purchase history" />
-        </${aOrDivPurchased}>`;
+        </${aOrDivPurchased}>
+        
+        <${aOrDivStores}${hrefStores} class="header__item header__item--mall">
+            <img src="./images/mall.png" title="all stores" />
+        </${aOrDivStores}>`;
+
         headerTitleElement.insertAdjacentHTML("afterend",additionalHeaderElementsHtml);
         
     } catch (error) {

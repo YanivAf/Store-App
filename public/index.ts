@@ -5,7 +5,7 @@ async function welcome() {
     const h1: HTMLElement = document.querySelector('.header__item--h1');
     h1.innerHTML = h1Text;
     swal({
-        title: `"${h1Text}" shopping platform`,
+        title: `"${h1Text}" virtual mall`,
         text: message,
         button: "Great, lets go!",
     }).then(() => {

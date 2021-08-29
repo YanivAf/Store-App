@@ -3,10 +3,16 @@ async function renderStore() {
 
         const getStoreDetails = await axios.get('/store/:storeUuid');
         const { store, isAdmin } = getStoreDetails.data;
-        console.log(getStoreDetails);
+
+        let cartProducts;
+        if (!isAdmin) {
+            const getCartProducts = await axios.get('/user/cart');
+            cartProducts = getCartProducts.data.cartProducts;
+        }
+        
         const { storeName, products } = store;
 
-        const storeNameElement: HTMLElement = document.querySelector('#store-name');
+        const storeNameElement: HTMLElement = document.querySelector('.main__item--store-name');
         const pageTitle: HTMLElement = document.querySelector('title');
         storeNameElement.innerText = storeName;
         pageTitle.innerText= storeName;
@@ -18,13 +24,21 @@ async function renderStore() {
             const AreThereProducts: boolean = (products.length > 0) ? true : false;
             html = (!AreThereProducts) ? 'no products to show!' :
             products.map((product) => {
-                let buttonsByRole: string = (isAdmin) ?
-                `<i class="product-buttons__item product-buttons__item--delete fas fa-trash" title="Delete ${product.productName}"></i>
-                <i class="product-buttons__item product-buttons__item--edit fas fa-edit" title="Edit ${product.productName}"></i>`
-                :
-                `<div class="product-buttons__item product-buttons__item--cart-reduce" title="Reduce quantity">-</div>
-                <a href="./cart.html" class="product-buttons__item product-buttons__item--cart-quantity" title="${product.productName} quantity">CartQuantity</a>
-                <div class="product-buttons__item product-buttons__item--cart-add" title="Add quantity">+</div>`;
+                let buttonsByRole: string;
+                if (isAdmin) {
+                    buttonsByRole =
+                    `<i class="product-buttons__item product-buttons__item--delete fas fa-trash" title="Delete ${product.productName}"></i>
+                    <i class="product-buttons__item product-buttons__item--edit fas fa-edit" title="Edit ${product.productName}"></i>`
+                } else {
+                    const cartProduct = cartProducts.find(cartProduct => cartProduct.productUuid === product.productUuid);
+                    const cartProductQuantity: number = (cartProduct) ? cartProduct.quantity : 0;
+                    const reduceDisabled: string = (cartProductQuantity === 0) ? 'disabled' : '';
+                    const quantityZero: string = (cartProductQuantity === 0) ? ' style="background-color: gray;"' : '';
+                    buttonsByRole =
+                    `<button ${reduceDisabled} class="product-buttons__item product-buttons__item--cart-reduce" title="Reduce quantity">-</button>
+                    <div class="product-buttons__item product-buttons__item--cart-quantity"${quantityZero} title="${product.productName} quantity">${cartProductQuantity}</div>
+                    <button class="product-buttons__item product-buttons__item--cart-add" title="Add quantity">+</button>`;
+                }
                 let inStockText: string;
                 let inStockColor: string;
                 const isInStock: boolean = (product.inStock > 0) ? true : false;

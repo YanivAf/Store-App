@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function getUserDetails() {
     return __awaiter(this, void 0, void 0, function () {
-        var userDetails, _a, username, cart, purchased, usernameElement, headerTitleElement, whichHtmlFile, aOrDivPurchased, aOrDivCart, hrefPurchased, hrefCart, additionalHeaderElementsHtml, error_1;
+        var userDetails, _a, username, cart, purchased, usernameElement, headerTitleElement, whichHtmlFile, aOrDivPurchased, aOrDivCart, aOrDivStores, hrefPurchased, hrefCart, hrefStores, additionalHeaderElementsHtml, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -52,8 +52,10 @@ function getUserDetails() {
                     whichHtmlFile = window.location.pathname;
                     aOrDivPurchased = 'a';
                     aOrDivCart = 'a';
+                    aOrDivStores = 'a';
                     hrefPurchased = ' href="./purchased.html"';
                     hrefCart = ' href="./cart.html"';
+                    hrefStores = ' href="./stores.html"';
                     switch (whichHtmlFile) {
                         case '/purchased.html':
                             aOrDivPurchased = 'div';
@@ -63,11 +65,15 @@ function getUserDetails() {
                             aOrDivCart = 'div';
                             hrefCart = '';
                             break;
+                        case '/stores.html':
+                            aOrDivStores = 'div';
+                            hrefStores = '';
+                            break;
                     }
                     additionalHeaderElementsHtml = (!cart) ?
                         "<div class=\"header__item header__item--add-product\" title=\"Add new product\">+</div>"
                         :
-                            "<" + aOrDivCart + hrefCart + " class=\"header__item header__item--cart\">\n            <img src=\"./images/full-cart.png\" title=\"cart\" />\n            <div>\n                1\n            </div>\n        </" + aOrDivCart + ">\n\n        <" + aOrDivPurchased + hrefPurchased + " class=\"header__item header__item--history\">\n            <img src=\"./images/history-cart.png\" title=\"purchase history\" />\n        </" + aOrDivPurchased + ">";
+                            "<" + aOrDivCart + hrefCart + " class=\"header__item header__item--cart\">\n            <img src=\"./images/full-cart.png\" title=\"cart\" />\n            <div>\n                1\n            </div>\n        </" + aOrDivCart + ">\n\n        <" + aOrDivPurchased + hrefPurchased + " class=\"header__item header__item--history\">\n            <img src=\"./images/history-cart.png\" title=\"purchase history\" />\n        </" + aOrDivPurchased + ">\n        \n        <" + aOrDivStores + hrefStores + " class=\"header__item header__item--mall\">\n            <img src=\"./images/mall.png\" title=\"all stores\" />\n        </" + aOrDivStores + ">";
                     headerTitleElement.insertAdjacentHTML("afterend", additionalHeaderElementsHtml);
                     return [3 /*break*/, 3];
                 case 2:

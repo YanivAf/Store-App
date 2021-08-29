@@ -2,7 +2,7 @@ export {};
 
 const { secret } = require('../../secret/dist/secret');
 const jwt = require('jsonwebtoken');
-const { Users, User } = require('../../models/dist/usersModel');
+const { Users, User, CartProduct } = require('../../models/dist/usersModel');
 const { Product, Store } = require('../../models/dist/storeModel');
 
 export function welcome(req, res) {
@@ -84,6 +84,22 @@ export const details = (req, res)=> { // all htmls except for index.html,  regis
   }
 }
 
+export function getQuantities(req, res) { // store.html + cart.html
+  try {
+    const { userIndex } = req;
+
+    const users = new Users();
+
+    const cartProducts: Array<CartProduct> = users.users[userIndex].cart;
+
+    res.send({ messege: `got all user's cart products`, cartProducts });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+}
+
 export function addToCart(req, res) { // store.html
   try {
     const { productUuid, productName } = req.body;
@@ -110,7 +126,7 @@ export function updateQuantity(req, res) { // store.html + cart.html
 
     const productQuantity: number = users.updateCartProductQuantity(userUuid, productUuid, mathSign);
 
-    res.send({ title: `There are now ${productQuantity} ${productName}(s) in your cart`, updateQuantity: true});
+    res.send({ message: `There are now ${productQuantity} ${productName}(s) in your cart`, updateQuantity: true});
 
   } catch (error) {
     console.error(error);

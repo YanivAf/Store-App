@@ -26,7 +26,7 @@ export class CartProduct {
     constructor(productUuid: string) {
         this.productUuid = productUuid;
         this.totalPrice = 0;
-        this.quantity = 1;
+        this.quantity = 0;
     }
 }
 
@@ -132,7 +132,7 @@ export class Users {
             
             const cartProduct = new CartProduct(productUuid);
             cartProduct.productName = product.productName;
-            cartProduct.quantity = quantity;
+            cartProduct.quantity = (quantity === 0) ? 1 : quantity;
             cartProduct.totalPrice = productPrice * quantity;
             
             return cartProduct;
@@ -143,28 +143,28 @@ export class Users {
         }
     }
 
-    addCartProduct(shopperUuid: string, productUuid: string): CartProduct {
+    addCartProduct(shopperUuid: string, productUuid: string): number {
         try {
             const shopperIndex: number = this.findUserIndex(shopperUuid, null);
 
-            const cartProduct: CartProduct = this.completeCartProductDetails(1, productUuid);
+            const cartProduct: CartProduct = this.completeCartProductDetails(0, productUuid);
 
             this.users[shopperIndex].cart.push(cartProduct);
-            
+            const cartProductIndex: number = this.users[shopperIndex].cart.length - 1;
             
             this.updateUsersJson();
             
-            return cartProduct;
+            return cartProductIndex;
 
         } catch (error) {
             console.error(error.message);
         }
     }
 
-    findCartProduct(shopperIndex: number, productUuid: string): number {
+    findCartProduct(shopperIndex: number, productUuid: string, mathSign: string): number {
         try {
-            const cartProductIndex: number = this.users[shopperIndex].cart.findIndex(cartProduct => cartProduct.productUuid === productUuid);
-            if (cartProductIndex === -1) throw new Error(`product ${productUuid} wasn't found in cart`);
+            let cartProductIndex: number = this.users[shopperIndex].cart.findIndex(cartProduct => cartProduct.productUuid === productUuid);
+            if ((cartProductIndex === -1) && (mathSign === '+')) cartProductIndex = this.addCartProduct(this.users[shopperIndex].userUuid, productUuid);
             
             return cartProductIndex;
 
@@ -176,7 +176,6 @@ export class Users {
     deleteCartProduct(shopperUuid: string, productUuid: string) { // on direct deletion or when quantity === 0
         try {
             const shopperIndex: number = this.findUserIndex(shopperUuid, null);
-            const cartProductIndex: number = this.findCartProduct(shopperIndex, productUuid); // used to catch error if product doesn't exist
 
             this.users[shopperIndex].cart = this.users[shopperIndex].cart.filter(cartProduct => cartProduct.productUuid !== productUuid);
 
@@ -190,7 +189,7 @@ export class Users {
     updateCartProductQuantity(shopperUuid: string, productUuid: string, mathSign: string): CartProduct {
         try {
             const shopperIndex: number = this.findUserIndex(shopperUuid, null);
-            const cartProductIndex: number = this.findCartProduct(shopperIndex, productUuid);
+            const cartProductIndex: number = this.findCartProduct(shopperIndex, productUuid, mathSign);
 
             if (mathSign === '+') this.users[shopperIndex].cart[cartProductIndex].quantity++;
             else this.users[shopperIndex].cart[cartProductIndex].quantity--;

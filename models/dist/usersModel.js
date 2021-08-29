@@ -20,7 +20,7 @@ var CartProduct = /** @class */ (function () {
     function CartProduct(productUuid) {
         this.productUuid = productUuid;
         this.totalPrice = 0;
-        this.quantity = 1;
+        this.quantity = 0;
     }
     return CartProduct;
 }());
@@ -110,7 +110,7 @@ var Users = /** @class */ (function () {
             var productPrice = product.productPrice;
             var cartProduct = new CartProduct(productUuid);
             cartProduct.productName = product.productName;
-            cartProduct.quantity = quantity;
+            cartProduct.quantity = (quantity === 0) ? 1 : quantity;
             cartProduct.totalPrice = productPrice * quantity;
             return cartProduct;
         }
@@ -121,20 +121,21 @@ var Users = /** @class */ (function () {
     Users.prototype.addCartProduct = function (shopperUuid, productUuid) {
         try {
             var shopperIndex = this.findUserIndex(shopperUuid, null);
-            var cartProduct = this.completeCartProductDetails(1, productUuid);
+            var cartProduct = this.completeCartProductDetails(0, productUuid);
             this.users[shopperIndex].cart.push(cartProduct);
+            var cartProductIndex = this.users[shopperIndex].cart.length - 1;
             this.updateUsersJson();
-            return cartProduct;
+            return cartProductIndex;
         }
         catch (error) {
             console.error(error.message);
         }
     };
-    Users.prototype.findCartProduct = function (shopperIndex, productUuid) {
+    Users.prototype.findCartProduct = function (shopperIndex, productUuid, mathSign) {
         try {
             var cartProductIndex = this.users[shopperIndex].cart.findIndex(function (cartProduct) { return cartProduct.productUuid === productUuid; });
-            if (cartProductIndex === -1)
-                throw new Error("product " + productUuid + " wasn't found in cart");
+            if ((cartProductIndex === -1) && (mathSign === '+'))
+                cartProductIndex = this.addCartProduct(this.users[shopperIndex].userUuid, productUuid);
             return cartProductIndex;
         }
         catch (error) {
@@ -144,7 +145,6 @@ var Users = /** @class */ (function () {
     Users.prototype.deleteCartProduct = function (shopperUuid, productUuid) {
         try {
             var shopperIndex = this.findUserIndex(shopperUuid, null);
-            var cartProductIndex = this.findCartProduct(shopperIndex, productUuid); // used to catch error if product doesn't exist
             this.users[shopperIndex].cart = this.users[shopperIndex].cart.filter(function (cartProduct) { return cartProduct.productUuid !== productUuid; });
             this.updateUsersJson();
         }
@@ -155,7 +155,7 @@ var Users = /** @class */ (function () {
     Users.prototype.updateCartProductQuantity = function (shopperUuid, productUuid, mathSign) {
         try {
             var shopperIndex = this.findUserIndex(shopperUuid, null);
-            var cartProductIndex = this.findCartProduct(shopperIndex, productUuid);
+            var cartProductIndex = this.findCartProduct(shopperIndex, productUuid, mathSign);
             if (mathSign === '+')
                 this.users[shopperIndex].cart[cartProductIndex].quantity++;
             else
