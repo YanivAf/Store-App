@@ -147,6 +147,8 @@ function validatePassword(req, res, next) {
                     req.role = (users_1.users[userIndex_1].stores.length === 0) ? 'shopper' : 'admin';
                     next();
                 }
+                else
+                    res.status(409).send({ message: 'The password you entered is incorrect.' });
             }
             catch (error) {
                 console.error(error.message);

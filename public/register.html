@@ -29,9 +29,11 @@
                 <label for="email">Email address</label>
                 <input type="email" name="email" placeholder="Email address" required />
                 <label for="username">Username</label>
-                <input type="text" name="username" placeholder="Username" required />
+                <input type="text" name="username" placeholder="Username" minlength="2" maxlength="20" required />
                 <label for="password">Password</label>
-                <input type="password" name="password" placeholder="Password" required />
+                <input type="password" name="password" placeholder="Password" title="Your password must contain 6-8 characters, at least one uppercase letter, one lowercase letter, one number and one special character. Please try again" required />
+                <label for="password">Password Verification</label>
+                <input type="password" name="passwordVerify" placeholder="Password" title="Your password must contain 6-8 characters, at least one uppercase letter, one lowercase letter, one number and one special character. Please try again" required />
             </div>
             <input class="button" type="submit" value="Register" />
         </form>

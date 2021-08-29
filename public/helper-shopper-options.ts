@@ -4,18 +4,18 @@ updateQuantityAncestor.addEventListener('click', ev => updateQuantity(ev));
 
 async function updateQuantity(ev: any) {
   try {
-    if ((ev.target.className !== 'product-buttons__item product-buttons__item--cart-reduce') || (ev.target.className !== 'product-buttons__item product-buttons__item--cart-add')) return;
-
+    if ((ev.target.className !== 'product-buttons__item product-buttons__item--cart-reduce') && (ev.target.className !== 'product-buttons__item product-buttons__item--cart-add')) return;
     const productDiv: HTMLElement = ev.target.parentElement.parentElement;
     const productUuid: string = productDiv.getAttribute('id');
     const productNameElement: HTMLElement = productDiv.querySelector('.product__item--name');
     const productName: string = productNameElement.innerText;
     const mathSign: string = ev.target.innerText;
-    const postProductQuantity = await axios.put('/cart', productUuid, productName, mathSign);
-
-    console.log('hi');
-
-
+    const putProductQuantity = await axios.put('/user/cart', { productUuid, productName, mathSign });
+    const { productQuantity } = putProductQuantity.data;
+    const productQuantityElement: HTMLElement = productDiv.querySelector(('.product-buttons__item--cart-quantity'));
+    productQuantityElement.innerText = productQuantity;
+    renderStore(false);
+    
   } catch (error) {
       console.error(error.message);
   }

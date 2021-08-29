@@ -74,7 +74,7 @@ export function doesUserExist(req, res, next) {
                 }
                 return;
             }
-
+            
             res.status(409).send({ message: `Email already registered. Please use a different one.` });
         }
 
@@ -144,8 +144,8 @@ export function validatePassword(req, res, next) {
                     req.shopperToAdmin = false;
                     req.role = (users.users[userIndex].stores.length === 0) ? 'shopper' : 'admin';
                     next();
-                }
-            
+                } else res.status(409).send({ message: 'The password you entered is incorrect.' });
+
             } catch (error) {
                 console.error(error.message);
                 res.status(500).send(error.message);    

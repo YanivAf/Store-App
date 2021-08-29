@@ -1,13 +1,33 @@
-async function renderStore() {
+async function renderStore(showCartSwal: boolean) {
     try {
 
         const getStoreDetails = await axios.get('/store/:storeUuid');
         const { store, isAdmin } = getStoreDetails.data;
 
+        const inCartDiv: HTMLElement = document.querySelector('#in-cart');
+        const CartImg: HTMLElement = document.querySelector('#cart');
         let cartProducts;
         if (!isAdmin) {
             const getCartProducts = await axios.get('/user/cart');
             cartProducts = getCartProducts.data.cartProducts;
+            const inCartSum: number = cartProducts.reduce((previousValue, currentValue) => previousValue + currentValue.quantity, 0);
+            if (inCartSum === 0) {
+                CartImg.setAttribute('src','./images/empty-cart.png');
+                inCartDiv.style.display = 'none';
+            } else {
+                CartImg.setAttribute('src','./images/full-cart.png');
+                inCartDiv.style.display = 'unset';
+                if (showCartSwal) {
+                    swal({
+                        title: `You have items in your cart!`,
+                        text: `What do you wanna do?`,
+                        buttons: ["More Shopping", 'Go to Cart'],
+                    }).then((willGoToCart) => {
+                        if (willGoToCart) window.location.href = `./cart.html`;
+                    });
+                }
+            }
+            inCartDiv.innerText = inCartSum.toString();
         }
         
         const { storeName, products } = store;
@@ -33,11 +53,12 @@ async function renderStore() {
                     const cartProduct = cartProducts.find(cartProduct => cartProduct.productUuid === product.productUuid);
                     const cartProductQuantity: number = (cartProduct) ? cartProduct.quantity : 0;
                     const reduceDisabled: string = (cartProductQuantity === 0) ? 'disabled' : '';
+                    const addDisabled: string = (cartProductQuantity === 10) ? 'disabled' : '';
                     const quantityZero: string = (cartProductQuantity === 0) ? ' style="background-color: gray;"' : '';
                     buttonsByRole =
                     `<button ${reduceDisabled} class="product-buttons__item product-buttons__item--cart-reduce" title="Reduce quantity">-</button>
                     <div class="product-buttons__item product-buttons__item--cart-quantity"${quantityZero} title="${product.productName} quantity">${cartProductQuantity}</div>
-                    <button class="product-buttons__item product-buttons__item--cart-add" title="Add quantity">+</button>`;
+                    <button ${addDisabled} class="product-buttons__item product-buttons__item--cart-add" title="Add quantity">+</button>`;
                 }
                 let inStockText: string;
                 let inStockColor: string;
@@ -72,4 +93,4 @@ async function renderStore() {
     }
 }
 
-renderStore();
+renderStore(true);

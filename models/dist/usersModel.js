@@ -110,7 +110,7 @@ var Users = /** @class */ (function () {
             var productPrice = product.productPrice;
             var cartProduct = new CartProduct(productUuid);
             cartProduct.productName = product.productName;
-            cartProduct.quantity = (quantity === 0) ? 1 : quantity;
+            cartProduct.quantity = quantity;
             cartProduct.totalPrice = productPrice * quantity;
             return cartProduct;
         }

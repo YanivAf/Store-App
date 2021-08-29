@@ -34,23 +34,49 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var registerForm = document.querySelector('#register-form');
-registerForm.addEventListener('submit', register);
+var registerForm = document.querySelector("#register-form");
+registerForm.addEventListener("submit", register);
 function register(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, email, username, password, adminRegisterForm_1, registerUser, _b, title, text, storeUuid_1, isRegistered, error_1;
+        var _a, email, username, password, passwordVerify, adminRegisterForm_1, passRegExRule, passRegEx, registerUser, _b, title, text, storeUuid_1, isRegistered, error_1;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
                     _c.trys.push([0, 2, , 3]);
                     ev.preventDefault();
-                    _a = ev.target.elements, email = _a.email, username = _a.username, password = _a.password;
+                    _a = ev.target.elements, email = _a.email, username = _a.username, password = _a.password, passwordVerify = _a.passwordVerify;
                     email = email.value;
                     username = username.value;
                     password = password.value;
-                    adminRegisterForm_1 = (window.location.href.indexOf('shopper') === -1) ? true : false;
+                    passwordVerify = passwordVerify.value;
+                    adminRegisterForm_1 = window.location.href.indexOf("shopper") === -1 ? true : false;
+                    passRegExRule = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,8}$/;
+                    passRegEx = new RegExp(passRegExRule, "gm");
+                    if (!passRegEx.test(password)) {
+                        swal({
+                            title: 'Password Not Secured Enough',
+                            text: "Your password must contain 6-8 characters, at least one uppercase letter, one lowercase letter, one number and one special character. Please try again",
+                            icon: "warning",
+                            button: "Try again"
+                        });
+                        throw new Error('Password Not Secured Enough, please try again');
+                    }
+                    if (password != passwordVerify) {
+                        swal({
+                            title: 'Password Verification Issue',
+                            text: "Your entered different passwords, please try again",
+                            icon: "warning",
+                            button: "Try again"
+                        });
+                        throw new Error('Password Verification Issue, please try again');
+                    }
                     ev.target.reset();
-                    return [4 /*yield*/, axios.post('/user/register', { email: email, username: username, password: password, adminRegisterForm: adminRegisterForm_1 })];
+                    return [4 /*yield*/, axios.post("/user/register", {
+                            email: email,
+                            username: username,
+                            password: password,
+                            adminRegisterForm: adminRegisterForm_1
+                        })];
                 case 1:
                     registerUser = _c.sent();
                     _b = registerUser.data, title = _b.title, text = _b.text, storeUuid_1 = _b.storeUuid, isRegistered = _b.isRegistered;
@@ -59,8 +85,11 @@ function register(ev) {
                         text: text,
                         icon: "success",
                         button: "Lets go"
-                    })
-                        .then(function () { window.location.href = (adminRegisterForm_1) ? "./store.html?storeUuid=" + storeUuid_1 : './stores.html'; });
+                    }).then(function () {
+                        window.location.href = adminRegisterForm_1
+                            ? "./store.html?storeUuid=" + storeUuid_1
+                            : "./stores.html";
+                    });
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _c.sent();

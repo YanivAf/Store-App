@@ -65,6 +65,22 @@ export function login(req, res) { // index.html
   }
 }
 
+export function logout(req, res) { // index.html
+  try {
+    const { userIndex } = req;
+
+    const users = new Users();
+    const { username } = users.users[userIndex];
+
+    res.clearCookie('currentUser');
+    res.send({ username });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+}
+
 export const details = (req, res)=> { // all htmls except for index.html,  register.html, shopper-register.html
   try {
     const userIndex: string = req.userIndex;
@@ -100,33 +116,15 @@ export function getQuantities(req, res) { // store.html + cart.html
   }
 }
 
-export function addToCart(req, res) { // store.html
-  try {
-    const { productUuid, productName } = req.body;
-
-    const users = new Users();
-    const { userUuid } = req.userUuid;
-
-    users.addCartProduct(userUuid, productUuid);
-
-    res.send({ title: `${productName} added to your cart!`, addToCart: true});
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error.message);
-  }
-}
-
 export function updateQuantity(req, res) { // store.html + cart.html
   try {
     const { productUuid, productName, mathSign } = req.body;
-
     const users = new Users();
-    const { userUuid } = req.userUuid;
+    const { userUuid } = req;
 
     const productQuantity: number = users.updateCartProductQuantity(userUuid, productUuid, mathSign);
 
-    res.send({ message: `There are now ${productQuantity} ${productName}(s) in your cart`, updateQuantity: true});
+    res.send({ message: `There are now ${productQuantity} ${productName}(s) in your cart`, productQuantity});
 
   } catch (error) {
     console.error(error);

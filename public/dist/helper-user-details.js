@@ -44,9 +44,8 @@ function getUserDetails() {
                     return [4 /*yield*/, axios.get('/user/details')];
                 case 1:
                     userDetails = _b.sent();
-                    console.log(userDetails);
                     _a = userDetails.data, username = _a.username, cart = _a.cart, purchased = _a.purchased;
-                    usernameElement = document.querySelector('.header__item--h4');
+                    usernameElement = document.querySelector('.header__item--username');
                     usernameElement.innerText = "Logged in as " + username;
                     headerTitleElement = document.querySelector('.header__item--h1');
                     whichHtmlFile = window.location.pathname;
@@ -73,7 +72,7 @@ function getUserDetails() {
                     additionalHeaderElementsHtml = (!cart) ?
                         "<div class=\"header__item header__item--add-product\" title=\"Add new product\">+</div>"
                         :
-                            "<" + aOrDivCart + hrefCart + " class=\"header__item header__item--cart\">\n            <img src=\"./images/full-cart.png\" title=\"cart\" />\n            <div>\n                1\n            </div>\n        </" + aOrDivCart + ">\n\n        <" + aOrDivPurchased + hrefPurchased + " class=\"header__item header__item--history\">\n            <img src=\"./images/history-cart.png\" title=\"purchase history\" />\n        </" + aOrDivPurchased + ">\n        \n        <" + aOrDivStores + hrefStores + " class=\"header__item header__item--mall\">\n            <img src=\"./images/mall.png\" title=\"all stores\" />\n        </" + aOrDivStores + ">";
+                            "<" + aOrDivCart + hrefCart + " class=\"header__item header__item--cart\">\n            <img id=\"cart\" src=\"./images/full-cart.png\" title=\"cart\" />\n            <div id=\"in-cart\">\n                1\n            </div>\n        </" + aOrDivCart + ">\n\n        <" + aOrDivPurchased + hrefPurchased + " class=\"header__item header__item--history\">\n            <img src=\"./images/history-cart.png\" title=\"purchase history\" />\n        </" + aOrDivPurchased + ">\n        \n        <" + aOrDivStores + hrefStores + " class=\"header__item header__item--mall\">\n            <img src=\"./images/mall.png\" title=\"all stores\" />\n        </" + aOrDivStores + ">";
                     headerTitleElement.insertAdjacentHTML("afterend", additionalHeaderElementsHtml);
                     return [3 /*break*/, 3];
                 case 2:
@@ -86,3 +85,37 @@ function getUserDetails() {
     });
 }
 getUserDetails();
+var logoutBtn = document.querySelector('#logout');
+logoutBtn.addEventListener('click', function (ev) { return logout(ev); });
+function logout(ev) {
+    var _this = this;
+    try {
+        swal({
+            title: "Bye!",
+            text: "Hope to see you again soon!",
+            buttons: ["Stay", "Byeee"],
+            dangerMode: true
+        }).then(function (willLogout) { return __awaiter(_this, void 0, void 0, function () {
+            var doLogout, username;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!willLogout) return [3 /*break*/, 2];
+                        return [4 /*yield*/, axios.get('/user/logout')];
+                    case 1:
+                        doLogout = _a.sent();
+                        username = doLogout.data.username;
+                        swal(username + ", you are now logged out \uD83D\uDD90", {
+                            icon: "success",
+                            button: "🖐"
+                        }).then(function () { window.location.href = '/'; });
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        }); });
+    }
+    catch (error) {
+        console.error(error.message);
+    }
+}

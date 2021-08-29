@@ -34,9 +34,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-function renderStore() {
+function renderStore(showCartSwal) {
     return __awaiter(this, void 0, void 0, function () {
-        var getStoreDetails, _a, store, isAdmin_1, cartProducts_1, getCartProducts, storeName, products, storeNameElement, pageTitle, productsElement, html, AreThereProducts, error_1;
+        var getStoreDetails, _a, store, isAdmin_1, inCartDiv, CartImg, cartProducts_1, getCartProducts, inCartSum, storeName, products, storeNameElement, pageTitle, productsElement, html, AreThereProducts, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -45,11 +45,33 @@ function renderStore() {
                 case 1:
                     getStoreDetails = _b.sent();
                     _a = getStoreDetails.data, store = _a.store, isAdmin_1 = _a.isAdmin;
+                    inCartDiv = document.querySelector('#in-cart');
+                    CartImg = document.querySelector('#cart');
                     if (!!isAdmin_1) return [3 /*break*/, 3];
                     return [4 /*yield*/, axios.get('/user/cart')];
                 case 2:
                     getCartProducts = _b.sent();
                     cartProducts_1 = getCartProducts.data.cartProducts;
+                    inCartSum = cartProducts_1.reduce(function (previousValue, currentValue) { return previousValue + currentValue.quantity; }, 0);
+                    if (inCartSum === 0) {
+                        CartImg.setAttribute('src', './images/empty-cart.png');
+                        inCartDiv.style.display = 'none';
+                    }
+                    else {
+                        CartImg.setAttribute('src', './images/full-cart.png');
+                        inCartDiv.style.display = 'unset';
+                        if (showCartSwal) {
+                            swal({
+                                title: "You have items in your cart!",
+                                text: "What do you wanna do?",
+                                buttons: ["More Shopping", 'Go to Cart']
+                            }).then(function (willGoToCart) {
+                                if (willGoToCart)
+                                    window.location.href = "./cart.html";
+                            });
+                        }
+                    }
+                    inCartDiv.innerText = inCartSum.toString();
                     _b.label = 3;
                 case 3:
                     storeName = store.storeName, products = store.products;
@@ -71,9 +93,10 @@ function renderStore() {
                                 var cartProduct = cartProducts_1.find(function (cartProduct) { return cartProduct.productUuid === product.productUuid; });
                                 var cartProductQuantity = (cartProduct) ? cartProduct.quantity : 0;
                                 var reduceDisabled = (cartProductQuantity === 0) ? 'disabled' : '';
+                                var addDisabled = (cartProductQuantity === 10) ? 'disabled' : '';
                                 var quantityZero = (cartProductQuantity === 0) ? ' style="background-color: gray;"' : '';
                                 buttonsByRole =
-                                    "<button " + reduceDisabled + " class=\"product-buttons__item product-buttons__item--cart-reduce\" title=\"Reduce quantity\">-</button>\n                    <div class=\"product-buttons__item product-buttons__item--cart-quantity\"" + quantityZero + " title=\"" + product.productName + " quantity\">" + cartProductQuantity + "</div>\n                    <button class=\"product-buttons__item product-buttons__item--cart-add\" title=\"Add quantity\">+</button>";
+                                    "<button " + reduceDisabled + " class=\"product-buttons__item product-buttons__item--cart-reduce\" title=\"Reduce quantity\">-</button>\n                    <div class=\"product-buttons__item product-buttons__item--cart-quantity\"" + quantityZero + " title=\"" + product.productName + " quantity\">" + cartProductQuantity + "</div>\n                    <button " + addDisabled + " class=\"product-buttons__item product-buttons__item--cart-add\" title=\"Add quantity\">+</button>";
                             }
                             var inStockText;
                             var inStockColor;
@@ -102,4 +125,4 @@ function renderStore() {
         });
     });
 }
-renderStore();
+renderStore(true);

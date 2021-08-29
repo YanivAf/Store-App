@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.purchaseCart = exports.deleteFromCart = exports.updateQuantity = exports.addToCart = exports.getQuantities = exports.details = exports.login = exports.register = exports.welcome = void 0;
+exports.purchaseCart = exports.deleteFromCart = exports.updateQuantity = exports.getQuantities = exports.details = exports.logout = exports.login = exports.register = exports.welcome = void 0;
 var secret = require('../../secret/dist/secret').secret;
 var jwt = require('jsonwebtoken');
 var _a = require('../../models/dist/usersModel'), Users = _a.Users, User = _a.User, CartProduct = _a.CartProduct;
@@ -59,6 +59,20 @@ function login(req, res) {
     }
 }
 exports.login = login;
+function logout(req, res) {
+    try {
+        var userIndex = req.userIndex;
+        var users = new Users();
+        var username = users.users[userIndex].username;
+        res.clearCookie('currentUser');
+        res.send({ username: username });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send(error.message);
+    }
+}
+exports.logout = logout;
 exports.details = function (req, res) {
     try {
         var userIndex = req.userIndex;
@@ -89,27 +103,13 @@ function getQuantities(req, res) {
     }
 }
 exports.getQuantities = getQuantities;
-function addToCart(req, res) {
-    try {
-        var _a = req.body, productUuid = _a.productUuid, productName = _a.productName;
-        var users = new Users();
-        var userUuid = req.userUuid.userUuid;
-        users.addCartProduct(userUuid, productUuid);
-        res.send({ title: productName + " added to your cart!", addToCart: true });
-    }
-    catch (error) {
-        console.error(error);
-        res.status(500).send(error.message);
-    }
-}
-exports.addToCart = addToCart;
 function updateQuantity(req, res) {
     try {
         var _a = req.body, productUuid = _a.productUuid, productName = _a.productName, mathSign = _a.mathSign;
         var users = new Users();
-        var userUuid = req.userUuid.userUuid;
+        var userUuid = req.userUuid;
         var productQuantity = users.updateCartProductQuantity(userUuid, productUuid, mathSign);
-        res.send({ message: "There are now " + productQuantity + " " + productName + "(s) in your cart", updateQuantity: true });
+        res.send({ message: "There are now " + productQuantity + " " + productName + "(s) in your cart", productQuantity: productQuantity });
     }
     catch (error) {
         console.error(error);

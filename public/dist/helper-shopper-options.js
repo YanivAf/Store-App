@@ -38,22 +38,25 @@ var updateQuantityAncestor = document.querySelector('.products');
 updateQuantityAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
 function updateQuantity(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var productDiv, productUuid, productNameElement, productName, mathSign, postProductQuantity, error_1;
+        var productDiv, productUuid, productNameElement, productName, mathSign, putProductQuantity, productQuantity, productQuantityElement, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    if ((ev.target.className !== 'product-buttons__item product-buttons__item--cart-reduce') || (ev.target.className !== 'product-buttons__item product-buttons__item--cart-add'))
+                    if ((ev.target.className !== 'product-buttons__item product-buttons__item--cart-reduce') && (ev.target.className !== 'product-buttons__item product-buttons__item--cart-add'))
                         return [2 /*return*/];
                     productDiv = ev.target.parentElement.parentElement;
                     productUuid = productDiv.getAttribute('id');
                     productNameElement = productDiv.querySelector('.product__item--name');
                     productName = productNameElement.innerText;
                     mathSign = ev.target.innerText;
-                    return [4 /*yield*/, axios.put('/cart', productUuid, productName, mathSign)];
+                    return [4 /*yield*/, axios.put('/user/cart', { productUuid: productUuid, productName: productName, mathSign: mathSign })];
                 case 1:
-                    postProductQuantity = _a.sent();
-                    console.log('hi');
+                    putProductQuantity = _a.sent();
+                    productQuantity = putProductQuantity.data.productQuantity;
+                    productQuantityElement = productDiv.querySelector(('.product-buttons__item--cart-quantity'));
+                    productQuantityElement.innerText = productQuantity;
+                    renderStore(false);
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _a.sent();

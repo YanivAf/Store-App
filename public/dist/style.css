@@ -71,7 +71,7 @@ a:hover {
   align-items: center;
   grid-template-columns: 1.5fr 0.75fr 0.75fr 0.75fr 1.25fr 1fr 2fr;
   grid-template-rows: 1fr 1fr;
-  grid-template-areas: "h1 item1 item2 item3 . h4 form" "h1 item1 item2 item3 . call reg";
+  grid-template-areas: "h1 item1 item2 item3 . h4 topright" "h1 item1 item2 item3 . call botright";
   position: sticky;
   height: fit-content;
   height: clamp(100px, 3vh, 120px);
@@ -117,6 +117,7 @@ a:hover {
   grid-area: item1;
   position: relative;
   width: clamp(20px, 4vw, 40px);
+  height: clamp(20px, 4vw, 40px);
 }
 .header__item--cart img {
   background-color: white;
@@ -136,7 +137,8 @@ a:hover {
   font-weight: bold;
   text-align: center;
   height: 40%;
-  width: 50%;
+  width: fit-content;
+  min-width: 50%;
   position: absolute;
   right: -50%;
   top: -5px;
@@ -144,6 +146,7 @@ a:hover {
 .header__item--history {
   grid-area: item2;
   width: clamp(20px, 4vw, 40px);
+  height: clamp(20px, 4vw, 40px);
 }
 .header__item--history img {
   background-color: white;
@@ -157,6 +160,7 @@ a:hover {
 .header__item--mall {
   grid-area: item3;
   width: clamp(20px, 4vw, 40px);
+  height: clamp(20px, 4vw, 40px);
 }
 .header__item--mall img {
   background-color: white;
@@ -172,7 +176,7 @@ a:hover {
   font-size: clamp(8px, 4vw, 16px);
 }
 .header__item--admin-login-form {
-  grid-area: form;
+  grid-area: topright;
   display: flex;
 }
 .header__item--admin-login-form .form-inputs {
@@ -182,13 +186,32 @@ a:hover {
   font-size: clamp(6px, 4vw, 14px);
   margin: 0;
 }
+.header__item--username {
+  grid-area: topright;
+  font-size: clamp(8px, 4vw, 16px);
+}
 .header__item--call-to-register {
   grid-area: call;
   font-size: clamp(8px, 3vw, 12px);
   color: white;
 }
+.header__item--logout {
+  grid-area: botright;
+  border: 0;
+  margin: 0 auto;
+  padding: 5px;
+  color: white;
+  font-weight: bold;
+  width: fit-content;
+  border-radius: 20px;
+  background-color: darkred;
+  cursor: pointer;
+}
+.header__item--logout:hover {
+  background-color: red;
+}
 .header__item--register {
-  grid-area: reg;
+  grid-area: botright;
 }
 
 .main__item--store-name {
@@ -259,6 +282,9 @@ a:hover {
   color: darkred;
   cursor: pointer;
 }
+.products .product .product-buttons__item--delete:hover {
+  background-color: red;
+}
 .products .product .product-buttons__item--cart-add {
   color: white;
   font-weight: bold;
@@ -290,7 +316,6 @@ a:hover {
   width: 25px;
   border-radius: 2px;
   background-color: orange;
-  cursor: pointer;
 }
 .products .product .product-buttons__item:disabled {
   background-color: gray;

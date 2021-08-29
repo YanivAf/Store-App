@@ -132,7 +132,7 @@ export class Users {
             
             const cartProduct = new CartProduct(productUuid);
             cartProduct.productName = product.productName;
-            cartProduct.quantity = (quantity === 0) ? 1 : quantity;
+            cartProduct.quantity = quantity;
             cartProduct.totalPrice = productPrice * quantity;
             
             return cartProduct;

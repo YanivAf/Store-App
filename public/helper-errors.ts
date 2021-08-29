@@ -23,7 +23,7 @@ window.axios.interceptors.response.use(function (response) {
             break;
     }
     if (error.response.status) {
-        if ((window.location.pathname === '/') || (window.location.pathname === '/index.html')) return;
+        if ((error.response.status === 401) && ((window.location.pathname === '/') || (window.location.pathname === '/index.html'))) return;
         if (error.response.status !== 409) {
             swal({
                 title,
@@ -37,7 +37,7 @@ window.axios.interceptors.response.use(function (response) {
         } else {
             swal({
                 title: `Ops.. ${title}`,
-                text: text,
+                text,
                 icon: "warning",
                 button: "Try again",
             });
