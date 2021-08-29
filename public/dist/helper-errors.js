@@ -14,7 +14,7 @@ window.axios.interceptors.response.use(function (response) {
             title = "Not Found";
             break;
         case 409:
-            title = "Registration Issue";
+            title = "Conflict";
             break;
         case 500:
             title = "Server Request Issue";
