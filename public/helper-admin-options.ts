@@ -21,15 +21,6 @@ async function updateProduct(ev: any) {
   }
 }
 
-async function addToCart(productUuid: string, productName: string) {
-  try {
-    console.log('hi2');
-
-  } catch (error) {
-      console.error(error.message);
-  }
-}
-
 const readURL = (input: any) => {
     if (input.files && input.files[0]) {
       let reader = new FileReader();
