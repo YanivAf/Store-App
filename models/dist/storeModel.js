@@ -44,6 +44,15 @@ var Store = /** @class */ (function () {
             console.error(error.message);
         }
     };
+    Store.prototype.findProductIndex = function (productUuid) {
+        try {
+            var productIndex = this.products.findIndex(function (product) { return product.productUuid === productUuid; });
+            return productIndex;
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    };
     Store.prototype.addProduct = function () {
         try {
         }

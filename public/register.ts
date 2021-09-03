@@ -54,7 +54,7 @@ async function register(ev) {
     }).then(() => {
       window.location.href = adminRegisterForm
         ? `./store.html?storeUuid=${storeUuid}`
-        : "./stores.html";
+        : "./store.html?storeUuid=all";
     });
   } catch (error) {
     console.error(error.message);

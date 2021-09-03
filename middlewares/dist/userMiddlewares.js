@@ -60,7 +60,7 @@ function doesUserExist(req, res, next) {
                     return;
                 }
             }
-            else if (adminLoginForm === undefined) { // shopper registration attempt
+            else if (adminRegisterForm === false) { // shopper registration attempt
                 if (userIndex === -1) { // shopper doesn't exist
                     req.shopperToAdmin = false;
                     req.userIndex = userIndex;
@@ -69,7 +69,7 @@ function doesUserExist(req, res, next) {
                     return;
                 }
             }
-            else { // login attempt
+            else if (adminLoginForm !== undefined) { // login attempt
                 if (userIndex === -1)
                     res.status(404).send({ message: "User doesn't exist. Please register to the system." });
                 else {

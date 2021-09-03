@@ -132,6 +132,7 @@ a:hover {
   background-color: var(--hover-bg-color);
 }
 .header__item--cart div {
+  padding-bottom: 4px;
   background-color: orange;
   border: 1px solid white;
   border-radius: 2px;
@@ -284,39 +285,15 @@ a:hover {
   cursor: pointer;
 }
 .products .product .product-buttons__item--cart-add {
-  color: white;
-  font-weight: bold;
-  height: 20px;
-  width: 20px;
-  border-radius: 20px;
-  background-color: green;
+  color: darkgreen;
   cursor: pointer;
 }
 .products .product .product-buttons__item--cart-add:hover {
-  background-color: lightgreen;
+  color: green;
 }
-.products .product .product-buttons__item--cart-reduce {
-  color: white;
-  font-weight: bold;
-  height: 20px;
-  width: 20px;
-  border-radius: 20px;
-  background-color: darkred;
-  cursor: pointer;
+.products .product .product-buttons__item--cart-added {
+  color: lightgreen;
 }
-.products .product .product-buttons__item--cart-reduce:hover {
-  background-color: red;
-}
-.products .product .product-buttons__item--cart-quantity {
-  color: white;
-  font-weight: bold;
-  height: 25px;
-  width: 25px;
-  border-radius: 2px;
-  background-color: orange;
-}
-.products .product .product-buttons__item:disabled {
-  background-color: gray;
-  color: white;
-  cursor: not-allowed;
+.products .product .product-buttons__item--cart-added:hover {
+  color: green;
 }

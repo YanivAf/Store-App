@@ -1,59 +1,117 @@
 async function getUserDetails() {
     try {
         const userDetails = await axios.get('/user/details');
-        const { username, cart, purchased } = userDetails.data;
-        const usernameElement: HTMLElement = document.querySelector('.header__item--username');
-        usernameElement.innerText = `Logged in as ${username}`;
-        
-        const headerTitleElement: HTMLElement = document.querySelector('.header__item--h1');
-        const whichHtmlFile: string = window.location.pathname;
-        let aOrDivPurchased: string = 'a';
-        let aOrDivCart: string = 'a';
-        let aOrDivStores: string = 'a';
-        let hrefPurchased: string = ' href="./purchased.html"';
-        let hrefCart: string = ' href="./cart.html"';
-        let hrefStores: string = ' href="./stores.html"';
-        switch (whichHtmlFile) {
-            case '/purchased.html':
-                aOrDivPurchased = 'div';
-                hrefPurchased = '';
-                break;
-            case '/cart.html':
-                aOrDivCart = 'div';
-                hrefCart = '';
-                break;
-            case '/stores.html':
-                aOrDivStores = 'div';
-                hrefStores = '';
-                break;
-        } 
+        const { user, isAdmin } = userDetails.data;
 
-        const additionalHeaderElementsHtml: string = (!cart) ? 
-        `<div class="header__item header__item--add-product" title="Add new product">+</div>`
-        :
-        `<${aOrDivCart}${hrefCart} class="header__item header__item--cart">
-            <img id="cart" src="./images/full-cart.png" title="cart" />
-            <div id="in-cart">
-                1
-            </div>
-        </${aOrDivCart}>
+        const isCartEmpty: boolean = renderUserDetails(user, isAdmin);
 
-        <${aOrDivPurchased}${hrefPurchased} class="header__item header__item--history">
-            <img src="./images/history-cart.png" title="purchase history" />
-        </${aOrDivPurchased}>
-        
-        <${aOrDivStores}${hrefStores} class="header__item header__item--mall">
-            <img src="./images/mall.png" title="all stores" />
-        </${aOrDivStores}>`;
-
-        headerTitleElement.insertAdjacentHTML("afterend",additionalHeaderElementsHtml);
-        
+        if ((!isAdmin) && (isCartEmpty === false)) {
+            swal({
+                title: `You have items in your cart!`,
+                text: `What do you wanna do?`,
+                buttons: ["More Shopping", 'Go to Cart'],
+            }).then((willGoToCart) => {
+                if (willGoToCart) window.location.href = `./cart.html`;
+            });
+        }
+                
     } catch (error) {
         console.error(error.message);
     }
 }
 
 getUserDetails();
+
+let cartProductsToRender: Array<any>;
+
+function renderUserDetails(user: any, isAdmin: boolean) {
+    try {
+        const usernameElement: HTMLElement = document.querySelector('.header__item--username');
+        usernameElement.innerText = `Logged in as ${user.username}`;
+
+        let additionalHeaderElementsHtml: string;
+        let isCartEmpty: boolean;
+        cartProductsToRender = user.cart;
+
+        if (!isAdmin) {
+            const shopperCart: any = renderShopperCart(cartProductsToRender);
+            isCartEmpty = shopperCart.isCartEmpty;
+        } else {
+            additionalHeaderElementsHtml = `<div class="header__item header__item--add-product" title="Add new product">+</div>`;
+            const headerTitleElement: HTMLElement = document.querySelector('.header__item--h1');
+            headerTitleElement.insertAdjacentHTML("afterend",additionalHeaderElementsHtml);
+        }
+
+        return isCartEmpty;
+
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+function renderShopperCart(cartProducts: Array<any>) {
+    try {
+
+        const inCartSum: number = cartProducts.reduce((previousValue, currentValue) => previousValue + currentValue.quantity, 0);
+        const isCartEmpty: boolean = (inCartSum > 0) ? false : true;
+
+        const whichHtmlFile: string = window.location.pathname;
+        const navBar: any = {
+            purchased: { aOrDiv: 'a', href: ' href="./purchased.html"' },
+            cart: { aOrDiv: 'a', href: ' href="./cart.html"', },
+            stores: { aOrDiv: 'a', href: ' href="./stores.html"' }
+        }
+
+        navBar.cart.innerHTML = (inCartSum > 0) ?
+        `<img id="cart" src="./images/full-cart.png" title="cart" />
+        <div id="in-cart">
+            ${inCartSum}
+        </div>`
+        :
+        `<img id="cart" src="./images/empty-cart.png" title="cart" />`;
+
+        switch (whichHtmlFile) {
+            case '/purchased.html':
+                navBar.purchased.aOrDiv = 'div';
+                navBar.purchased.href = '';
+                break;
+            case '/cart.html':
+                navBar.cart.aOrDiv = 'div';
+                navBar.cart.href = '';
+                break;
+            case '/stores.html':
+                navBar.stores.aOrDiv = 'div';
+                navBar.stores.href = '';
+                break;
+        }
+
+        const shopperHeaderElementsHtml: string =
+        `<${navBar.cart.aOrDiv}${navBar.cart.href} class="header__item header__item--cart">
+            ${navBar.cart.innerHTML}
+        </${navBar.cart.aOrDiv}>
+
+        <${navBar.purchased.aOrDiv}${navBar.purchased.href} class="header__item header__item--history">
+            <img src="./images/history-cart.png" title="purchase history" />
+        </${navBar.purchased.aOrDiv}>
+        
+        <${navBar.stores.aOrDiv}${navBar.stores.href} class="header__item header__item--mall">
+            <img src="./images/mall.png" title="virtual mall" />
+        </${navBar.stores.aOrDiv}>`;
+        console.log(shopperHeaderElementsHtml);
+        const headerCartElement: HTMLElement = document.querySelector('.header__item--cart');
+        if (headerCartElement) {
+            headerCartElement.innerHTML = `${navBar.cart.innerHTML}`;
+        } else {
+            const headerTitleElement: HTMLElement = document.querySelector('.header__item--h1');
+            headerTitleElement.insertAdjacentHTML("afterend",shopperHeaderElementsHtml);
+        }
+
+        return { isCartEmpty };
+
+    } catch (error) {
+        console.error(error.message);
+    }
+}
 
 const logoutBtn: HTMLElement = document.querySelector('#logout');
 

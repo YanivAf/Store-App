@@ -88,7 +88,7 @@ function register(ev) {
                     }).then(function () {
                         window.location.href = adminRegisterForm_1
                             ? "./store.html?storeUuid=" + storeUuid_1
-                            : "./stores.html";
+                            : "./store.html?storeUuid=all";
                     });
                     return [3 /*break*/, 3];
                 case 2:

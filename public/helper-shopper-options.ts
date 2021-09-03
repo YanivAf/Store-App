@@ -4,27 +4,30 @@ updateQuantityAncestor.addEventListener('click', ev => updateQuantity(ev));
 
 async function updateQuantity(ev: any) {
   try {
-    if ((ev.target.className !== 'product-buttons__item product-buttons__item--cart-reduce') && (ev.target.className !== 'product-buttons__item product-buttons__item--cart-add')) return;
+    if ((ev.target.getAttribute('id') !== 'add-to-cart') && (ev.target.className !== 'update-cart-qunatity') && (ev.target.className !== 'delete-from-cart')) return;
+    let productQuantity: number;
+    switch (ev.target.getAttribute('id')) { // TODO add 0 (remove) or specific number (+) depending on ev.target.className (from product/cart page)
+      default:
+        const cartProductQuantityInput: HTMLElement = document.querySelector('#cart-qunatity');
+        productQuantity = cartProductQuantityInput.valueAsNumber;
+        break;
+
+      case 'add-to-cart':
+        productQuantity = 1;
+        break;
+      
+      case 'delete-from-cart':
+        productQuantity = 0;
+        break;
+
+    } 
     const productDiv: HTMLElement = ev.target.parentElement.parentElement;
     const productUuid: string = productDiv.getAttribute('id');
-    const productNameElement: HTMLElement = productDiv.querySelector('.product__item--name');
-    const productName: string = productNameElement.innerText;
-    const mathSign: string = ev.target.innerText;
-    const putProductQuantity = await axios.put('/user/cart', { productUuid, productName, mathSign });
-    const { productQuantity } = putProductQuantity.data;
-    const productQuantityElement: HTMLElement = productDiv.querySelector(('.product-buttons__item--cart-quantity'));
-    productQuantityElement.innerText = productQuantity;
-    renderStore(false);
+    const updateCartProductQuantity = await axios.put('/user/cart', { productUuid, productQuantity });
+    const { cartProducts, storeProducts } = updateCartProductQuantity.data;
+    renderShopperCart(cartProducts);
+    renderStoreProducts(storeProducts, cartProducts, false);
     
-  } catch (error) {
-      console.error(error.message);
-  }
-}
-
-async function addToCart(productUuid: string, productName: string) {
-  try {
-    console.log('hi2');
-
   } catch (error) {
       console.error(error.message);
   }

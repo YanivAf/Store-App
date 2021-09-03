@@ -17,10 +17,9 @@ var readUsersJson = function () {
     }
 };
 var CartProduct = /** @class */ (function () {
-    function CartProduct(productUuid) {
+    function CartProduct(productUuid, quantity) {
         this.productUuid = productUuid;
-        this.totalPrice = 0;
-        this.quantity = 0;
+        this.quantity = quantity;
     }
     return CartProduct;
 }());
@@ -54,8 +53,6 @@ var Users = /** @class */ (function () {
         try {
             var userIndex = (userUuid) ? this.users.findIndex(function (user) { return user.userUuid === userUuid; })
                 : this.users.findIndex(function (user) { return user.email === userEmail; });
-            if ((userIndex === -1) && (userUuid))
-                throw new Error("no user with uuid " + userUuid);
             return userIndex;
         }
         catch (error) {
@@ -103,25 +100,9 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Users.prototype.completeCartProductDetails = function (quantity, productUuid) {
+    Users.prototype.addCartProduct = function (shopperIndex, productUuid, productQuantity) {
         try {
-            var store = readStoreJson();
-            var product = store.products.find(function (product) { return product.productUuid === productUuid; });
-            var productPrice = product.productPrice;
-            var cartProduct = new CartProduct(productUuid);
-            cartProduct.productName = product.productName;
-            cartProduct.quantity = quantity;
-            cartProduct.totalPrice = productPrice * quantity;
-            return cartProduct;
-        }
-        catch (error) {
-            console.error(error.message);
-        }
-    };
-    Users.prototype.addCartProduct = function (shopperUuid, productUuid) {
-        try {
-            var shopperIndex = this.findUserIndex(shopperUuid, null);
-            var cartProduct = this.completeCartProductDetails(0, productUuid);
+            var cartProduct = new CartProduct(productUuid, productQuantity);
             this.users[shopperIndex].cart.push(cartProduct);
             var cartProductIndex = this.users[shopperIndex].cart.length - 1;
             this.updateUsersJson();
@@ -131,11 +112,11 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Users.prototype.findCartProduct = function (shopperIndex, productUuid, mathSign) {
+    Users.prototype.findCartProduct = function (shopperIndex, productUuid, productQuantity) {
         try {
             var cartProductIndex = this.users[shopperIndex].cart.findIndex(function (cartProduct) { return cartProduct.productUuid === productUuid; });
-            if ((cartProductIndex === -1) && (mathSign === '+'))
-                cartProductIndex = this.addCartProduct(this.users[shopperIndex].userUuid, productUuid);
+            if ((cartProductIndex === -1) && (productQuantity > 0))
+                cartProductIndex = this.addCartProduct(shopperIndex, productUuid, productQuantity);
             return cartProductIndex;
         }
         catch (error) {
@@ -152,24 +133,28 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Users.prototype.updateCartProductQuantity = function (shopperUuid, productUuid, mathSign) {
+    Users.prototype.updateCartProductQuantity = function (shopperUuid, productUuid, productQuantity) {
         try {
             var shopperIndex = this.findUserIndex(shopperUuid, null);
-            var cartProductIndex = this.findCartProduct(shopperIndex, productUuid, mathSign);
-            if (mathSign === '+')
-                this.users[shopperIndex].cart[cartProductIndex].quantity++;
-            else
-                this.users[shopperIndex].cart[cartProductIndex].quantity--;
-            var cartProductQuantity = this.users[shopperIndex].cart[cartProductIndex].quantity;
-            var cartProduct = void 0;
-            if (cartProductQuantity === 0)
+            var cartProductIndex = this.findCartProduct(shopperIndex, productUuid, productQuantity);
+            var store = readStoreJson();
+            var productIndex = store.products.findIndex(function (product) { return product.productUuid === productUuid; });
+            if (productQuantity === 0) {
+                store.products[productIndex].inStock += this.users[shopperIndex].cart[cartProductIndex].quantity;
                 this.deleteCartProduct(shopperUuid, productUuid);
-            else {
-                cartProduct = this.completeCartProductDetails(cartProductQuantity, productUuid);
-                this.users[shopperIndex].cart[cartProductIndex] = cartProduct;
             }
+            else {
+                store.products[productIndex].inStock -= productQuantity;
+                this.users[shopperIndex].cart[cartProductIndex].quantity = productQuantity;
+            }
+            var cartProductQuantity = this.users[shopperIndex].cart[cartProductIndex].quantity;
+            var cartProductPrice = store.products[productIndex].productPrice;
+            var cartProductName = store.products[productIndex].productName;
+            this.users[shopperIndex].cart[cartProductIndex].totalPrice = cartProductQuantity * cartProductPrice;
+            this.users[shopperIndex].cart[cartProductIndex].productName = cartProductName;
+            fs.writeFileSync(storeJsonPath, JSON.stringify(store));
             this.updateUsersJson();
-            return cartProduct;
+            return this.users[shopperIndex].cart;
         }
         catch (error) {
             console.error(error.message);
@@ -187,12 +172,6 @@ var Users = /** @class */ (function () {
                     _this.users[shopperIndex].purchased[cartProductIndex].totalPrice += cartProduct.totalPrice;
                 }
             });
-            var store_1 = readStoreJson();
-            this.users[shopperIndex].cart.forEach(function (cartProduct) {
-                var productIndex = store_1.products.findIndex(function (product) { return product.productUuid === cartProduct.productUuid; });
-                store_1.products[productIndex].inStock -= cartProduct.quantity;
-            });
-            fs.writeFileSync(storeJsonPath, JSON.stringify(store_1));
         }
         catch (error) {
             console.error(error.message);

@@ -55,6 +55,17 @@ export class Store {
         }
     }
 
+    findProductIndex(productUuid: string): number {
+        try {
+            const productIndex: number = this.products.findIndex(product => product.productUuid === productUuid);
+
+            return productIndex;
+            
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
     addProduct() {
         try {
 

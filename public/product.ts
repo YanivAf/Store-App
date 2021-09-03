@@ -1,4 +1,4 @@
-async function product() {
+async function getProduct() {
     try {
         console.log('hi you');
         // on top - render `Welcome ${username}` + storeName
@@ -14,4 +14,4 @@ async function product() {
     }
 }
 
-product();
+getProduct();
