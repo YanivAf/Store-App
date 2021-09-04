@@ -1,41 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
-    integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://kit.fontawesome.com/3d6c8f810b.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./dist/style.min.css">
     <title>Cart</title>
 </head>
+
 <body>
     <nav class="header">
         <a class="header__item header__item--h1" href="./index.html">Shop Shop Shop</a>
-    
+
         <h4 class="header__item header__item--username">usename</h4>
 
         <button class="header__item header__item--logout" id="logout">logout</button>
     </nav>
-    
+
     <main class="main">
-        <h1 class="main__item" id="store-name">storeName</h1>
-        <h2 class="main__item">Purchase History</h2>
+        <h1 class="main__item" id="shopper-cart">Cart</h1>
 
         <div class="main__item products">
-            <div class="products__item product">cart product</div>
-            <div class="products__item product">cart product</div>
+            <!-- <div class="products__item products__item--headers">
+                <h4>Remove from Cart</h4>
+                <h4>Product Image</h4>
+                <h4>Product Name</h4>
+                <h4>Total Price</h4>
+                <h4>Left in Stock</h4>
+                <h4>Quantity in Cart</h4>
+            </div> -->
         </div>
     </main>
 
     <script src="./dist/helper-errors.min.js"></script>
     <script src="./dist/helper-user-details.min.js"></script>
     <script src="./dist/cart.min.js"></script>
-
+    <script src="./dist/helper-shopper-options.min.js"></script>
 </body>
+
 </html>

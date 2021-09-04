@@ -1,3 +1,5 @@
+const whichHtmlFile: string = window.location.pathname;
+
 async function getUserDetails() {
     try {
         const userDetails = await axios.get('/user/details');
@@ -5,11 +7,11 @@ async function getUserDetails() {
 
         const isCartEmpty: boolean = renderUserDetails(user, isAdmin);
 
-        if ((!isAdmin) && (isCartEmpty === false)) {
+        if ((!isAdmin) && (isCartEmpty === false) && (whichHtmlFile === '/store.html')) {
             swal({
                 title: `You have items in your cart!`,
                 text: `What do you wanna do?`,
-                buttons: ["More Shopping", 'Go to Cart'],
+                buttons: ['More Shopping', 'Go to Cart'],
             }).then((willGoToCart) => {
                 if (willGoToCart) window.location.href = `./cart.html`;
             });
@@ -29,7 +31,7 @@ function renderUserDetails(user: any, isAdmin: boolean) {
         const usernameElement: HTMLElement = document.querySelector('.header__item--username');
         usernameElement.innerText = `Logged in as ${user.username}`;
 
-        let additionalHeaderElementsHtml: string;
+        let additionalHeaderElementsHtml: string = '';
         let isCartEmpty: boolean;
         cartProductsToRender = user.cart;
 
@@ -37,7 +39,24 @@ function renderUserDetails(user: any, isAdmin: boolean) {
             const shopperCart: any = renderShopperCart(cartProductsToRender);
             isCartEmpty = shopperCart.isCartEmpty;
         } else {
-            additionalHeaderElementsHtml = `<div class="header__item header__item--add-product" title="Add new product">+</div>`;
+            const navBar: any = { store: { aOrDiv: 'a', href: ` href="./store.html?storeUuid=${user.stores[0]}"` } }
+            let addProductHtml: string = '';
+            
+            if (whichHtmlFile === '/store.html') {
+                addProductHtml = `
+                <a href="#add-product-form" class="header__item header__item--add-product" title="Add new product">
+                    <i class="fas fa-gift"></i>+
+                </a>`;
+                navBar.store.aOrDiv = 'div';
+                navBar.store.href = '';
+            }
+    
+            additionalHeaderElementsHtml = `
+            <${navBar.store.aOrDiv}${navBar.store.href} class="header__item header__item--store">
+                <img src="./images/store.png" title="Your store" />
+            </${navBar.store.aOrDiv}>
+            ${addProductHtml}`;
+            }
             const headerTitleElement: HTMLElement = document.querySelector('.header__item--h1');
             headerTitleElement.insertAdjacentHTML("afterend",additionalHeaderElementsHtml);
         }
@@ -55,20 +74,20 @@ function renderShopperCart(cartProducts: Array<any>) {
         const inCartSum: number = cartProducts.reduce((previousValue, currentValue) => previousValue + currentValue.quantity, 0);
         const isCartEmpty: boolean = (inCartSum > 0) ? false : true;
 
-        const whichHtmlFile: string = window.location.pathname;
         const navBar: any = {
             purchased: { aOrDiv: 'a', href: ' href="./purchased.html"' },
             cart: { aOrDiv: 'a', href: ' href="./cart.html"', },
-            stores: { aOrDiv: 'a', href: ' href="./stores.html"' }
+            storesList: { aOrDiv: 'a', href: ' href="./stores.html"' },
+            mall: { aOrDiv: 'a', href: ' href="./store.html?storeUuid=mall"' }
         }
 
         navBar.cart.innerHTML = (inCartSum > 0) ?
-        `<img id="cart" src="./images/full-cart.png" title="cart" />
+        `<img id="cart" src="./images/full-cart.png" title="Cart" />
         <div id="in-cart">
             ${inCartSum}
         </div>`
         :
-        `<img id="cart" src="./images/empty-cart.png" title="cart" />`;
+        `<img id="cart" src="./images/empty-cart.png" title="Cart" />`;
 
         switch (whichHtmlFile) {
             case '/purchased.html':
@@ -80,8 +99,12 @@ function renderShopperCart(cartProducts: Array<any>) {
                 navBar.cart.href = '';
                 break;
             case '/stores.html':
-                navBar.stores.aOrDiv = 'div';
-                navBar.stores.href = '';
+                navBar.storesList.aOrDiv = 'div';
+                navBar.storesList.href = '';
+                break;
+            case '/store.html':
+                navBar.mall.aOrDiv = 'div';
+                navBar.mall.href = '';
                 break;
         }
 
@@ -91,13 +114,17 @@ function renderShopperCart(cartProducts: Array<any>) {
         </${navBar.cart.aOrDiv}>
 
         <${navBar.purchased.aOrDiv}${navBar.purchased.href} class="header__item header__item--history">
-            <img src="./images/history-cart.png" title="purchase history" />
+            <img src="./images/history-cart.png" title="Purchase history" />
         </${navBar.purchased.aOrDiv}>
         
-        <${navBar.stores.aOrDiv}${navBar.stores.href} class="header__item header__item--mall">
-            <img src="./images/mall.png" title="virtual mall" />
-        </${navBar.stores.aOrDiv}>`;
-        console.log(shopperHeaderElementsHtml);
+        <${navBar.mall.aOrDiv}${navBar.mall.href} class="header__item header__item--mall">
+            <img src="./images/mall.png" title="Virtual mall" />
+        </${navBar.mall.aOrDiv}>
+        
+        <${navBar.storesList.aOrDiv}${navBar.storesList.href} class="header__item header__item--stores-list">
+            <img src="./images/stores-list.png" title="Stores list" />
+        </${navBar.storesList.aOrDiv}>`;
+
         const headerCartElement: HTMLElement = document.querySelector('.header__item--cart');
         if (headerCartElement) {
             headerCartElement.innerHTML = `${navBar.cart.innerHTML}`;

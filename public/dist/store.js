@@ -34,6 +34,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var url = new URL(window.location.href);
+var storeUuid = url.searchParams.get("storeUuid");
 function getStore() {
     return __awaiter(this, void 0, void 0, function () {
         var getStoreDetails, _a, store, isAdmin, error_1;
@@ -41,7 +43,7 @@ function getStore() {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, axios.get('/store/:storeUuid')];
+                    return [4 /*yield*/, axios.get("/store/" + storeUuid)];
                 case 1:
                     getStoreDetails = _b.sent();
                     _a = getStoreDetails.data, store = _a.store, isAdmin = _a.isAdmin;
@@ -64,6 +66,8 @@ function renderStore(store, isAdmin) {
         var pageTitle = document.querySelector('title');
         pageTitle.innerText = storeName;
         renderStoreProducts(products, cartProductsToRender, isAdmin);
+        if (isAdmin)
+            renderAddProductForm();
     }
     catch (error) {
         console.error(error.message);
@@ -78,9 +82,8 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
             :
                 products.map(function (product) {
                     var buttonsByRole;
-                    var cartProductQuantity;
                     if (isAdmin)
-                        buttonsByRole = "\n            <i class=\"product-buttons__item product-buttons__item--delete fas fa-trash\" id=\"delete-from-store\" title=\"Delete " + product.productName + "\"></i>\n            <i class=\"product-buttons__item product-buttons__item--edit fas fa-edit\" id=\"edit-on-store\" title=\"Edit " + product.productName + "\"></i>";
+                        buttonsByRole = "\n                <a href=\"./product.html?productUuid=" + product.productUuid + "\" class=\"product-buttons__item product-buttons__item--info fas fa-info\" >\n                    <i title=\"View & change " + product.productName + "\"></i>\n                </a>";
                     else {
                         var cartProductIndex = cartProducts.findIndex(function (cartProduct) { return cartProduct.productUuid === product.productUuid; });
                         if (cartProductIndex === -1)
@@ -109,5 +112,10 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
     catch (error) {
         console.error(error.message);
     }
+}
+function renderAddProductForm() {
+    var productsElement = document.querySelector('.products');
+    var formHTML = "\n    <form class=\"main__item main__item--add-product-form product-large\" id=\"add-product-form\">\n        <h3 class=\"product-large__item product-large__item--title\" >Add a new product</h3>\n        <input class=\"product-large__item product-large__item--name\" type=\"text\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" />\n        <div class=\"product-large__item product-large__item--img\">\n            <img id=\"productImg\" src=\"./images/cart-wp.png\">\n            <input class=\"product-large__item product-large__item--img\" type=\"file\" name=\"image\" onchange=\"readURL(this)\" />\n        </div>\n        <textarea class=\"product-large__item product-large__item--description\" minLength=\"10\" maxLength=\"500\" placeholder=\"Product Description\"></textarea>\n        <input class=\"product-large__item product-large__item--price\" type=\"number\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" />\n        <input class=\"product-large__item product-large__item--in-stock\" type=\"number\" min=\"0\" max=\"500\" placeholder=\"In Stock\" />\n        <input class=\"product-large__item product-large__item--submit\" type=\"submit\" value=\"Add\" />\n    </form>";
+    productsElement.insertAdjacentHTML('afterend', formHTML);
 }
 getStore();

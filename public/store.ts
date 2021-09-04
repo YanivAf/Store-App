@@ -1,6 +1,9 @@
+const url = new URL(window.location.href);
+const storeUuid = url.searchParams.get("storeUuid");
+
 async function getStore() {
     try {
-        const getStoreDetails = await axios.get('/store/:storeUuid');
+        const getStoreDetails = await axios.get(`/store/${storeUuid}`);
         const { store, isAdmin } = getStoreDetails.data;
         
         renderStore(store, isAdmin);
@@ -21,6 +24,7 @@ function renderStore(store: any, isAdmin: boolean) {
         pageTitle.innerText= storeName;
         
         renderStoreProducts(products, cartProductsToRender, isAdmin);
+        if (isAdmin) renderAddProductForm();
 
     } catch (error) {
         console.error(error.message);
@@ -38,10 +42,10 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
         :
         products.map((product) => {
             let buttonsByRole: string;
-            let cartProductQuantity: number;
             if (isAdmin) buttonsByRole =`
-            <i class="product-buttons__item product-buttons__item--delete fas fa-trash" id="delete-from-store" title="Delete ${product.productName}"></i>
-            <i class="product-buttons__item product-buttons__item--edit fas fa-edit" id="edit-on-store" title="Edit ${product.productName}"></i>`;
+                <a href="./product.html?productUuid=${product.productUuid}" class="product-buttons__item product-buttons__item--info fas fa-info" >
+                    <i title="View & change ${product.productName}"></i>
+                </a>`;
             else {
                 const cartProductIndex = cartProducts.findIndex(cartProduct => cartProduct.productUuid === product.productUuid);
                 if (cartProductIndex === -1) buttonsByRole = `<i class="product-buttons__item product-buttons__item--cart-add fas fa-cart-plus" id="add-to-cart" title="Add ${product.productName} to cart"></i>`;
@@ -79,6 +83,25 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
     } catch (error) {
         console.error(error.message);
     }
+}
+
+function renderAddProductForm() {
+    const productsElement: HTMLElement = document.querySelector('.products');
+    const formHTML: string = `
+    <form class="main__item main__item--add-product-form product-large" id="add-product-form">
+        <h3 class="product-large__item product-large__item--title" >Add a new product</h3>
+        <input class="product-large__item product-large__item--name" type="text" minLength="2" maxLength="40" placeholder="Product Name" />
+        <div class="product-large__item product-large__item--img">
+            <img id="productImg" src="./images/cart-wp.png">
+            <input class="product-large__item product-large__item--img" type="file" name="image" onchange="readURL(this)" />
+        </div>
+        <textarea class="product-large__item product-large__item--description" minLength="10" maxLength="500" placeholder="Product Description"></textarea>
+        <input class="product-large__item product-large__item--price" type="number" min="0" max="5000" placeholder="Price ($)" />
+        <input class="product-large__item product-large__item--in-stock" type="number" min="0" max="500" placeholder="In Stock" />
+        <input class="product-large__item product-large__item--submit" type="submit" value="Add" />
+    </form>`;
+
+    productsElement.insertAdjacentHTML('afterend',formHTML);
 }
 
 getStore();

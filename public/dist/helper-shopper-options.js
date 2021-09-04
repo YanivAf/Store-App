@@ -36,28 +36,25 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var updateQuantityAncestor = document.querySelector('.products');
 updateQuantityAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
+updateQuantityAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
 function updateQuantity(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var productQuantity, cartProductQuantityInput, productDiv, productUuid, updateCartProductQuantity, _a, cartProducts, storeProducts, error_1;
+        var productQuantity, productDiv, productUuid, updateCartProductQuantity, _a, cartProducts, storeProducts, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
-                    if ((ev.target.getAttribute('id') !== 'add-to-cart') && (ev.target.className !== 'update-cart-qunatity') && (ev.target.className !== 'delete-from-cart'))
+                    if (((ev.target.getAttribute('id') !== 'add-to-cart') && (!ev.target.classList.contains('update-cart-qunatity')) && (!ev.target.classList.contains('remove-from-cart')))
+                        || ((ev.type === 'click') && (ev.target.classList.contains('update-cart-qunatity'))))
                         return [2 /*return*/];
                     productQuantity = void 0;
-                    switch (ev.target.getAttribute('id')) { // TODO add 0 (remove) or specific number (+) depending on ev.target.className (from product/cart page)
-                        default:
-                            cartProductQuantityInput = document.querySelector('#cart-qunatity');
-                            productQuantity = cartProductQuantityInput.valueAsNumber;
-                            break;
-                        case 'add-to-cart':
-                            productQuantity = 1;
-                            break;
-                        case 'delete-from-cart':
-                            productQuantity = 0;
-                            break;
-                    }
+                    if (ev.target.getAttribute('id') === 'add-to-cart')
+                        productQuantity = 1;
+                    else if (ev.target.classList.contains('remove-from-cart'))
+                        productQuantity = 0;
+                    else
+                        productQuantity = ev.target.valueAsNumber;
+                    console.log(productQuantity, ev.type);
                     productDiv = ev.target.parentElement.parentElement;
                     productUuid = productDiv.getAttribute('id');
                     return [4 /*yield*/, axios.put('/user/cart', { productUuid: productUuid, productQuantity: productQuantity })];
@@ -65,7 +62,10 @@ function updateQuantity(ev) {
                     updateCartProductQuantity = _b.sent();
                     _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts;
                     renderShopperCart(cartProducts);
-                    renderStoreProducts(storeProducts, cartProducts, false);
+                    if (ev.target.getAttribute('id') === 'add-to-cart')
+                        renderStoreProducts(storeProducts, cartProducts, false);
+                    else
+                        renderCartProducts(storeProducts, cartProducts);
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _b.sent();

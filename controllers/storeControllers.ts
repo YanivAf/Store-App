@@ -2,7 +2,7 @@ export {};
 
 const { Product, Store } = require('../../models/dist/storeModel');
 
-export const showStores = (req, res)=> { // stores.html
+export const showStores = (req, res)=> {
   try {
     const store = new Store();
     res.send({ storeUuid: store.storeUuid, storeName: store.storeName });
@@ -17,9 +17,10 @@ export const showProducts = (req, res)=> { // store.html
   try {
     const isAdmin = req.isAdmin;
 
-    const storeUuid: string = req.params.storeUuid; // needed when database will have more than 1 store in the future
-
+    const storeUuid: string = req.params.storeUuid;
     const store = new Store();
+    if (storeUuid === 'mall') store.storeName = 'Virtual Mall'; // show from all stores (needed if more than 1 store. for now only title changes)
+    
     res.send({ store, isAdmin });
 
   } catch (error) {

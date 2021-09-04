@@ -15,8 +15,10 @@ exports.showStores = function (req, res) {
 exports.showProducts = function (req, res) {
     try {
         var isAdmin = req.isAdmin;
-        var storeUuid = req.params.storeUuid; // needed when database will have more than 1 store in the future
+        var storeUuid = req.params.storeUuid;
         var store = new Store();
+        if (storeUuid === 'mall')
+            store.storeName = 'Virtual Mall'; // show from all stores (needed if more than 1 store. for now only title changes)
         res.send({ store: store, isAdmin: isAdmin });
     }
     catch (error) {

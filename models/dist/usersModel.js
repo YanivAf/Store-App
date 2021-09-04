@@ -6,7 +6,7 @@ var fs = require("fs");
 var path = require("path");
 var usersJsonPath = path.resolve(__dirname, "../users.json");
 var storeJsonPath = path.resolve(__dirname, "../store.json");
-var _a = require('./storeModel'), readStoreJson = _a.readStoreJson, Product = _a.Product, Store = _a.Store;
+var _a = require('./storeModel'), Product = _a.Product, Store = _a.Store;
 var readUsersJson = function () {
     try {
         var users = fs.readFileSync(usersJsonPath);
@@ -17,9 +17,9 @@ var readUsersJson = function () {
     }
 };
 var CartProduct = /** @class */ (function () {
-    function CartProduct(productUuid, quantity) {
+    function CartProduct(productUuid) {
         this.productUuid = productUuid;
-        this.quantity = quantity;
+        this.quantity = 1;
     }
     return CartProduct;
 }());
@@ -65,7 +65,7 @@ var Users = /** @class */ (function () {
             var storeUuid = void 0;
             if (firstAdminIndex === -1) {
                 storeUuid = uuidv4(); /// if a store doesn't exist - create it
-                var store = readStoreJson();
+                var store = new Store();
                 store.storeUuid = storeUuid;
                 fs.writeFileSync(storeJsonPath, JSON.stringify(store));
             }
@@ -100,9 +100,9 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Users.prototype.addCartProduct = function (shopperIndex, productUuid, productQuantity) {
+    Users.prototype.addCartProduct = function (shopperIndex, productUuid) {
         try {
-            var cartProduct = new CartProduct(productUuid, productQuantity);
+            var cartProduct = new CartProduct(productUuid);
             this.users[shopperIndex].cart.push(cartProduct);
             var cartProductIndex = this.users[shopperIndex].cart.length - 1;
             this.updateUsersJson();
@@ -112,11 +112,9 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Users.prototype.findCartProduct = function (shopperIndex, productUuid, productQuantity) {
+    Users.prototype.findCartProduct = function (shopperIndex, productUuid) {
         try {
             var cartProductIndex = this.users[shopperIndex].cart.findIndex(function (cartProduct) { return cartProduct.productUuid === productUuid; });
-            if ((cartProductIndex === -1) && (productQuantity > 0))
-                cartProductIndex = this.addCartProduct(shopperIndex, productUuid, productQuantity);
             return cartProductIndex;
         }
         catch (error) {
@@ -136,22 +134,26 @@ var Users = /** @class */ (function () {
     Users.prototype.updateCartProductQuantity = function (shopperUuid, productUuid, productQuantity) {
         try {
             var shopperIndex = this.findUserIndex(shopperUuid, null);
-            var cartProductIndex = this.findCartProduct(shopperIndex, productUuid, productQuantity);
-            var store = readStoreJson();
-            var productIndex = store.products.findIndex(function (product) { return product.productUuid === productUuid; });
+            var cartProductIndex = this.findCartProduct(shopperIndex, productUuid);
+            var isNew = (cartProductIndex === -1) ? true : false;
+            if (isNew)
+                cartProductIndex = this.addCartProduct(shopperIndex, productUuid);
+            var store = new Store();
+            var productIndex = store.findProductIndex(productUuid);
+            var cartQuantityChange = (isNew) ? productQuantity : productQuantity - this.users[shopperIndex].cart[cartProductIndex].quantity;
             if (productQuantity === 0) {
                 store.products[productIndex].inStock += this.users[shopperIndex].cart[cartProductIndex].quantity;
                 this.deleteCartProduct(shopperUuid, productUuid);
             }
             else {
-                store.products[productIndex].inStock -= productQuantity;
+                store.products[productIndex].inStock -= cartQuantityChange;
                 this.users[shopperIndex].cart[cartProductIndex].quantity = productQuantity;
+                var cartProductQuantity = this.users[shopperIndex].cart[cartProductIndex].quantity;
+                var cartProductPrice = store.products[productIndex].productPrice;
+                var cartProductName = store.products[productIndex].productName;
+                this.users[shopperIndex].cart[cartProductIndex].totalPrice = cartProductQuantity * cartProductPrice;
+                this.users[shopperIndex].cart[cartProductIndex].productName = cartProductName;
             }
-            var cartProductQuantity = this.users[shopperIndex].cart[cartProductIndex].quantity;
-            var cartProductPrice = store.products[productIndex].productPrice;
-            var cartProductName = store.products[productIndex].productName;
-            this.users[shopperIndex].cart[cartProductIndex].totalPrice = cartProductQuantity * cartProductPrice;
-            this.users[shopperIndex].cart[cartProductIndex].productName = cartProductName;
             fs.writeFileSync(storeJsonPath, JSON.stringify(store));
             this.updateUsersJson();
             return this.users[shopperIndex].cart;

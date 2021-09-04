@@ -38,19 +38,16 @@ var updateProductAncestor = document.querySelector('.products');
 updateProductAncestor.addEventListener('click', function (ev) { return updateProduct(ev); });
 function updateProduct(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var productDiv, productUuid, productNameElement, productName, mathSign, putProductQuantity, productQuantity, productQuantityElement, error_1;
+        var productDiv, productUuid, putProductQuantity, productQuantity, productQuantityElement, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    if ((ev.target.className !== 'product-buttons__item product-buttons__item--edit fas fa-edit'))
+                    if ((ev.target.getAttribute('id') !== 'edit-on-store'))
                         return [2 /*return*/];
                     productDiv = ev.target.parentElement.parentElement;
                     productUuid = productDiv.getAttribute('id');
-                    productNameElement = productDiv.querySelector('.product__item--name');
-                    productName = productNameElement.innerText;
-                    mathSign = ev.target.innerText;
-                    return [4 /*yield*/, axios.put('/user/cart', { productUuid: productUuid, productName: productName, mathSign: mathSign })];
+                    return [4 /*yield*/, axios.put('/store/cart', { productUuid: productUuid, productName: productName, mathSign: mathSign })];
                 case 1:
                     putProductQuantity = _a.sent();
                     productQuantity = putProductQuantity.data.productQuantity;
@@ -67,25 +64,12 @@ function updateProduct(ev) {
         });
     });
 }
-function addToCart(productUuid, productName) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            try {
-                console.log('hi2');
-            }
-            catch (error) {
-                console.error(error.message);
-            }
-            return [2 /*return*/];
-        });
-    });
-}
 var readURL = function (input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
-        reader.onload = function (e) {
-            document.querySelector('#productImg').setAttribute("src", "" + e.target.result);
-            return e.target.result;
+        reader.onload = function (ev) {
+            document.querySelector('#productImg').setAttribute("src", "" + ev.target.result);
+            return ev.target.result;
         };
         reader.readAsDataURL(input.files[0]);
     }

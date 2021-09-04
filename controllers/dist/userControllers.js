@@ -42,13 +42,13 @@ function login(req, res) {
         var adminLoginForm = req.body.adminLoginForm;
         var userIndex = req.userIndex, role = req.role;
         var users = new Users();
-        var _a = users.users[userIndex], username = _a.username, userUuid = _a.userUuid, storeUuid = _a.storeUuid;
+        var _a = users.users[userIndex], username = _a.username, userUuid = _a.userUuid, stores = _a.stores;
         var roleText = (role === 'admin') ? 'n admin' : ' shopper';
         if (((!adminLoginForm) && (role === 'shopper')) || // check shopper uses shopper-login
             ((adminLoginForm) && (role === 'admin'))) { // and admin uses admin-login
             var currentUserToken = jwt.sign({ userUuid: userUuid }, secret, { expiresIn: 1800 });
             res.cookie('currentUser', currentUserToken, { maxAge: 1800000, httpOnly: true });
-            res.send({ title: "Welcome back, " + username + "!", text: "Enjoy your visit!", storeUuid: storeUuid, isLoggedIn: true });
+            res.send({ title: "Welcome back, " + username + "!", text: "Enjoy your visit!", storeUuid: stores[0], isLoggedIn: true });
         }
         else
             res.send({ title: username + ", you are not a" + roleText + "!", text: "Please use the right login form!", isLoggedIn: false });

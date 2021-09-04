@@ -34,6 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var whichHtmlFile = window.location.pathname;
 function getUserDetails() {
     return __awaiter(this, void 0, void 0, function () {
         var userDetails, _a, user, isAdmin, isCartEmpty, error_1;
@@ -46,11 +47,11 @@ function getUserDetails() {
                     userDetails = _b.sent();
                     _a = userDetails.data, user = _a.user, isAdmin = _a.isAdmin;
                     isCartEmpty = renderUserDetails(user, isAdmin);
-                    if ((!isAdmin) && (isCartEmpty === false)) {
+                    if ((!isAdmin) && (isCartEmpty === false) && (whichHtmlFile === '/store.html')) {
                         swal({
                             title: "You have items in your cart!",
                             text: "What do you wanna do?",
-                            buttons: ["More Shopping", 'Go to Cart']
+                            buttons: ['More Shopping', 'Go to Cart']
                         }).then(function (willGoToCart) {
                             if (willGoToCart)
                                 window.location.href = "./cart.html";
@@ -72,7 +73,7 @@ function renderUserDetails(user, isAdmin) {
     try {
         var usernameElement = document.querySelector('.header__item--username');
         usernameElement.innerText = "Logged in as " + user.username;
-        var additionalHeaderElementsHtml = void 0;
+        var additionalHeaderElementsHtml = '';
         var isCartEmpty = void 0;
         cartProductsToRender = user.cart;
         if (!isAdmin) {
@@ -80,30 +81,40 @@ function renderUserDetails(user, isAdmin) {
             isCartEmpty = shopperCart.isCartEmpty;
         }
         else {
-            additionalHeaderElementsHtml = "<div class=\"header__item header__item--add-product\" title=\"Add new product\">+</div>";
-            var headerTitleElement = document.querySelector('.header__item--h1');
-            headerTitleElement.insertAdjacentHTML("afterend", additionalHeaderElementsHtml);
+            var navBar = { store: { aOrDiv: 'a', href: " href=\"./store.html?storeUuid=" + user.stores[0] + "\"" } };
+            var addProductHtml = '';
+            if (whichHtmlFile === '/store.html') {
+                addProductHtml = "\n                <a href=\"#add-product-form\" class=\"header__item header__item--add-product\" title=\"Add new product\">\n                    <i class=\"fas fa-gift\"></i>+\n                </a>";
+                navBar.store.aOrDiv = 'div';
+                navBar.store.href = '';
+            }
+            additionalHeaderElementsHtml = "\n            <" + navBar.store.aOrDiv + navBar.store.href + " class=\"header__item header__item--store\">\n                <img src=\"./images/store.png\" title=\"Your store\" />\n            </" + navBar.store.aOrDiv + ">\n            " + addProductHtml;
         }
-        return isCartEmpty;
+        var headerTitleElement = document.querySelector('.header__item--h1');
+        headerTitleElement.insertAdjacentHTML("afterend", additionalHeaderElementsHtml);
     }
-    catch (error) {
-        console.error(error.message);
+    finally {
     }
+    return isCartEmpty;
+}
+try { }
+catch (error) {
+    console.error(error.message);
 }
 function renderShopperCart(cartProducts) {
     try {
         var inCartSum = cartProducts.reduce(function (previousValue, currentValue) { return previousValue + currentValue.quantity; }, 0);
         var isCartEmpty = (inCartSum > 0) ? false : true;
-        var whichHtmlFile = window.location.pathname;
         var navBar = {
             purchased: { aOrDiv: 'a', href: ' href="./purchased.html"' },
             cart: { aOrDiv: 'a', href: ' href="./cart.html"' },
-            stores: { aOrDiv: 'a', href: ' href="./stores.html"' }
+            storesList: { aOrDiv: 'a', href: ' href="./stores.html"' },
+            mall: { aOrDiv: 'a', href: ' href="./store.html?storeUuid=mall"' }
         };
         navBar.cart.innerHTML = (inCartSum > 0) ?
-            "<img id=\"cart\" src=\"./images/full-cart.png\" title=\"cart\" />\n        <div id=\"in-cart\">\n            " + inCartSum + "\n        </div>"
+            "<img id=\"cart\" src=\"./images/full-cart.png\" title=\"Cart\" />\n        <div id=\"in-cart\">\n            " + inCartSum + "\n        </div>"
             :
-                "<img id=\"cart\" src=\"./images/empty-cart.png\" title=\"cart\" />";
+                "<img id=\"cart\" src=\"./images/empty-cart.png\" title=\"Cart\" />";
         switch (whichHtmlFile) {
             case '/purchased.html':
                 navBar.purchased.aOrDiv = 'div';
@@ -114,12 +125,15 @@ function renderShopperCart(cartProducts) {
                 navBar.cart.href = '';
                 break;
             case '/stores.html':
-                navBar.stores.aOrDiv = 'div';
-                navBar.stores.href = '';
+                navBar.storesList.aOrDiv = 'div';
+                navBar.storesList.href = '';
+                break;
+            case '/store.html':
+                navBar.mall.aOrDiv = 'div';
+                navBar.mall.href = '';
                 break;
         }
-        var shopperHeaderElementsHtml = "<" + navBar.cart.aOrDiv + navBar.cart.href + " class=\"header__item header__item--cart\">\n            " + navBar.cart.innerHTML + "\n        </" + navBar.cart.aOrDiv + ">\n\n        <" + navBar.purchased.aOrDiv + navBar.purchased.href + " class=\"header__item header__item--history\">\n            <img src=\"./images/history-cart.png\" title=\"purchase history\" />\n        </" + navBar.purchased.aOrDiv + ">\n        \n        <" + navBar.stores.aOrDiv + navBar.stores.href + " class=\"header__item header__item--mall\">\n            <img src=\"./images/mall.png\" title=\"virtual mall\" />\n        </" + navBar.stores.aOrDiv + ">";
-        console.log(shopperHeaderElementsHtml);
+        var shopperHeaderElementsHtml = "<" + navBar.cart.aOrDiv + navBar.cart.href + " class=\"header__item header__item--cart\">\n            " + navBar.cart.innerHTML + "\n        </" + navBar.cart.aOrDiv + ">\n\n        <" + navBar.purchased.aOrDiv + navBar.purchased.href + " class=\"header__item header__item--history\">\n            <img src=\"./images/history-cart.png\" title=\"Purchase history\" />\n        </" + navBar.purchased.aOrDiv + ">\n        \n        <" + navBar.mall.aOrDiv + navBar.mall.href + " class=\"header__item header__item--mall\">\n            <img src=\"./images/mall.png\" title=\"Virtual mall\" />\n        </" + navBar.mall.aOrDiv + ">\n        \n        <" + navBar.storesList.aOrDiv + navBar.storesList.href + " class=\"header__item header__item--stores-list\">\n            <img src=\"./images/stores-list.png\" title=\"Stores list\" />\n        </" + navBar.storesList.aOrDiv + ">";
         var headerCartElement = document.querySelector('.header__item--cart');
         if (headerCartElement) {
             headerCartElement.innerHTML = "" + navBar.cart.innerHTML;

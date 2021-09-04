@@ -39,6 +39,19 @@ function getProduct() {
         return __generator(this, function (_a) {
             try {
                 console.log('hi you');
+            }
+            catch (error) {
+                console.error(error.message);
+            }
+            return [2 /*return*/];
+        });
+    });
+}
+function renderProduct() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            try {
+                console.log('hi you');
                 // on top - render `Welcome ${username}` + storeName
                 // SHOPPER
                 // on top - render cart logo        

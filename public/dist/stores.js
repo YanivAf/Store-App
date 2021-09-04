@@ -41,7 +41,7 @@ function renderStores() {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, axios.get('/store/all')];
+                    return [4 /*yield*/, axios.get('/store/list')];
                 case 1:
                     getStoresDetails = _b.sent();
                     _a = getStoresDetails.data, storeUuid = _a.storeUuid, storeName = _a.storeName;

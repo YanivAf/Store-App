@@ -1,6 +1,15 @@
 async function getProduct() {
     try {
         console.log('hi you');
+
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+async function renderProduct() {
+    try {
+        console.log('hi you');
         // on top - render `Welcome ${username}` + storeName
         // SHOPPER
         // on top - render cart logo        

@@ -15,7 +15,13 @@ exports.readStoreJson = function () {
     }
 };
 var Product = /** @class */ (function () {
-    function Product() {
+    function Product(productName, productDescription, productPrice, productImage, inStock) {
+        this.productUuid = uuidv4();
+        this.productName = productName;
+        this.productDescription = productDescription;
+        this.productPrice = productPrice;
+        this.productImage = productImage;
+        this.inStock = inStock;
     }
     return Product;
 }());
@@ -53,8 +59,12 @@ var Store = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Store.prototype.addProduct = function () {
+    Store.prototype.addProduct = function (productName, productDescription, productPrice, productImage, inStock, storeUuid) {
         try {
+            var product = new Product(productName, productDescription, productPrice, productImage, inStock);
+            product.storeUuid = this.storeUuid;
+            this.products.push(product);
+            this.updateStoreJson();
         }
         catch (error) {
             console.error(error.message);

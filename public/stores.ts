@@ -1,6 +1,6 @@
 async function renderStores() {
     try {
-        const getStoresDetails = await axios.get('/store/all');
+        const getStoresDetails = await axios.get('/store/list');
         const { storeUuid, storeName } = getStoresDetails.data;
 
         const storesElement: HTMLElement = document.querySelector('.stores');

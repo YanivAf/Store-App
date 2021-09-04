@@ -47,7 +47,7 @@ export function login(req, res) { // index.html
     const { userIndex, role } = req;
 
     const users = new Users();
-    const { username, userUuid, storeUuid } = users.users[userIndex];
+    const { username, userUuid, stores } = users.users[userIndex];
 
     const roleText: string = (role === 'admin') ? 'n admin' : ' shopper';
     
@@ -56,7 +56,7 @@ export function login(req, res) { // index.html
       const currentUserToken: any = jwt.sign({ userUuid }, secret, { expiresIn: 1800 });
 
       res.cookie('currentUser', currentUserToken, { maxAge: 1800000, httpOnly: true });
-      res.send({ title: `Welcome back, ${username}!`, text: `Enjoy your visit!`, storeUuid, isLoggedIn: true});
+      res.send({ title: `Welcome back, ${username}!`, text: `Enjoy your visit!`, storeUuid: stores[0], isLoggedIn: true});
     } else res.send({ title: `${username}, you are not a${roleText}!`, text: `Please use the right login form!`, isLoggedIn: false});
 
   } catch (error) {
@@ -103,7 +103,6 @@ export function updateQuantity(req, res) { // store.html + cart.html
     const { productUuid, productQuantity } = req.body;
     const users = new Users();
     const { userUuid } = req;
-
     const cartProducts: Array<CartProduct> = users.updateCartProductQuantity(userUuid, productUuid, productQuantity);
     const store = new Store();
 

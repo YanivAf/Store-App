@@ -1,32 +1,27 @@
 const updateQuantityAncestor: HTMLElement = document.querySelector('.products');
 
 updateQuantityAncestor.addEventListener('click', ev => updateQuantity(ev));
+updateQuantityAncestor.addEventListener('change', ev => updateQuantity(ev));
 
 async function updateQuantity(ev: any) {
   try {
-    if ((ev.target.getAttribute('id') !== 'add-to-cart') && (ev.target.className !== 'update-cart-qunatity') && (ev.target.className !== 'delete-from-cart')) return;
+    if (((ev.target.getAttribute('id') !== 'add-to-cart') && (!ev.target.classList.contains('update-cart-qunatity')) && (!ev.target.classList.contains('remove-from-cart')))
+   || ((ev.type === 'click') && (ev.target.classList.contains('update-cart-qunatity')))) return;
+
     let productQuantity: number;
-    switch (ev.target.getAttribute('id')) { // TODO add 0 (remove) or specific number (+) depending on ev.target.className (from product/cart page)
-      default:
-        const cartProductQuantityInput: HTMLElement = document.querySelector('#cart-qunatity');
-        productQuantity = cartProductQuantityInput.valueAsNumber;
-        break;
-
-      case 'add-to-cart':
-        productQuantity = 1;
-        break;
-      
-      case 'delete-from-cart':
-        productQuantity = 0;
-        break;
-
-    } 
+    if (ev.target.getAttribute('id') === 'add-to-cart') productQuantity = 1;
+    else if (ev.target.classList.contains('remove-from-cart')) productQuantity = 0;
+    else productQuantity = ev.target.valueAsNumber;
+    console.log(productQuantity, ev.type);
     const productDiv: HTMLElement = ev.target.parentElement.parentElement;
     const productUuid: string = productDiv.getAttribute('id');
+
     const updateCartProductQuantity = await axios.put('/user/cart', { productUuid, productQuantity });
     const { cartProducts, storeProducts } = updateCartProductQuantity.data;
+
     renderShopperCart(cartProducts);
-    renderStoreProducts(storeProducts, cartProducts, false);
+    if (ev.target.getAttribute('id') === 'add-to-cart') renderStoreProducts(storeProducts, cartProducts, false);
+    else renderCartProducts(storeProducts, cartProducts);
     
   } catch (error) {
       console.error(error.message);

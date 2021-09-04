@@ -96,7 +96,7 @@ function login(ev) {
                             icon: "success",
                             button: "Lets go"
                         })
-                            .then(function () { window.location.href = (adminLoginForm_1) ? "./store.html?storeUuid=" + storeUuid_2 : './stores.html'; });
+                            .then(function () { window.location.href = (adminLoginForm_1) ? "./store.html?storeUuid=" + storeUuid_2 : './store.html?storeUuid=mall'; });
                     }
                     else {
                         swal({
