@@ -1,6 +1,7 @@
 export {};
 
 const { Product, Store } = require('../../models/dist/storeModel');
+const { CartProduct, User, Users } = require('../../models/dist/usersModel');
 
 export const showStores = (req, res)=> {
   try {
@@ -31,8 +32,15 @@ export const showProducts = (req, res)=> { // store.html
 
 export const showProduct = (req, res)=> { // product.html
   try {
+    const { isAdmin, userIndex, cartProductIndex, productIndex } = req;
 
-    // res.send({ showProduct:true });
+    const store = new Store();
+    const users = new Users();
+
+    const storeProduct: Product = store.products[productIndex];
+    const cartProduct: CartProduct = ((isAdmin) || (cartProductIndex)) ? undefined : users.users[userIndex].cart[cartProductIndex];
+
+    res.send({ storeProduct, cartProduct, isAdmin });
 
   } catch (error) {
     console.error(error);

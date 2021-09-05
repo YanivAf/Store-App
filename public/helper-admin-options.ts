@@ -1,17 +1,9 @@
-const updateProductAncestor: HTMLElement = document.querySelector('.products');
+const updateProductAncestor: HTMLElement = document.querySelector('.product');
 
-updateProductAncestor.addEventListener('click', ev => updateProduct(ev));
+updateProductAncestor.addEventListener('submit', ev => updateProduct(ev));
 
 async function updateProduct(ev: any) {
   try {
-    if ((ev.target.getAttribute('id') !== 'edit-on-store')) return;
-    const productDiv: HTMLElement = ev.target.parentElement.parentElement;
-    const productUuid: string = productDiv.getAttribute('id');
-    const putProductQuantity = await axios.put('/store/cart', { productUuid, productName, mathSign });
-    const { productQuantity } = putProductQuantity.data;
-    const productQuantityElement: HTMLElement = productDiv.querySelector(('.product-buttons__item--cart-quantity'));
-    productQuantityElement.innerText = productQuantity;
-    renderStore(false);
     
   } catch (error) {
       console.error(error.message);

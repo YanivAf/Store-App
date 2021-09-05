@@ -60,18 +60,30 @@ function getStore() {
 function renderCartProducts(products, cartProducts) {
     try {
         var productsElement = document.querySelector('.products');
+        var payBtn = document.querySelector('#pay');
         var cartProductsHtml = void 0;
         var AreThereProducts = (cartProducts.length > 0) ? true : false;
-        cartProductsHtml = (!AreThereProducts) ? '<p>Your cart is empty... <a href="./store.html?storeUuid=mall">Click here</a> to do some shopping!</p>'
-            :
-                "<div class=\"products__item products__item--headers\">\n            <h4>Remove</h4>\n            <h4>Product Image</h4>\n            <h4>Product Name</h4>\n            <h4>Left in Stock</h4>\n            <h4>Total Price</h4>\n            <h4>Quantity</h4>\n        </div>" +
-                    cartProducts.map(function (cartProduct) {
-                        var productIndex = products.findIndex(function (product) { return product.productUuid === cartProduct.productUuid; });
-                        var inStockText = products[productIndex].inStock + " left";
-                        var inStockColor = (products[productIndex].inStock > 5) ? 'green' : 'orange';
-                        var cartProductHtml = "\n            <div class=\"products__item product-row\" id=\"" + cartProduct.productUuid + "\">\n                <div class=\"product-row__item product-row__item--remove\">\n                    <i class=\"fas fa-trash remove-from-cart\" title=\"Remove " + cartProduct.productName + " from cart\"></i>\n                </div>\n                <a href=\"./product.html?productUuid=" + cartProduct.productUuid + "\" class=\"product-row__item product-row__item--img\">\n                    <img src=\"" + products[productIndex].productImage + "\" title=\"" + cartProduct.productName + "\"/>\n                </a>\n                <a href=\"./product.html?productUuid=" + cartProduct.productUuid + "\" class=\"product-row__item product-row__item--name\">\n                    <h3>" + cartProduct.productName + "</h3>\n                </a>\n                <div class=\"product-row__item product-row__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                <h4 class=\"product-row__item product-row__item--total\">" + (Math.round(cartProduct.totalPrice * 100) / 100).toFixed(2) + "$</h4>\n                <div class=\"product-row__item product-row__item--quantity\">\n                    <input type=\"number\" class=\"update-cart-qunatity\" min=\"0\" max=\"" + (cartProduct.quantity + products[productIndex].inStock) + "\" value=\"" + cartProduct.quantity + "\" />\n                </div>\n            </div>";
-                        return cartProductHtml;
-                    }).join('');
+        var totalCartPrice_1 = 0;
+        var totalQuantity_1 = 0;
+        if (!AreThereProducts) {
+            cartProductsHtml = '<p>Your cart is empty... <a href="./store.html?storeUuid=mall">Click here</a> to do some shopping!</p>';
+            payBtn.classList.add('hide');
+        }
+        else {
+            var headersHtml = "\n            <div class=\"products__item products__item--headers\">\n                <h4>Remove</h4>\n                <h4>Product Image</h4>\n                <h4>Product Name</h4>\n                <h4>Left in Stock</h4>\n                <h4>Total Price</h4>\n                <h4>Quantity</h4>\n            </div>";
+            var productsHtml = cartProducts.map(function (cartProduct) {
+                var productIndex = products.findIndex(function (product) { return product.productUuid === cartProduct.productUuid; });
+                var inStockText = products[productIndex].inStock + " left";
+                var inStockColor = (products[productIndex].inStock > 5) ? 'green' : 'orange';
+                totalCartPrice_1 += cartProduct.totalPrice;
+                totalQuantity_1 += cartProduct.quantity;
+                var cartProductHtml = "\n                <div class=\"products__item product-row\" id=\"" + cartProduct.productUuid + "\">\n                    <div class=\"product-row__item product-row__item--remove\">\n                        <i class=\"fas fa-trash remove-from-cart\" title=\"Remove " + cartProduct.productName + " from cart\"></i>\n                    </div>\n                    <a href=\"./product.html?productUuid=" + cartProduct.productUuid + "\" class=\"product-row__item product-row__item--img\">\n                        <img src=\"" + products[productIndex].productImage + "\" title=\"" + cartProduct.productName + "\"/>\n                    </a>\n                    <a href=\"./product.html?productUuid=" + cartProduct.productUuid + "\" class=\"product-row__item product-row__item--name\">\n                        <h3>" + cartProduct.productName + "</h3>\n                    </a>\n                    <div class=\"product-row__item product-row__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                    <h4 class=\"product-row__item product-row__item--total\">" + (Math.round(cartProduct.totalPrice * 100) / 100).toFixed(2) + "$</h4>\n                    <div class=\"product-row__item product-row__item--quantity\">\n                        <input type=\"number\" class=\"update-cart-qunatity\" min=\"0\" max=\"" + (cartProduct.quantity + products[productIndex].inStock) + "\" value=\"" + cartProduct.quantity + "\" />\n                    </div>\n                </div>";
+                return cartProductHtml;
+            }).join('');
+            var totalHtml = "\n            <div class=\"products__item product-row total\">\n                <h3>Total:</h3>\n                <h3 class=\"product-row__item product-row__item--total\">" + (Math.round(totalCartPrice_1 * 100) / 100).toFixed(2) + "$</h3>\n                <div class=\"product-row__item product-row__item--quantity\">\n                    <h3>" + totalQuantity_1 + "</h3>\n                </div>\n            </div>";
+            cartProductsHtml = headersHtml + productsHtml + totalHtml;
+            payBtn.classList.remove('hide');
+        }
         productsElement.innerHTML = cartProductsHtml;
     }
     catch (error) {
@@ -79,5 +91,3 @@ function renderCartProducts(products, cartProducts) {
     }
 }
 getStore();
-// <i class="product-buttons__item product-buttons__item--delete fas fa-trash" id="delete-from-store" title="Delete ${product.productName}"></i>
-// <i class="product-buttons__item product-buttons__item--edit fas fa-edit" id="edit-on-store" title="Edit ${product.productName}"></i>

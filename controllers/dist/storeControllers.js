@@ -2,6 +2,7 @@
 exports.__esModule = true;
 exports.deleteProduct = exports.editProduct = exports.addProduct = exports.editStoreName = exports.showProduct = exports.showProducts = exports.showStores = void 0;
 var _a = require('../../models/dist/storeModel'), Product = _a.Product, Store = _a.Store;
+var _b = require('../../models/dist/usersModel'), CartProduct = _b.CartProduct, User = _b.User, Users = _b.Users;
 exports.showStores = function (req, res) {
     try {
         var store = new Store();
@@ -28,7 +29,12 @@ exports.showProducts = function (req, res) {
 };
 exports.showProduct = function (req, res) {
     try {
-        // res.send({ showProduct:true });
+        var isAdmin = req.isAdmin, userIndex = req.userIndex, cartProductIndex = req.cartProductIndex, productIndex = req.productIndex;
+        var store = new Store();
+        var users = new Users();
+        var storeProduct = store.products[productIndex];
+        var cartProduct = ((isAdmin) || (cartProductIndex)) ? undefined : users.users[userIndex].cart[cartProductIndex];
+        res.send({ storeProduct: storeProduct, cartProduct: cartProduct, isAdmin: isAdmin });
     }
     catch (error) {
         console.error(error);

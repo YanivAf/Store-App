@@ -214,12 +214,10 @@ export class Users {
         }
     }
 
-    emptyCart(shopperUuid: string/*, storeUuid: string*/) { // after payment.
+    emptyCart(userIndex: number/*, storeUuid: string*/) { // after payment.
         try {
-            const shopperIndex: number = this.findUserIndex(shopperUuid, null);
-
-            this.updatePurcased(shopperIndex/*, storeUuid*/); // storeUuid will be used when there is more than 1 store
-            this.users[shopperIndex].cart = [];
+            this.updatePurcased(userIndex/*, storeUuid*/); // storeUuid will be used when there is more than 1 store
+            this.users[userIndex].cart = [];
 
             this.updateUsersJson();
 

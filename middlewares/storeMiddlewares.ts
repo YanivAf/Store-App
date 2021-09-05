@@ -4,29 +4,12 @@ const { secret } = require('../../secret/dist/secret');
 const { Product, Store } = require("../../models/dist/storeModel");
 const { Users, User, CartProduct } = require("../../models/dist/usersModel");
 
-// export function doesStoreExist(req, res, next) {
-//     try {
-//         // some logic
-
-//         if (storeIndex === -1) res.status(404).send({ message: `Store doesn't exist. Apologies for the inconvenience.` });
-//         else {
-//             req.storeIndex = storeIndex;
-//             next();
-//         }
-//         return; 
-
-//     } catch (error) {
-//         console.error(error.message);
-//         res.status(500).send(error.message);    
-//     }
-// }
-
 export function doesProductExist(req, res, next) {
     try {
         const store = new Store();
         const users = new Users();
 
-        const { productUuid } = req.body;
+        const productUuid: string = (!req.params.productUuid) ? req.body.productUuid : req.params.productUuid;
         const userIndex: number = req.userIndex;
         const productIndex: number = store.findProductIndex(productUuid);
         const cartProductIndex: number = users.findCartProduct(userIndex, productUuid);
@@ -71,3 +54,20 @@ export function enoughInStock(req, res, next) {
     }
 }
 
+
+// export function doesStoreExist(req, res, next) {
+//     try {
+//         // some logic
+
+//         if (storeIndex === -1) res.status(404).send({ message: `Store doesn't exist. Apologies for the inconvenience.` });
+//         else {
+//             req.storeIndex = storeIndex;
+//             next();
+//         }
+//         return; 
+
+//     } catch (error) {
+//         console.error(error.message);
+//         res.status(500).send(error.message);    
+//     }
+// }

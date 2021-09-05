@@ -84,7 +84,7 @@ function renderUserDetails(user, isAdmin) {
             var navBar = { store: { aOrDiv: 'a', href: " href=\"./store.html?storeUuid=" + user.stores[0] + "\"" } };
             var addProductHtml = '';
             if (whichHtmlFile === '/store.html') {
-                addProductHtml = "\n                <a href=\"#add-product-form\" class=\"header__item header__item--add-product\" title=\"Add new product\">\n                    <i class=\"fas fa-gift\"></i>+\n                </a>";
+                addProductHtml = "\n                <a href=\"#add-product-form\" class=\"header__item header__item--add-product\" title=\"Add new product\">\n                    <img src=\"./images/add-product.png\" title=\"Add new product\" />\n                </a>";
                 navBar.store.aOrDiv = 'div';
                 navBar.store.href = '';
             }

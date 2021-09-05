@@ -24,7 +24,7 @@ function renderStore(store: any, isAdmin: boolean) {
         pageTitle.innerText= storeName;
         
         renderStoreProducts(products, cartProductsToRender, isAdmin);
-        if (isAdmin) renderAddProductForm();
+        if (isAdmin) renderProductForm();
 
     } catch (error) {
         console.error(error.message);
@@ -69,7 +69,7 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
                 <a href="./product.html?productUuid=${product.productUuid}" class="product__item product__item--img">
                     <img src="${product.productImage}" title="${product.productName}"/>
                 </a>
-                <a href="./product.html?productUuid=${product.productUuid}" title="${product.productDescription}" class="product__item product__item--description">${product.productDescription}</a>
+                <a href="./product.html?productUuid=${product.productUuid}" title="Click for full description" class="product__item product__item--description">${product.productDescription}</a>
                 <h4 class="product__item product__item--price">${(Math.round(product.productPrice * 100) / 100).toFixed(2)}$</h4>
                 <div class="product__item product__item--stock" style="color:${inStockColor}">${inStockText}</div>
                 <div class="product__item product-buttons">${buttonsByRole}</div>
@@ -85,7 +85,7 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
     }
 }
 
-function renderAddProductForm() {
+function renderProductForm() {
     const productsElement: HTMLElement = document.querySelector('.products');
     const formHTML: string = `
     <form class="main__item main__item--add-product-form product-large" id="add-product-form">

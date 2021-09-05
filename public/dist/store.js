@@ -67,7 +67,7 @@ function renderStore(store, isAdmin) {
         pageTitle.innerText = storeName;
         renderStoreProducts(products, cartProductsToRender, isAdmin);
         if (isAdmin)
-            renderAddProductForm();
+            renderProductForm();
     }
     catch (error) {
         console.error(error.message);
@@ -104,7 +104,7 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
                     }
                     var productHtml = ((!isAdmin) && (!isInStock)) ? ''
                         :
-                            "<div class=\"products__item product\" id=\"" + product.productUuid + "\">\n                <h3 class=\"product__item product__item--name\">" + product.productName + "</h3>\n                <a href=\"./product.html?productUuid=" + product.productUuid + "\" class=\"product__item product__item--img\">\n                    <img src=\"" + product.productImage + "\" title=\"" + product.productName + "\"/>\n                </a>\n                <a href=\"./product.html?productUuid=" + product.productUuid + "\" title=\"" + product.productDescription + "\" class=\"product__item product__item--description\">" + product.productDescription + "</a>\n                <h4 class=\"product__item product__item--price\">" + (Math.round(product.productPrice * 100) / 100).toFixed(2) + "$</h4>\n                <div class=\"product__item product__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                <div class=\"product__item product-buttons\">" + buttonsByRole + "</div>\n                \n            </div>";
+                            "<div class=\"products__item product\" id=\"" + product.productUuid + "\">\n                <h3 class=\"product__item product__item--name\">" + product.productName + "</h3>\n                <a href=\"./product.html?productUuid=" + product.productUuid + "\" class=\"product__item product__item--img\">\n                    <img src=\"" + product.productImage + "\" title=\"" + product.productName + "\"/>\n                </a>\n                <a href=\"./product.html?productUuid=" + product.productUuid + "\" title=\"Click for full description\" class=\"product__item product__item--description\">" + product.productDescription + "</a>\n                <h4 class=\"product__item product__item--price\">" + (Math.round(product.productPrice * 100) / 100).toFixed(2) + "$</h4>\n                <div class=\"product__item product__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                <div class=\"product__item product-buttons\">" + buttonsByRole + "</div>\n                \n            </div>";
                     return productHtml;
                 }).join('');
         productsElement.innerHTML = productsHtml;
@@ -113,7 +113,7 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
         console.error(error.message);
     }
 }
-function renderAddProductForm() {
+function renderProductForm() {
     var productsElement = document.querySelector('.products');
     var formHTML = "\n    <form class=\"main__item main__item--add-product-form product-large\" id=\"add-product-form\">\n        <h3 class=\"product-large__item product-large__item--title\" >Add a new product</h3>\n        <input class=\"product-large__item product-large__item--name\" type=\"text\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" />\n        <div class=\"product-large__item product-large__item--img\">\n            <img id=\"productImg\" src=\"./images/cart-wp.png\">\n            <input class=\"product-large__item product-large__item--img\" type=\"file\" name=\"image\" onchange=\"readURL(this)\" />\n        </div>\n        <textarea class=\"product-large__item product-large__item--description\" minLength=\"10\" maxLength=\"500\" placeholder=\"Product Description\"></textarea>\n        <input class=\"product-large__item product-large__item--price\" type=\"number\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" />\n        <input class=\"product-large__item product-large__item--in-stock\" type=\"number\" min=\"0\" max=\"500\" placeholder=\"In Stock\" />\n        <input class=\"product-large__item product-large__item--submit\" type=\"submit\" value=\"Add\" />\n    </form>";
     productsElement.insertAdjacentHTML('afterend', formHTML);

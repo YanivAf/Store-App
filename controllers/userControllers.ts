@@ -134,10 +134,9 @@ export function deleteFromCart(req, res) { // cart.html
 export function purchaseCart(req, res) { // cart.html
   try {
     const users = new Users();
-    const { userUuid } = req.userUuid;
+    const { userIndex } = req;
 
-    users.emptyCart(userUuid);
-
+    users.emptyCart(userIndex);
 
     res.send({ title: `Cart purchase completed`, purchaseCart: true});
 

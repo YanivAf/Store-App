@@ -77,8 +77,10 @@ var Store = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Store.prototype.deleteProduct = function () {
+    Store.prototype.deleteProduct = function (productUuid) {
         try {
+            this.products = this.products.filter(function (product) { return product.productUuid !== productUuid; });
+            this.updateStoreJson();
         }
         catch (error) {
             console.error(error.message);

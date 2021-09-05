@@ -118,8 +118,8 @@ exports.deleteFromCart = deleteFromCart;
 function purchaseCart(req, res) {
     try {
         var users = new Users();
-        var userUuid = req.userUuid.userUuid;
-        users.emptyCart(userUuid);
+        var userIndex = req.userIndex;
+        users.emptyCart(userIndex);
         res.send({ title: "Cart purchase completed", purchaseCart: true });
     }
     catch (error) {

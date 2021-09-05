@@ -113,22 +113,18 @@ a {
 
         &--add-product {
             grid-area: item2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-            text-decoration: none;
-            margin-top: 10px;
-            font-size: clamp(6px, 4vw, 16px);
             width: clamp(20px, 4vw, 40px);
             height: clamp(20px, 4vw, 40px);
-            border-radius: 200px;
-            background-color: green;
-            
-            &:hover {
-                color: white;
+
+            img {
                 background-color: lightgreen;
+                padding: 1vw;
+                border-radius: 50px;
+                width: clamp(80%, 4vw, 100%);;
+
+                &:hover {
+                    background-color: var(--hover-bg-color);
+                }
             }
         }
 
@@ -309,16 +305,28 @@ a {
             box-shadow: inset 0 -10px 10px -10px var(--main-bg-color),
             inset 0 10px 10px -10px var(--main-bg-color);
         }
+
+        &--pay {
+            width: 20vw;
+            margin: 20px auto;
+            padding: 10px 0;
+        }
+
+        &--add-product-form {
+            background-color: lightgreen;
+        }
     }
 
     .product-large {
-        margin: 10vh auto;
+        margin: 20px auto;
         padding: 15px;
         border-radius: 10px;
-        height: 50vw;
-        width: 50vw;
-        min-height: 290px;
-        min-width: 290px;
+        height: 60vw;
+        width: 60vw;
+        min-height: 270px;
+        min-width: 270px;
+        max-height: 470px;
+        max-width: 470px;
         background-color: white;
         display: grid;
         align-items: center;
@@ -390,9 +398,10 @@ a {
         &--headers {
             padding: 15px 0;
             background-color: var(--links-color);
+            color: white;
             display: flex;
             word-wrap: normal;
-            font-size: clamp(10px, 4vw, 16px);
+            font-size: clamp(8px, 3vw, 16px);
             justify-content: space-between;
             width: 90vw;
 
@@ -478,7 +487,6 @@ a {
                         color: green;
                     }
                 }
-
             }
         }
     }
@@ -544,9 +552,22 @@ a {
                 grid-area: quantity;
 
                 input {
+                    font-size: clamp(8px, 2vw, 16px);
                     width: 7.5vw;
                 }
             }
+        }
+    }
+
+    .total {
+        padding: 0;
+        height: 5vw;
+        background-color: var(--links-color);
+        color: white;
+        word-wrap: normal;
+
+        h3 {
+            margin: 0;
         }
     }
 }

@@ -14,8 +14,7 @@ router
     .post('/login', doesUserExist, validatePassword, login)
     .get('/logout', isLoggedInAndAuthenticated, doesUserExist, logout)
     .get('/details', isLoggedInAndAuthenticated, doesUserExist, isAdmin, details)
-    .put('/cart', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, doesProductExist, enoughInStock, updateQuantity) // only add to cart if exists + in stock
-    .delete('/cart', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, deleteFromCart)
+    .put('/cart', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, doesProductExist, enoughInStock, updateQuantity)
     .put('/cart/purchase', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, purchaseCart);
 
 module.exports = router;

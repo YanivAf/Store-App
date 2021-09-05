@@ -45,7 +45,7 @@ function renderUserDetails(user: any, isAdmin: boolean) {
             if (whichHtmlFile === '/store.html') {
                 addProductHtml = `
                 <a href="#add-product-form" class="header__item header__item--add-product" title="Add new product">
-                    <i class="fas fa-gift"></i>+
+                    <img src="./images/add-product.png" title="Add new product" />
                 </a>`;
                 navBar.store.aOrDiv = 'div';
                 navBar.store.href = '';

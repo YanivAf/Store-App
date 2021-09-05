@@ -179,11 +179,10 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Users.prototype.emptyCart = function (shopperUuid /*, storeUuid: string*/) {
+    Users.prototype.emptyCart = function (userIndex /*, storeUuid: string*/) {
         try {
-            var shopperIndex = this.findUserIndex(shopperUuid, null);
-            this.updatePurcased(shopperIndex /*, storeUuid*/); // storeUuid will be used when there is more than 1 store
-            this.users[shopperIndex].cart = [];
+            this.updatePurcased(userIndex /*, storeUuid*/); // storeUuid will be used when there is more than 1 store
+            this.users[userIndex].cart = [];
             this.updateUsersJson();
         }
         catch (error) {

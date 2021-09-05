@@ -39,26 +39,41 @@ updateQuantityAncestor.addEventListener('click', function (ev) { return updateQu
 updateQuantityAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
 function updateQuantity(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var productQuantity, productDiv, productUuid, updateCartProductQuantity, _a, cartProducts, storeProducts, error_1;
+        var productQuantity, cancelDelete, productDiv, productUuid, updateCartProductQuantity, _a, cartProducts, storeProducts, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 2, , 3]);
+                    _b.trys.push([0, 6, , 7]);
                     if (((ev.target.getAttribute('id') !== 'add-to-cart') && (!ev.target.classList.contains('update-cart-qunatity')) && (!ev.target.classList.contains('remove-from-cart')))
                         || ((ev.type === 'click') && (ev.target.classList.contains('update-cart-qunatity'))))
                         return [2 /*return*/];
                     productQuantity = void 0;
-                    if (ev.target.getAttribute('id') === 'add-to-cart')
-                        productQuantity = 1;
-                    else if (ev.target.classList.contains('remove-from-cart'))
-                        productQuantity = 0;
-                    else
-                        productQuantity = ev.target.valueAsNumber;
-                    console.log(productQuantity, ev.type);
+                    if (!(ev.target.getAttribute('id') === 'add-to-cart')) return [3 /*break*/, 1];
+                    productQuantity = 1;
+                    return [3 /*break*/, 4];
+                case 1:
+                    if (!ev.target.classList.contains('remove-from-cart')) return [3 /*break*/, 3];
+                    return [4 /*yield*/, swal({
+                            title: "Remove from Cart",
+                            text: "Are you sure?",
+                            icon: "warning",
+                            dangerMode: true,
+                            buttons: ['Nope', 'Yup']
+                        })];
+                case 2:
+                    cancelDelete = _b.sent();
+                    if (!cancelDelete)
+                        return [2 /*return*/];
+                    productQuantity = 0;
+                    return [3 /*break*/, 4];
+                case 3:
+                    productQuantity = ev.target.valueAsNumber;
+                    _b.label = 4;
+                case 4:
                     productDiv = ev.target.parentElement.parentElement;
                     productUuid = productDiv.getAttribute('id');
                     return [4 /*yield*/, axios.put('/user/cart', { productUuid: productUuid, productQuantity: productQuantity })];
-                case 1:
+                case 5:
                     updateCartProductQuantity = _b.sent();
                     _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts;
                     renderShopperCart(cartProducts);
@@ -66,10 +81,64 @@ function updateQuantity(ev) {
                         renderStoreProducts(storeProducts, cartProducts, false);
                     else
                         renderCartProducts(storeProducts, cartProducts);
-                    return [3 /*break*/, 3];
-                case 2:
+                    return [3 /*break*/, 7];
+                case 6:
                     error_1 = _b.sent();
                     console.error(error_1.message);
+                    return [3 /*break*/, 7];
+                case 7: return [2 /*return*/];
+            }
+        });
+    });
+}
+var whichHtmlFile = window.location.pathname;
+if (whichHtmlFile === '/cart.html') {
+    var payBtn = document.querySelector('#pay');
+    payBtn.addEventListener('click', function (ev) { return purchaseCart(ev); });
+}
+function purchaseCart(ev) {
+    return __awaiter(this, void 0, void 0, function () {
+        var error_2;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, swal({
+                            title: "Paying for Cart",
+                            text: "Do you wish to proceed?",
+                            icon: "warning",
+                            buttons: ['Nope', 'Yup']
+                        }).then(function (willPurchase) { return __awaiter(_this, void 0, void 0, function () {
+                            var updateCartProductQuantity;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        if (!willPurchase) return [3 /*break*/, 3];
+                                        return [4 /*yield*/, axios.put('/user/cart/purchase')];
+                                    case 1:
+                                        updateCartProductQuantity = _a.sent();
+                                        return [4 /*yield*/, swal({
+                                                title: "Congrats!",
+                                                text: "You've completed the purchase",
+                                                icon: "success",
+                                                button: 'Cool'
+                                            }).then(function () {
+                                                window.location.href = './store.html?storeUuid=mall';
+                                            })];
+                                    case 2:
+                                        _a.sent();
+                                        _a.label = 3;
+                                    case 3: return [2 /*return*/];
+                                }
+                            });
+                        }); })];
+                case 1:
+                    _a.sent();
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_2 = _a.sent();
+                    console.error(error_2.message);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }

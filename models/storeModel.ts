@@ -99,8 +99,11 @@ export class Store {
         }
     }
 
-    deleteProduct() {
+    deleteProduct(productUuid: string) {
         try {
+            this.products = this.products.filter(product => product.productUuid !== productUuid);
+
+            this.updateStoreJson();
 
         } catch (error) {
             console.error(error.message);
