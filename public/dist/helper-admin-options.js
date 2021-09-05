@@ -49,7 +49,7 @@ else if (whichHtmlFile === '/store.html') {
 }
 function updateProduct(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, productName, productDescription, productPrice, productImage, productInStock, productUuid, error_1;
+        var _a, productName, productDescription, productPrice, productInStock, imageInput, productImage, productUuid, error_1;
         var _this = this;
         return __generator(this, function (_b) {
             switch (_b.label) {
@@ -58,14 +58,16 @@ function updateProduct(ev) {
                     console.log(productUuidParams);
                     console.log(typeof ev.target);
                     ev.target.preventDefault();
-                    _a = ev.target.elements, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
+                    _a = ev.target.elements, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productInStock = _a.productInStock;
                     productName = productName.value;
                     productDescription = productDescription.value;
                     productPrice = productPrice.value;
-                    productImage = productImage.value;
                     productInStock = productInStock.value;
+                    imageInput = document.querySelector('#product-image');
+                    productImage = imageInput.files[0];
                     productUuid = productUuidParams;
-                    return [2 /*return*/];
+                    ev.target.reset();
+                    return [4 /*yield*/, axios.put("/store/product/" + productUuid, { storeUuid: storeUuid, productUuid: productUuid, productName: productName, productDescription: productDescription, productPrice: productPrice, productImage: productImage, productInStock: productInStock })];
                 case 1:
                     _b.sent();
                     swal({
@@ -89,20 +91,22 @@ function updateProduct(ev) {
 }
 function addProduct(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, productName, productDescription, productPrice, productImage, productInStock, addProductToStore, store, error_2;
+        var _a, productName, productDescription, productPrice, productInStock, imageInput, productImage, productUuid, addProductToStore, store, error_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
                     ev.target.preventDefault();
-                    _a = ev.target.elements, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
+                    _a = ev.target.elements, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productInStock = _a.productInStock;
                     productName = productName.value;
                     productDescription = productDescription.value;
                     productPrice = productPrice.valueAsNumber;
-                    productImage = productImage.value;
                     productInStock = productInStock.valueAsNumber;
+                    imageInput = document.querySelector('#product-image');
+                    productImage = imageInput.files[0];
+                    productUuid = productUuidParams;
                     ev.target.reset();
-                    return [4 /*yield*/, axios.post("/store/addProduct", { storeUuid: storeUuid, productName: productName, productDescription: productDescription, productPrice: productPrice, productImage: productImage, productInStock: productInStock })];
+                    return [4 /*yield*/, axios.post("/store/product/" + productUuid, { storeUuid: storeUuid, productName: productName, productDescription: productDescription, productPrice: productPrice, productImage: productImage, productInStock: productInStock })];
                 case 1:
                     addProductToStore = _b.sent();
                     store = addProductToStore.data.store;
@@ -127,7 +131,7 @@ var readURL = function (input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
         reader.onload = function (ev) {
-            document.querySelector('#productImg').setAttribute("src", "" + ev.target.result);
+            document.querySelector('#product-preview').setAttribute("src", "" + ev.target.result);
             return ev.target.result;
         };
         reader.readAsDataURL(input.files[0]);

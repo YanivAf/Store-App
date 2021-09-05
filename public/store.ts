@@ -92,8 +92,8 @@ function renderProductForm() {
         <h3 class="product-large__item product-large__item--title" >Add a new product</h3>
         <input class="product-large__item product-large__item--name" type="text" name="productName" minLength="2" maxLength="40" placeholder="Product Name" required />
         <div class="product-large__item product-large__item--img">
-            <img id="productImg" src="./images/cart-wp.png">
-            <input class="button" type="file" name="productImage" onchange="readURL(this)" />
+            <img id="product-preview" src="./images/cart-wp.png">
+            <input id="product-image" class="button" type="file" name="productImage" accept="image/*" onchange="readURL(this)" />
         </div>
         <textarea class="product-large__item product-large__item--description" name="productDescription" minLength="10" maxLength="300" placeholder="Product Description (10-300 characters)" required></textarea>
         <input class="product-large__item product-large__item--price" type="number" name="productPrice" min="0" max="5000" placeholder="Price ($)" step=".01" pattern="^\\d+(?:\\.\\d{1,2})?$" required />

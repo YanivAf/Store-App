@@ -1,11 +1,18 @@
 "use strict";
 exports.__esModule = true;
-exports.Store = exports.PurchasedCart = exports.Product = exports.readStoreJson = void 0;
+exports.Store = exports.PurchasedCart = exports.Product = exports.readStoreJson = exports.productImgStorage = void 0;
 var uuidv4 = require("uuid").v4;
+var multer = require('multer');
 var fs = require("fs");
 var path = require("path");
 var storeJsonPath = path.resolve(__dirname, "../store.json");
 var CartProduct = require('./usersModel').CartProduct;
+exports.productImgStorage = multer.diskStorage({
+    destination: "./public/images",
+    filename: function (req, file, cb) {
+        cb(null, file.originalname + "-" + Date.now() + path.extname(file.originalname));
+    }
+});
 exports.readStoreJson = function () {
     try {
         var store = fs.readFileSync(storeJsonPath);
@@ -22,7 +29,7 @@ var Product = /** @class */ (function () {
         this.productName = productName;
         this.productDescription = productDescription;
         this.productPrice = productPrice;
-        this.productImage = productImage;
+        this.productImage = "images/" + productImage;
         this.inStock = inStock;
     }
     return Product;
@@ -72,9 +79,9 @@ var Store = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Store.prototype.addProduct = function (productName, productDescription, productPrice, productImage, inStock, storeUuid) {
+    Store.prototype.addProduct = function (productName, productDescription, productPrice, filename, inStock, storeUuid) {
         try {
-            var product = new Product(undefined, this.storeUuid, productName, productDescription, productPrice, productImage, inStock);
+            var product = new Product(undefined, this.storeUuid, productName, productDescription, productPrice, filename, inStock);
             this.products.push(product);
             this.updateStoreJson();
         }
@@ -82,9 +89,9 @@ var Store = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Store.prototype.editProduct = function (productUuid, productName, productDescription, productPrice, productImage, inStock) {
+    Store.prototype.editProduct = function (productUuid, productName, productDescription, productPrice, filename, inStock) {
         try {
-            var product = new Product(productUuid, this.storeUuid, productName, productDescription, productPrice, productImage, inStock);
+            var product = new Product(productUuid, this.storeUuid, productName, productDescription, productPrice, filename, inStock);
             var productIndex = this.findProductIndex(productUuid);
             this.products[productIndex] = product;
             this.updateStoreJson();

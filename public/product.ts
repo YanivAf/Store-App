@@ -32,8 +32,9 @@ async function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boole
             <div class="product-large__item product-large__item--buttons product-buttons">${buttonsByRole}</div>
             <input class="product-large__item product-large__item--name" type="text" name="productName" minLength="2" maxLength="40" placeholder="Product Name" value="${storeProduct.productName}" required />
             <div class="product-large__item product-large__item--img">
-                <img id="productImg" src="${storeProduct.productImage}" title="${storeProduct.productName}">
-                <input class="button" type="file" name="productImage" onchange="readURL(this)" />
+                <img id="product-preview" src="${storeProduct.productImage}" title="${storeProduct.productName}">
+                <input id="product-image" class="button" type="file" name="productImage" accept="image/*" onchange="readURL(this)" />
+                <img id="product-preview" src="./images/cart-wp.png">
             </div>
             <textarea class="product-large__item product-large__item--description" name="productDescription" minLength="10" maxLength="300" placeholder="Product Description (10-300 characters)" required>${storeProduct.productDescription}</textarea>
             <div class="product-large__item product-large__item--price">

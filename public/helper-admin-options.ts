@@ -19,17 +19,18 @@ async function updateProduct(ev: any) {
     
     ev.target.preventDefault();
 
-    let { productName, productDescription, productPrice, productImage, productInStock } = ev.target.elements;
+    let { productName, productDescription, productPrice, productInStock } = ev.target.elements;
     productName = productName.value;
     productDescription = productDescription.value;
     productPrice = productPrice.value;
-    productImage = productImage.value;
     productInStock = productInStock.value;
+    const imageInput = document.querySelector('#product-image');
+    const productImage: any = imageInput.files[0];
     const productUuid = productUuidParams;
-    return;
+
     ev.target.reset();
 
-    await axios.put(`/store/product/${productUuidParams}`, { storeUuid, productUuid, productName, productDescription, productPrice, productImage, productInStock });
+    await axios.put(`/store/product/${productUuid}`, { storeUuid, productUuid, productName, productDescription, productPrice, productImage, productInStock });
 
     swal({
         title: 'Congrats!',
@@ -47,16 +48,18 @@ async function addProduct(ev) {
     try {
         ev.target.preventDefault();
 
-        let { productName, productDescription, productPrice, productImage, productInStock } = ev.target.elements;
+        let { productName, productDescription, productPrice, productInStock } = ev.target.elements;
         productName = productName.value;
         productDescription = productDescription.value;
         productPrice = productPrice.valueAsNumber;
-        productImage = productImage.value;
         productInStock = productInStock.valueAsNumber;
+        const imageInput = document.querySelector('#product-image');
+        const productImage: any = imageInput.files[0];
+        const productUuid = productUuidParams;
 
         ev.target.reset();
         
-        const addProductToStore = await axios.post(`/store/addProduct`, { storeUuid, productName, productDescription, productPrice, productImage, productInStock });
+        const addProductToStore = await axios.post(`/store/product/${productUuid}`, { storeUuid, productName, productDescription, productPrice, productImage, productInStock });
         const { store } = addProductToStore.data;
         
         swal({
@@ -78,7 +81,7 @@ const readURL = (input: any) => {
     let reader = new FileReader();
 
     reader.onload = (ev)=> {
-     document.querySelector('#productImg').setAttribute("src", `${ev.target.result}`);
+     document.querySelector('#product-preview').setAttribute("src", `${ev.target.result}`);
       return ev.target.result
     }
     reader.readAsDataURL(input.files[0]);

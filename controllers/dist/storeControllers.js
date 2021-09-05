@@ -54,7 +54,8 @@ exports.addProduct = function (req, res) {
     try {
         var _a = req.body, storeUuid = _a.storeUuid, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
         var store = new Store(); // storeUuid would be used if more than 1 store
-        store.addProduct(productName, productDescription, productPrice, productImage, productInStock);
+        var filename = req.file.filename;
+        store.addProduct(productName, productDescription, productPrice, filename, productInStock);
         res.send({ store: store });
     }
     catch (error) {
@@ -66,8 +67,8 @@ exports.editProduct = function (req, res) {
     try {
         var _a = req.body, storeUuid = _a.storeUuid, productUuid = _a.productUuid, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
         var store = new Store(); // storeUuid would be used if more than 1 store
-        console.log('hi');
-        store.editProduct(productUuid, productName, productDescription, productPrice, productImage, productInStock);
+        var filename = req.file.filename;
+        store.editProduct(productUuid, productName, productDescription, productPrice, filename, productInStock);
         res.send({ productUpdate: true });
     }
     catch (error) {

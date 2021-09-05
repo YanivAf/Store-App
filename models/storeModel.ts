@@ -1,11 +1,19 @@
 export {};
 
 const { v4: uuidv4 } = require("uuid");
+const multer = require('multer');
 const fs = require("fs");
 const path = require("path");
 const storeJsonPath = path.resolve(__dirname, "../store.json");
 
 const { CartProduct } = require('./usersModel');
+
+export const productImgStorage = multer.diskStorage({
+    destination: "./public/images",
+    filename: (req, file, cb) => {
+        cb(null, file.originalname + "-" + Date.now() + path.extname(file.originalname));
+    }
+});
 
 export const readStoreJson = () => {
     try {
@@ -22,8 +30,8 @@ export class Product {
     productName: string;
     productDescription: string;
     productPrice: number;
-    productImage: string; // upload file
-    inStock: number; // how many in stock
+    productImage: string; // uploaded file path
+    inStock: number;
 
     constructor (productUuid: string, storeUuid: string, productName: string, productDescription: string, productPrice: number, productImage: string, inStock: number) {
         this.productUuid = (productUuid) ? productUuid : uuidv4();
@@ -31,7 +39,7 @@ export class Product {
         this.productName = productName;
         this.productDescription = productDescription;
         this.productPrice = productPrice;
-        this.productImage = productImage;
+        this.productImage = `images/${productImage}`;
         this.inStock = inStock;
     }
 }
@@ -94,9 +102,9 @@ export class Store {
         }
     }
 
-    addProduct(productName: string, productDescription: string, productPrice: number, productImage: string, inStock: number, storeUuid: string) {
+    addProduct(productName: string, productDescription: string, productPrice: number, filename: string, inStock: number, storeUuid: string) {
         try {
-            const product = new Product(undefined, this.storeUuid, productName, productDescription, productPrice, productImage, inStock);
+            const product = new Product(undefined, this.storeUuid, productName, productDescription, productPrice, filename, inStock);
 
             this.products.push(product);
 
@@ -107,9 +115,9 @@ export class Store {
         }
     }
 
-    editProduct(productUuid: string, productName: string, productDescription: string, productPrice: number, productImage: string, inStock: number) {
+    editProduct(productUuid: string, productName: string, productDescription: string, productPrice: number, filename: string, inStock: number) {
         try {
-            const product = new Product(productUuid, this.storeUuid, productName, productDescription, productPrice, productImage, inStock);
+            const product = new Product(productUuid, this.storeUuid, productName, productDescription, productPrice, filename, inStock);
 
             const productIndex: number = this.findProductIndex(productUuid);
             
