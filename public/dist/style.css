@@ -377,6 +377,7 @@ a:hover {
 }
 .products .product__item--img img {
   max-height: 100%;
+  max-width: 100%;
 }
 .products .product__item--description {
   overflow: hidden;

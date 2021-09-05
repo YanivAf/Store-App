@@ -55,7 +55,7 @@ function welcome() {
                         if (isAdmin_1)
                             window.location.href = "./store.html?storeUuid=" + storeUuid_1;
                         else
-                            window.location.href = './stores.html';
+                            window.location.href = './store.html?storeUuid=mall';
                     });
                     return [3 /*break*/, 3];
                 case 2:
