@@ -1,6 +1,6 @@
 let updateQuantityAncestor: HTMLElement
 
-if (window.location.pathname === '/store.html') {
+if (whichHtmlFile === '/store.html') {
   updateQuantityAncestor = document.querySelector('.products');
   updateQuantityAncestor.addEventListener('click', ev => updateQuantity(ev));
   updateQuantityAncestor.addEventListener('change', ev => updateQuantity(ev));
@@ -31,22 +31,20 @@ async function updateQuantity(ev: any) {
     else productQuantity = ev.target.valueAsNumber;
 
     const productDiv: HTMLElement = ev.target.parentElement.parentElement;
-    const productUuid: string = (window.location.pathname === '/product.html') ? productUuidParams : productDiv.getAttribute('id') ;
+    const productUuid: string = (whichHtmlFile === '/product.html') ? productUuidParams : productDiv.getAttribute('id') ;
 
     const updateCartProductQuantity = await axios.put('/user/cart', { productUuid, productQuantity });
     const { cartProducts, storeProducts } = updateCartProductQuantity.data;
 
     await renderShopperCart(cartProducts);
-    if (ev.target.getAttribute('id') === 'add-to-cart') renderStoreProducts(storeProducts, cartProducts, false);
-    else if (window.location.pathname === '/product.html') getProduct();
-    else renderCartProducts(storeProducts, cartProducts);
+    if ((ev.target.getAttribute('id') === 'add-to-cart') && (whichHtmlFile === '/store.html')) renderStoreProducts(storeProducts, cartProducts, false);
+    else if (whichHtmlFile === '/product.html') getProduct();
+    else if  (whichHtmlFile === '/cart.html') renderCartProducts(storeProducts, cartProducts);
     
   } catch (error) {
       console.error(error.message);
   }
 }
-
-const whichHtmlFile: string = window.location.pathname;
 
 if (whichHtmlFile === '/cart.html') {
   const payBtn: HTMLButtonElement = document.querySelector('#pay');

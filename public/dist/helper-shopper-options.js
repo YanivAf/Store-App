@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var updateQuantityAncestor;
-if (window.location.pathname === '/store.html') {
+if (whichHtmlFile === '/store.html') {
     updateQuantityAncestor = document.querySelector('.products');
     updateQuantityAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
     updateQuantityAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
@@ -79,7 +79,7 @@ function updateQuantity(ev) {
                     _b.label = 4;
                 case 4:
                     productDiv = ev.target.parentElement.parentElement;
-                    productUuid = (window.location.pathname === '/product.html') ? productUuidParams : productDiv.getAttribute('id');
+                    productUuid = (whichHtmlFile === '/product.html') ? productUuidParams : productDiv.getAttribute('id');
                     return [4 /*yield*/, axios.put('/user/cart', { productUuid: productUuid, productQuantity: productQuantity })];
                 case 5:
                     updateCartProductQuantity = _b.sent();
@@ -87,11 +87,11 @@ function updateQuantity(ev) {
                     return [4 /*yield*/, renderShopperCart(cartProducts)];
                 case 6:
                     _b.sent();
-                    if (ev.target.getAttribute('id') === 'add-to-cart')
+                    if ((ev.target.getAttribute('id') === 'add-to-cart') && (whichHtmlFile === '/store.html'))
                         renderStoreProducts(storeProducts, cartProducts, false);
-                    else if (window.location.pathname === '/product.html')
+                    else if (whichHtmlFile === '/product.html')
                         getProduct();
-                    else
+                    else if (whichHtmlFile === '/cart.html')
                         renderCartProducts(storeProducts, cartProducts);
                     return [3 /*break*/, 8];
                 case 7:
@@ -103,7 +103,6 @@ function updateQuantity(ev) {
         });
     });
 }
-var whichHtmlFile = window.location.pathname;
 if (whichHtmlFile === '/cart.html') {
     var payBtn = document.querySelector('#pay');
     payBtn.addEventListener('click', function (ev) { return purchaseCart(ev); });

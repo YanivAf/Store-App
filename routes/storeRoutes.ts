@@ -14,7 +14,7 @@ router
     .get('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, doesProductExist, showProduct)
     .put('/', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, editStoreName)
     .put('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, editProduct)
-    .post('/product/', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, validateBody(productSchema), addProduct)
+    .post('/addProduct/', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, validateBody(productSchema), addProduct)
     .delete('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, deleteProduct);
 
 module.exports = router;

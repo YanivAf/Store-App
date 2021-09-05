@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var whichHtmlFile = window.location.pathname;
+var storeUuid;
 function getUserDetails() {
     return __awaiter(this, void 0, void 0, function () {
         var userDetails, _a, user, isAdmin, error_1;
@@ -46,6 +47,8 @@ function getUserDetails() {
                 case 1:
                     userDetails = _b.sent();
                     _a = userDetails.data, user = _a.user, isAdmin = _a.isAdmin;
+                    if (isAdmin)
+                        storeUuid = user.stores[0];
                     renderUserDetails(user, isAdmin);
                     return [3 /*break*/, 3];
                 case 2:
@@ -58,7 +61,7 @@ function getUserDetails() {
     });
 }
 getUserDetails();
-var isCartEmpty;
+var isCartEmpty = true;
 var cartProductsToRender;
 var purchasedProductsToRender;
 function renderUserDetails(user, isAdmin) {
@@ -73,7 +76,7 @@ function renderUserDetails(user, isAdmin) {
             isCartEmpty = (user.cart.length === 0) ? true : false;
         }
         else {
-            var navBar = { store: { aOrDiv: 'a', href: " href=\"./store.html?storeUuid=" + user.stores[0] + "\"" } };
+            var navBar = { store: { aOrDiv: 'a', href: " href=\"./store.html?storeUuid=" + storeUuid + "\"" } };
             var addProductHtml = '';
             if (whichHtmlFile === '/store.html') {
                 addProductHtml = "\n                <a href=\"#add-product-form\" class=\"header__item header__item--add-product\" title=\"Add new product\">\n                    <img src=\"./images/add-product.png\" title=\"Add new product\" />\n                </a>";
@@ -92,7 +95,6 @@ function renderUserDetails(user, isAdmin) {
 function renderShopperCart(cartProducts) {
     try {
         var inCartSum = cartProducts.reduce(function (previousValue, currentValue) { return previousValue + currentValue.quantity; }, 0);
-        var isCartEmpty_1 = (inCartSum > 0) ? false : true;
         var navBar = {
             purchased: { aOrDiv: 'a', href: ' href="./purchased.html"' },
             cart: { aOrDiv: 'a', href: ' href="./cart.html"' },
@@ -138,47 +140,63 @@ function renderShopperCart(cartProducts) {
 var logoutBtn = document.querySelector('#logout');
 logoutBtn.addEventListener('click', function (ev) { return logout(ev); });
 function logout(ev) {
-    var _this = this;
     try {
-        swal({
-            title: "You have items in your cart!",
-            text: "What do you wanna do?",
-            buttons: ['Logout anyway', 'Go to Cart']
-        }).then(function (willGoToCart) {
-            if (willGoToCart)
-                window.location.href = "./cart.html";
-            else {
-                swal({
-                    title: "Bye!",
-                    text: "Hope to see you again soon!",
-                    buttons: ["Mmm... Stay", "Byeee"],
-                    dangerMode: true
-                }).then(function (willLogout) { return __awaiter(_this, void 0, void 0, function () {
-                    var doLogout, username;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                if (!willLogout) return [3 /*break*/, 2];
-                                return [4 /*yield*/, axios.get('/user/logout')];
-                            case 1:
-                                doLogout = _a.sent();
-                                username = doLogout.data.username;
-                                swal(username + ", you are now logged out \uD83D\uDD90", {
-                                    icon: "success",
-                                    button: "🖐"
-                                }).then(function () { window.location.href = '/'; });
-                                _a.label = 2;
-                            case 2: return [2 /*return*/];
-                        }
-                    });
-                }); });
-            }
-        });
+        if (isCartEmpty === true) {
+            bye();
+        }
+        else {
+            swal({
+                title: "You have items in your cart!",
+                text: "What do you wanna do?",
+                buttons: ['Logout anyway', 'Go to Cart']
+            }).then(function (willGoToCart) {
+                if (willGoToCart)
+                    window.location.href = "./cart.html";
+                else {
+                    bye();
+                }
+            });
+        }
     }
     catch (error) {
         console.error(error.message);
     }
 }
-var asyncScript = document.querySelector('#async-script');
-asyncScript.setAttribute('src', asyncScript.getAttribute('data-src'));
-asyncScript.removeAttribute('data-src');
+function bye() {
+    var _this = this;
+    try {
+        swal({
+            title: "Bye!",
+            text: "Hope to see you again soon!",
+            buttons: ["Mmm... Stay", "Byeee"],
+            dangerMode: true
+        }).then(function (willLogout) { return __awaiter(_this, void 0, void 0, function () {
+            var doLogout, username;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!willLogout) return [3 /*break*/, 2];
+                        return [4 /*yield*/, axios.get('/user/logout')];
+                    case 1:
+                        doLogout = _a.sent();
+                        username = doLogout.data.username;
+                        swal(username + ", you are now logged out \uD83D\uDD90", {
+                            icon: "success",
+                            button: "🖐"
+                        }).then(function () { window.location.href = '/'; });
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        }); });
+    }
+    catch (error) {
+        console.error(error.message);
+    }
+}
+var asyncScripts = document.getElementsByClassName('async-script');
+for (var _i = 0, asyncScripts_1 = asyncScripts; _i < asyncScripts_1.length; _i++) {
+    var asyncScript = asyncScripts_1[_i];
+    asyncScript.setAttribute('src', asyncScript.getAttribute('data-src'));
+    asyncScript.removeAttribute('data-src');
+}

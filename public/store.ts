@@ -1,6 +1,3 @@
-const url = new URL(window.location.href);
-const storeUuid = url.searchParams.get("storeUuid");
-
 async function getStore() {
     try {
         const getStoreDetails = await axios.get(`/store/${storeUuid}`);
@@ -85,20 +82,21 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
     }
 }
 
-const addProductForm: HTMLFormElement = document.querySelector('#add-product-form')
 
 function renderProductForm() {
     try {
+        const addProductForm: HTMLFormElement = document.querySelector('#add-product-form')
         addProductForm.style.display = 'unset';
+        
         const formInnerHTML: string = `
         <h3 class="product-large__item product-large__item--title" >Add a new product</h3>
         <input class="product-large__item product-large__item--name" type="text" name="productName" minLength="2" maxLength="40" placeholder="Product Name" required />
         <div class="product-large__item product-large__item--img">
             <img id="productImg" src="./images/cart-wp.png">
-            <input class="button" type="file" name="productImage" onchange="readURL(this)" required />
+            <input class="button" type="file" name="productImage" onchange="readURL(this)" />
         </div>
         <textarea class="product-large__item product-large__item--description" name="productDescription" minLength="10" maxLength="300" placeholder="Product Description (10-300 characters)" required></textarea>
-        <input class="product-large__item product-large__item--price" type="number" name="productPrice" min="0" max="5000" placeholder="Price ($)" required />
+        <input class="product-large__item product-large__item--price" type="number" name="productPrice" min="0" max="5000" placeholder="Price ($)" step=".01" pattern="^\\d+(?:\\.\\d{1,2})?$" required />
         <input class="product-large__item product-large__item--in-stock" type="number" name="productInStock" min="0" max="500" placeholder="In Stock" required />
         <input class="product-large__item product-large__item--submit button" type="submit" value="Add" />`;
 
@@ -109,36 +107,3 @@ function renderProductForm() {
 }
 
 getStore();
-
-addProductForm.addEventListener('submit', ev => addProduct(ev));
-
-async function addProduct(ev) {
-    try {
-
-        ev.target.preventDefault();
-
-        let { productName, productDescription, productPrice, productImage, productInStock } = ev.target.elements;
-        productName = productName.value;
-        productDescription = productDescription.value;
-        productPrice = productPrice.value;
-        productImage = productImage.value;
-        productInStock = productInStock.value;
-
-        ev.target.reset();
-        
-        const addProductToStore = await axios.post(`/store/product`, { storeUuid, productName, productDescription, productPrice, productImage, productInStock });
-        const { store } = addProductToStore.data;
-        
-        swal({
-            title: 'Congrats!',
-            text: `${productName} was added to your store!`,
-            icon: "success",
-            button: "Cool",
-        });
-
-        renderStore(store, true);
-
-    } catch (error) {
-        console.error(error.message);
-    }
-}

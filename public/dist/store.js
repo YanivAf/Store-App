@@ -34,8 +34,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var url = new URL(window.location.href);
-var storeUuid = url.searchParams.get("storeUuid");
 function getStore() {
     return __awaiter(this, void 0, void 0, function () {
         var getStoreDetails, _a, store, isAdmin, error_1;
@@ -113,11 +111,11 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
         console.error(error.message);
     }
 }
-var addProductForm = document.querySelector('#add-product-form');
 function renderProductForm() {
     try {
+        var addProductForm = document.querySelector('#add-product-form');
         addProductForm.style.display = 'unset';
-        var formInnerHTML = "\n        <h3 class=\"product-large__item product-large__item--title\" >Add a new product</h3>\n        <input class=\"product-large__item product-large__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" required />\n        <div class=\"product-large__item product-large__item--img\">\n            <img id=\"productImg\" src=\"./images/cart-wp.png\">\n            <input class=\"button\" type=\"file\" name=\"productImage\" onchange=\"readURL(this)\" required />\n        </div>\n        <textarea class=\"product-large__item product-large__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required></textarea>\n        <input class=\"product-large__item product-large__item--price\" type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" required />\n        <input class=\"product-large__item product-large__item--in-stock\" type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" required />\n        <input class=\"product-large__item product-large__item--submit button\" type=\"submit\" value=\"Add\" />";
+        var formInnerHTML = "\n        <h3 class=\"product-large__item product-large__item--title\" >Add a new product</h3>\n        <input class=\"product-large__item product-large__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" required />\n        <div class=\"product-large__item product-large__item--img\">\n            <img id=\"productImg\" src=\"./images/cart-wp.png\">\n            <input class=\"button\" type=\"file\" name=\"productImage\" onchange=\"readURL(this)\" />\n        </div>\n        <textarea class=\"product-large__item product-large__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required></textarea>\n        <input class=\"product-large__item product-large__item--price\" type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" required />\n        <input class=\"product-large__item product-large__item--in-stock\" type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" required />\n        <input class=\"product-large__item product-large__item--submit button\" type=\"submit\" value=\"Add\" />";
         addProductForm.innerHTML = formInnerHTML;
     }
     catch (error) {
@@ -125,40 +123,3 @@ function renderProductForm() {
     }
 }
 getStore();
-addProductForm.addEventListener('submit', function (ev) { return addProduct(ev); });
-function addProduct(ev) {
-    return __awaiter(this, void 0, void 0, function () {
-        var _a, productName, productDescription, productPrice, productImage, productInStock, addProductToStore, store, error_2;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    _b.trys.push([0, 2, , 3]);
-                    ev.target.preventDefault();
-                    _a = ev.target.elements, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
-                    productName = productName.value;
-                    productDescription = productDescription.value;
-                    productPrice = productPrice.value;
-                    productImage = productImage.value;
-                    productInStock = productInStock.value;
-                    ev.target.reset();
-                    return [4 /*yield*/, axios.post("/store/product", { storeUuid: storeUuid, productName: productName, productDescription: productDescription, productPrice: productPrice, productImage: productImage, productInStock: productInStock })];
-                case 1:
-                    addProductToStore = _b.sent();
-                    store = addProductToStore.data.store;
-                    swal({
-                        title: 'Congrats!',
-                        text: productName + " was added to your store!",
-                        icon: "success",
-                        button: "Cool"
-                    });
-                    renderStore(store, true);
-                    return [3 /*break*/, 3];
-                case 2:
-                    error_2 = _b.sent();
-                    console.error(error_2.message);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
-            }
-        });
-    });
-}

@@ -1,10 +1,11 @@
 const whichHtmlFile: string = window.location.pathname;
+let storeUuid: string;
 
 async function getUserDetails() {
     try {
         const userDetails = await axios.get('/user/details');
         const { user, isAdmin } = userDetails.data;
-
+        if (isAdmin) storeUuid = user.stores[0];
         renderUserDetails(user, isAdmin);
                 
     } catch (error) {
@@ -14,7 +15,7 @@ async function getUserDetails() {
 
 getUserDetails();
 
-let isCartEmpty: boolean;
+let isCartEmpty: boolean = true;
 let cartProductsToRender: Array<any>;
 let purchasedProductsToRender: Array<any>;
 
@@ -31,7 +32,7 @@ function renderUserDetails(user: any, isAdmin: boolean) {
             renderShopperCart(cartProductsToRender);
             isCartEmpty = (user.cart.length === 0) ? true : false;
         } else {
-            const navBar: any = { store: { aOrDiv: 'a', href: ` href="./store.html?storeUuid=${user.stores[0]}"` } }
+            const navBar: any = { store: { aOrDiv: 'a', href: ` href="./store.html?storeUuid=${storeUuid}"` } }
             let addProductHtml: string = '';
             
             if (whichHtmlFile === '/store.html') {
@@ -62,7 +63,6 @@ function renderShopperCart(cartProducts: Array<any>) {
     try {
 
         const inCartSum: number = cartProducts.reduce((previousValue, currentValue) => previousValue + currentValue.quantity, 0);
-        const isCartEmpty: boolean = (inCartSum > 0) ? false : true;
 
         const navBar: any = {
             purchased: { aOrDiv: 'a', href: ' href="./purchased.html"' },
@@ -128,44 +128,59 @@ function renderShopperCart(cartProducts: Array<any>) {
     }
 }
 
+
 const logoutBtn: HTMLElement = document.querySelector('#logout');
 
 logoutBtn.addEventListener('click', ev => logout(ev));
 
 function logout(ev: any) {
-  try {
-    swal({
-        title: `You have items in your cart!`,
-        text: `What do you wanna do?`,
-        buttons: ['Logout anyway', 'Go to Cart'],
-    }).then((willGoToCart) => {
-        if (willGoToCart) window.location.href = `./cart.html`;
-        else {
+    try {
+        if (isCartEmpty === true) {
+            bye();
+        } else {
             swal({
-                title: `Bye!`,
-                text: `Hope to see you again soon!`,
-                buttons: ["Mmm... Stay", "Byeee"],
-                dangerMode: true
-            }).then( async (willLogout) => {
-                if (willLogout) {
-                    const doLogout = await axios.get('/user/logout');
-                    const { username } = doLogout.data;
-                    swal(`${username}, you are now logged out 🖐`, {
-                        icon: "success",
-                        button: "🖐"
-                    }).then( () => { window.location.href = '/'; });
-                  }
-            })
+                title: `You have items in your cart!`,
+                text: `What do you wanna do?`,
+                buttons: ['Logout anyway', 'Go to Cart'],
+            }).then((willGoToCart) => {
+                if (willGoToCart) window.location.href = `./cart.html`;
+                else {
+                    bye();
+                }
+            });
         }
-    });
-      
-
+    
     } catch (error) {
     console.error(error.message);
     }
 }
 
-const asyncScript: HTMLScriptElement = document.querySelector('#async-script');
+function bye() {
+    try {
+        swal({
+            title: `Bye!`,
+            text: `Hope to see you again soon!`,
+            buttons: ["Mmm... Stay", "Byeee"],
+            dangerMode: true
+        }).then( async (willLogout) => {
+            if (willLogout) {
+                const doLogout = await axios.get('/user/logout');
+                const { username } = doLogout.data;
+                swal(`${username}, you are now logged out 🖐`, {
+                    icon: "success",
+                    button: "🖐"
+                }).then( () => { window.location.href = '/'; });
+            }
+        })
 
-asyncScript.setAttribute('src', asyncScript.getAttribute('data-src'));
-asyncScript.removeAttribute('data-src');
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+const asyncScripts: HTMLCollection = document.getElementsByClassName('async-script');
+
+for (const asyncScript of asyncScripts){
+    asyncScript.setAttribute('src', asyncScript.getAttribute('data-src'));
+    asyncScript.removeAttribute('data-src');
+ }

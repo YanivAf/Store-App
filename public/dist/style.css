@@ -273,8 +273,6 @@ a:hover {
   width: 60vw;
   min-height: 270px;
   min-width: 270px;
-  max-height: 470px;
-  max-width: 470px;
   background-color: white;
   display: grid;
   align-items: center;

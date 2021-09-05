@@ -34,24 +34,92 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var updateProductAncestor;
-if (window.location.pathname === '/store.html') {
-    updateProductAncestor = document.querySelector('.products');
-    updateProductAncestor.addEventListener('click', function (ev) { return updateProduct(ev); });
+var updateProductForm;
+var addProductForm;
+var url = new URL(window.location.href);
+var productUuidParams;
+if (whichHtmlFile === '/product.html') {
+    productUuidParams = url.searchParams.get("productUuid");
+    updateProductForm = document.querySelector('#edit-product-form');
+    updateProductForm.addEventListener('submit', function (ev) { return updateProduct(ev); });
 }
-else {
-    updateProductAncestor = document.querySelector('.main');
-    updateProductAncestor.addEventListener('submit', function (ev) { return updateProduct(ev); });
+else if (whichHtmlFile === '/store.html') {
+    addProductForm = document.querySelector('#add-product-form');
+    addProductForm.addEventListener('submit', function (ev) { return addProduct(ev); });
 }
 function updateProduct(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            try {
+        var _a, productName, productDescription, productPrice, productImage, productInStock, productUuid, error_1;
+        var _this = this;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _b.trys.push([0, 2, , 3]);
+                    console.log(productUuidParams);
+                    console.log(typeof ev.target);
+                    ev.target.preventDefault();
+                    _a = ev.target.elements, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
+                    productName = productName.value;
+                    productDescription = productDescription.value;
+                    productPrice = productPrice.value;
+                    productImage = productImage.value;
+                    productInStock = productInStock.value;
+                    productUuid = productUuidParams;
+                    return [2 /*return*/];
+                case 1:
+                    _b.sent();
+                    swal({
+                        title: 'Congrats!',
+                        text: productName + " was updated successfully!",
+                        icon: "success",
+                        button: "Cool"
+                    }).then(function () { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+                        window.location.href = "./store.html?storeUuid=" + storeUuid;
+                        return [2 /*return*/];
+                    }); }); });
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_1 = _b.sent();
+                    console.error(error_1.message);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
             }
-            catch (error) {
-                console.error(error.message);
+        });
+    });
+}
+function addProduct(ev) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _a, productName, productDescription, productPrice, productImage, productInStock, addProductToStore, store, error_2;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _b.trys.push([0, 2, , 3]);
+                    ev.target.preventDefault();
+                    _a = ev.target.elements, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
+                    productName = productName.value;
+                    productDescription = productDescription.value;
+                    productPrice = productPrice.valueAsNumber;
+                    productImage = productImage.value;
+                    productInStock = productInStock.valueAsNumber;
+                    ev.target.reset();
+                    return [4 /*yield*/, axios.post("/store/addProduct", { storeUuid: storeUuid, productName: productName, productDescription: productDescription, productPrice: productPrice, productImage: productImage, productInStock: productInStock })];
+                case 1:
+                    addProductToStore = _b.sent();
+                    store = addProductToStore.data.store;
+                    swal({
+                        title: 'Congrats!',
+                        text: productName + " was added to your store!",
+                        icon: "success",
+                        button: "Cool"
+                    });
+                    renderStore(store, true);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_2 = _b.sent();
+                    console.error(error_2.message);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
             }
-            return [2 /*return*/];
         });
     });
 }

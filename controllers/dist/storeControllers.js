@@ -64,7 +64,11 @@ exports.addProduct = function (req, res) {
 };
 exports.editProduct = function (req, res) {
     try {
-        // res.send({ editProduct:true });
+        var _a = req.body, storeUuid = _a.storeUuid, productUuid = _a.productUuid, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
+        var store = new Store(); // storeUuid would be used if more than 1 store
+        console.log('hi');
+        store.editProduct(productUuid, productName, productDescription, productPrice, productImage, productInStock);
+        res.send({ productUpdate: true });
     }
     catch (error) {
         console.error(error);

@@ -77,7 +77,12 @@ export const addProduct = (req, res)=> { // store.html
 export const editProduct = (req, res)=> { // product.html
   try {
 
-    // res.send({ editProduct:true });
+    const { storeUuid, productUuid, productName, productDescription, productPrice, productImage, productInStock } = req.body;
+    const store = new Store(); // storeUuid would be used if more than 1 store
+console.log('hi');
+    store.editProduct(productUuid, productName, productDescription, productPrice, productImage, productInStock);
+
+    res.send({ productUpdate: true });
 
   } catch (error) {
     console.error(error);
