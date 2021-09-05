@@ -10,7 +10,7 @@ async function welcome() {
         button: "Great, lets go!",
     }).then(() => {
         if (isAdmin) window.location.href = `./store.html?storeUuid=${storeUuid}`;
-        else window.location.href = './stores.html';
+        else window.location.href = './store.html?storeUuid=mall';
     });
 
     } catch (error) {
