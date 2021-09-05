@@ -1,19 +1,11 @@
 export {};
 
 const { v4: uuidv4 } = require("uuid");
-const multer = require('multer');
 const fs = require("fs");
 const path = require("path");
 const storeJsonPath = path.resolve(__dirname, "../store.json");
 
 const { CartProduct } = require('./usersModel');
-
-export const productImgStorage = multer.diskStorage({
-    destination: "./public/images",
-    filename: (req, file, cb) => {
-        cb(null, file.originalname + "-" + Date.now() + path.extname(file.originalname));
-    }
-});
 
 export const readStoreJson = () => {
     try {
@@ -39,7 +31,7 @@ export class Product {
         this.productName = productName;
         this.productDescription = productDescription;
         this.productPrice = productPrice;
-        this.productImage = `images/${productImage}`;
+        this.productImage = (productImage) ? `images/${productImage}` : 'images/cart-wp.png';
         this.inStock = inStock;
     }
 }
@@ -118,9 +110,10 @@ export class Store {
     editProduct(productUuid: string, productName: string, productDescription: string, productPrice: number, filename: string, inStock: number) {
         try {
             const product = new Product(productUuid, this.storeUuid, productName, productDescription, productPrice, filename, inStock);
-
-            const productIndex: number = this.findProductIndex(productUuid);
             
+            const productIndex: number = this.findProductIndex(productUuid);
+            product.productImage = this.products[productIndex].productImage;
+
             this.products[productIndex] = product;
 
             this.updateStoreJson();

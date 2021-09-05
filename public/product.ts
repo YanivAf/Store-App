@@ -1,9 +1,7 @@
-
 async function getProduct() {
     try {
         const url = new URL(window.location.href);
         const productUuidParams = url.searchParams.get("productUuid");
-        console.log('productUuidParams',productUuidParams);
         
         const getProductDetails = await axios.get(`/store/product/${productUuidParams}`);
         const { storeProduct, cartProduct, isAdmin } = getProductDetails.data;
@@ -26,15 +24,14 @@ async function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boole
         let buttonsByRole: string;
         let cartProductQuantity: number;
         if (isAdmin) {
-            updateProductForm.style.display = 'unset';
-            buttonsByRole =`<i class="product-buttons__item product-buttons__item--delete fas fa-trash" id="delete-from-store" title="Delete ${storeProduct.productName}"></i>`;
+            updateProductForm.style.display = 'grid';
+            buttonsByRole =`<i class="product-buttons__item product-buttons__item--delete fas fa-trash" id="delete-from-store" onclick="deleteProduct(event)" title="Delete ${storeProduct.productName}"></i>`;
             productHtml = `
             <div class="product-large__item product-large__item--buttons product-buttons">${buttonsByRole}</div>
             <input class="product-large__item product-large__item--name" type="text" name="productName" minLength="2" maxLength="40" placeholder="Product Name" value="${storeProduct.productName}" required />
             <div class="product-large__item product-large__item--img">
                 <img id="product-preview" src="${storeProduct.productImage}" title="${storeProduct.productName}">
                 <input id="product-image" class="button" type="file" name="productImage" accept="image/*" onchange="readURL(this)" />
-                <img id="product-preview" src="./images/cart-wp.png">
             </div>
             <textarea class="product-large__item product-large__item--description" name="productDescription" minLength="10" maxLength="300" placeholder="Product Description (10-300 characters)" required>${storeProduct.productDescription}</textarea>
             <div class="product-large__item product-large__item--price">
@@ -45,14 +42,13 @@ async function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boole
                 <label for="productInStock">In Stock</label>
                 <input type="number" name="productInStock" min="0" max="500" placeholder="In Stock" value="${storeProduct.inStock}" required />
             </div>
-            <input class="product-large__item product-large__item--submit" type="submit" value="Update" required />`;
+            <input class="product-large__item product-large__item--submit button" type="submit" value="Update" />`;
 
             updateProductForm.innerHTML = productHtml;
 
         } else {
-            updateProductForm.remove();
+            if (updateProductForm) updateProductForm.remove();
 
-            cartProductQuantity = cartProduct.quantity;
             let inStockText: string;
             let inStockColor: string;
             const isInStock: boolean = (storeProduct.inStock > 0) ? true : false;
@@ -68,6 +64,7 @@ async function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boole
                 buttonsByRole = `<i class="product-buttons__item product-buttons__item--cart-add fas fa-cart-plus" id="add-to-cart" title="Add ${storeProduct.productName} to cart"></i>`;
                 cartProductQuantity = 0;
             } else {
+                cartProductQuantity = cartProduct.quantity;
                 buttonsByRole = `
                 <a href="./cart.html" class="product-buttons__item product-buttons__item--cart-added">
                     <i class="fas fa-shopping-cart" title="See ${storeProduct.productName} in your cart"></i>
@@ -76,24 +73,24 @@ async function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boole
 
             productHtml = `
             <div class="main__item main__item--product-details product-large">
-            <div class="product-large__item product-large__item--buttons product-buttons">${buttonsByRole}</div>
-            <div class="product-large__item product-large__item--img">
-                <img id="productImg" src="${storeProduct.productImage}" title="${storeProduct.productName}">
-            </div>
-            <article class="product-large__item product-large__item--description" title="Product Description">${storeProduct.productDescription}</article>
-            <div class="product-large__item product-large__item--price">
-                <h3>${(Math.round(storeProduct.productPrice * 100) / 100).toFixed(2)}$</h3>
-                <p>per unit</p>
-            </div>
-            <p class="product-large__item product-large__item--in-stock" title="In Stock" style="color:${inStockColor}">${inStockText}</p>
-            <div class="product-large__item product-large__item--quantity">
-                <input type="number" class="update-cart-qunatity" min="0" max="${cartProductQuantity + storeProduct.inStock}" value="${cartProductQuantity}" />
-            </div>
+                <div class="product-large__item product-large__item--buttons product-buttons">${buttonsByRole}</div>
+                <div class="product-large__item product-large__item--img">
+                    <img id="productImg" src="${storeProduct.productImage}" title="${storeProduct.productName}">
+                </div>
+                <article class="product-large__item product-large__item--description" title="Product Description">${storeProduct.productDescription}</article>
+                <div class="product-large__item product-large__item--price">
+                    <h3>${(Math.round(storeProduct.productPrice * 100) / 100).toFixed(2)}$</h3>
+                    <p>per unit</p>
+                </div>
+                <p class="product-large__item product-large__item--in-stock" title="In Stock" style="color:${inStockColor}">${inStockText}</p>
+                <div class="product-large__item product-large__item--quantity">
+                    <input type="number" class="update-cart-qunatity" min="0" max="${cartProductQuantity + storeProduct.inStock}" value="${cartProductQuantity}" />
+                </div>
             </div>`;
 
-            const productsElement: HTMLElement = document.querySelector('.product-large');
-            if (productsElement) productsElement.remove();
-
+            const productElement: HTMLElement = document.querySelector('.product-large');
+            if (productElement) productElement.remove();
+            
             const mainElement: HTMLElement = document.querySelector('.main');
             mainElement.insertAdjacentHTML('beforeend', productHtml);
         }

@@ -1,5 +1,6 @@
 let updateProductForm: HTMLFormElement;
 let addProductForm: HTMLFormElement;
+
 const url = new URL(window.location.href);
 let productUuidParams;
 
@@ -14,23 +15,29 @@ if (whichHtmlFile === '/product.html') {
 
 async function updateProduct(ev: any) {
   try {
-    console.log(productUuidParams);
-    console.log(typeof ev.target);
     
-    ev.target.preventDefault();
+    ev.preventDefault();
 
     let { productName, productDescription, productPrice, productInStock } = ev.target.elements;
     productName = productName.value;
     productDescription = productDescription.value;
-    productPrice = productPrice.value;
-    productInStock = productInStock.value;
+    productPrice = productPrice.valueAsNumber;
+    productInStock = productInStock.valueAsNumber;
+
+    const fd:FormData = new FormData();
     const imageInput = document.querySelector('#product-image');
     const productImage: any = imageInput.files[0];
-    const productUuid = productUuidParams;
+    if (productImage) fd.append('productImage', productImage, `${productImage.name}`);
+    fd.append('productName', productName);
+    fd.append('productDescription', productDescription);
+    fd.append('productPrice', productPrice);
+    fd.append('productInStock', productInStock);
+    fd.append('storeUuid', storeUuid);
 
+    const productUuid = productUuidParams;
     ev.target.reset();
 
-    await axios.put(`/store/product/${productUuid}`, { storeUuid, productUuid, productName, productDescription, productPrice, productImage, productInStock });
+    await axios.put(`/store/product/${productUuid}`, fd);
 
     swal({
         title: 'Congrats!',
@@ -46,20 +53,29 @@ async function updateProduct(ev: any) {
 
 async function addProduct(ev) {
     try {
-        ev.target.preventDefault();
+        ev.preventDefault();
 
         let { productName, productDescription, productPrice, productInStock } = ev.target.elements;
         productName = productName.value;
         productDescription = productDescription.value;
         productPrice = productPrice.valueAsNumber;
         productInStock = productInStock.valueAsNumber;
+
+        const fd:FormData = new FormData();
         const imageInput = document.querySelector('#product-image');
         const productImage: any = imageInput.files[0];
+        if (productImage) fd.append('productImage', productImage, `${productImage.name}`);
+        fd.append('productName', productName);
+        fd.append('productDescription', productDescription);
+        fd.append('productPrice', productPrice);
+        fd.append('productInStock', productInStock);
+        fd.append('storeUuid', storeUuid);
+
         const productUuid = productUuidParams;
 
         ev.target.reset();
         
-        const addProductToStore = await axios.post(`/store/product/${productUuid}`, { storeUuid, productName, productDescription, productPrice, productImage, productInStock });
+        const addProductToStore = await axios.post(`/store/addProduct`, fd);
         const { store } = addProductToStore.data;
         
         swal({
@@ -74,6 +90,36 @@ async function addProduct(ev) {
     } catch (error) {
         console.error(error.message);
     }
+}
+
+async function deleteProduct(ev: any) {
+  try {
+      const cancelDelete: boolean = await swal({
+        title: `Delete from Store`,
+        text: `Are you sure?`,
+        icon: `warning`,
+        dangerMode: true,
+        buttons: ['Nope', 'Yup'],
+      });
+      if (!cancelDelete) return;
+    
+      const productUuid: string = productUuidParams;
+      const productNameElement: HTMLElement = document.querySelector('#product-name');
+      const productName: string = productNameElement.innerText;
+
+      await axios.delete(`/store/product/${productUuid}`);
+
+      swal({
+        title: 'Done!',
+        text: `${productName} was deleted from your store!`,
+        icon: "success",
+        button: "Cool",
+      }).then(() => { window.location.href = `./store.html?storeUuid=${storeUuid}` });
+
+    
+  } catch (error) {
+      console.error(error.message);
+  }
 }
 
 const readURL = (input: any) => {

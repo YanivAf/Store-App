@@ -3,10 +3,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 
-const { productImgStorage } = require('../../models/dist/storeModel');
-const upload = multer({ productImgStorage })
-
 const { productSchema } = require('../../schemas/dist/productSchema');
+const { uploadImage } = require('../../middlewares/dist/uploadImage');
 const { validateBody } = require('../../middlewares/dist/validateBody');
 const { isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin } = require('../../middlewares/dist/userMiddlewares');
 const { doesProductExist } = require('../../middlewares/dist/storeMiddlewares');
@@ -17,8 +15,8 @@ router
     .get('/:storeUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, showProducts)
     .get('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, doesProductExist, showProduct)
     .put('/', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, editStoreName)
-    .put('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, upload.single('image'), validateBody(productSchema), editProduct)
-    .post('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, upload.single('image'), validateBody(productSchema), addProduct)
+    .put('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, uploadImage.single('productImage'), validateBody(productSchema), editProduct)
+    .post('/addProduct', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, uploadImage.single('productImage'), validateBody(productSchema), addProduct)
     .delete('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, deleteProduct);
 
 module.exports = router;

@@ -43,7 +43,6 @@ function getProduct() {
                     _b.trys.push([0, 2, , 3]);
                     url = new URL(window.location.href);
                     productUuidParams = url.searchParams.get("productUuid");
-                    console.log('productUuidParams', productUuidParams);
                     return [4 /*yield*/, axios.get("/store/product/" + productUuidParams)];
                 case 1:
                     getProductDetails = _b.sent();
@@ -61,7 +60,7 @@ function getProduct() {
 }
 function renderProduct(storeProduct, cartProduct, isAdmin) {
     return __awaiter(this, void 0, void 0, function () {
-        var updateProductForm, productNameElement, productHtml, buttonsByRole, cartProductQuantity, inStockText, inStockColor, isInStock, productsElement, mainElement;
+        var updateProductForm, productNameElement, productHtml, buttonsByRole, cartProductQuantity, inStockText, inStockColor, isInStock, productElement, mainElement;
         return __generator(this, function (_a) {
             try {
                 updateProductForm = document.querySelector('#edit-product-form');
@@ -71,14 +70,14 @@ function renderProduct(storeProduct, cartProduct, isAdmin) {
                 buttonsByRole = void 0;
                 cartProductQuantity = void 0;
                 if (isAdmin) {
-                    updateProductForm.style.display = 'unset';
-                    buttonsByRole = "<i class=\"product-buttons__item product-buttons__item--delete fas fa-trash\" id=\"delete-from-store\" title=\"Delete " + storeProduct.productName + "\"></i>";
-                    productHtml = "\n            <div class=\"product-large__item product-large__item--buttons product-buttons\">" + buttonsByRole + "</div>\n            <input class=\"product-large__item product-large__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" value=\"" + storeProduct.productName + "\" required />\n            <div class=\"product-large__item product-large__item--img\">\n                <img id=\"product-preview\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n                <input id=\"product-image\" class=\"button\" type=\"file\" name=\"productImage\" accept=\"image/*\" onchange=\"readURL(this)\" />\n                <img id=\"product-preview\" src=\"./images/cart-wp.png\">\n            </div>\n            <textarea class=\"product-large__item product-large__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required>" + storeProduct.productDescription + "</textarea>\n            <div class=\"product-large__item product-large__item--price\">\n                <label for=\"productPrice\">Price ($)</label>\n                <input type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" value=\"" + (Math.round(storeProduct.productPrice * 100) / 100).toFixed(2) + "\" required />\n            </div>\n            <div lass=\"product-large__item product-large__item--in-stock\">\n                <label for=\"productInStock\">In Stock</label>\n                <input type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" value=\"" + storeProduct.inStock + "\" required />\n            </div>\n            <input class=\"product-large__item product-large__item--submit\" type=\"submit\" value=\"Update\" required />";
+                    updateProductForm.style.display = 'grid';
+                    buttonsByRole = "<i class=\"product-buttons__item product-buttons__item--delete fas fa-trash\" id=\"delete-from-store\" onclick=\"deleteProduct(event)\" title=\"Delete " + storeProduct.productName + "\"></i>";
+                    productHtml = "\n            <div class=\"product-large__item product-large__item--buttons product-buttons\">" + buttonsByRole + "</div>\n            <input class=\"product-large__item product-large__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" value=\"" + storeProduct.productName + "\" required />\n            <div class=\"product-large__item product-large__item--img\">\n                <img id=\"product-preview\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n                <input id=\"product-image\" class=\"button\" type=\"file\" name=\"productImage\" accept=\"image/*\" onchange=\"readURL(this)\" />\n            </div>\n            <textarea class=\"product-large__item product-large__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required>" + storeProduct.productDescription + "</textarea>\n            <div class=\"product-large__item product-large__item--price\">\n                <label for=\"productPrice\">Price ($)</label>\n                <input type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" value=\"" + (Math.round(storeProduct.productPrice * 100) / 100).toFixed(2) + "\" required />\n            </div>\n            <div lass=\"product-large__item product-large__item--in-stock\">\n                <label for=\"productInStock\">In Stock</label>\n                <input type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" value=\"" + storeProduct.inStock + "\" required />\n            </div>\n            <input class=\"product-large__item product-large__item--submit button\" type=\"submit\" value=\"Update\" />";
                     updateProductForm.innerHTML = productHtml;
                 }
                 else {
-                    updateProductForm.remove();
-                    cartProductQuantity = cartProduct.quantity;
+                    if (updateProductForm)
+                        updateProductForm.remove();
                     inStockText = void 0;
                     inStockColor = void 0;
                     isInStock = (storeProduct.inStock > 0) ? true : false;
@@ -95,12 +94,13 @@ function renderProduct(storeProduct, cartProduct, isAdmin) {
                         cartProductQuantity = 0;
                     }
                     else {
+                        cartProductQuantity = cartProduct.quantity;
                         buttonsByRole = "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + storeProduct.productName + " in your cart\"></i>\n                </a>";
                     }
-                    productHtml = "\n            <div class=\"main__item main__item--product-details product-large\">\n            <div class=\"product-large__item product-large__item--buttons product-buttons\">" + buttonsByRole + "</div>\n            <div class=\"product-large__item product-large__item--img\">\n                <img id=\"productImg\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n            </div>\n            <article class=\"product-large__item product-large__item--description\" title=\"Product Description\">" + storeProduct.productDescription + "</article>\n            <div class=\"product-large__item product-large__item--price\">\n                <h3>" + (Math.round(storeProduct.productPrice * 100) / 100).toFixed(2) + "$</h3>\n                <p>per unit</p>\n            </div>\n            <p class=\"product-large__item product-large__item--in-stock\" title=\"In Stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</p>\n            <div class=\"product-large__item product-large__item--quantity\">\n                <input type=\"number\" class=\"update-cart-qunatity\" min=\"0\" max=\"" + (cartProductQuantity + storeProduct.inStock) + "\" value=\"" + cartProductQuantity + "\" />\n            </div>\n            </div>";
-                    productsElement = document.querySelector('.product-large');
-                    if (productsElement)
-                        productsElement.remove();
+                    productHtml = "\n            <div class=\"main__item main__item--product-details product-large\">\n                <div class=\"product-large__item product-large__item--buttons product-buttons\">" + buttonsByRole + "</div>\n                <div class=\"product-large__item product-large__item--img\">\n                    <img id=\"productImg\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n                </div>\n                <article class=\"product-large__item product-large__item--description\" title=\"Product Description\">" + storeProduct.productDescription + "</article>\n                <div class=\"product-large__item product-large__item--price\">\n                    <h3>" + (Math.round(storeProduct.productPrice * 100) / 100).toFixed(2) + "$</h3>\n                    <p>per unit</p>\n                </div>\n                <p class=\"product-large__item product-large__item--in-stock\" title=\"In Stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</p>\n                <div class=\"product-large__item product-large__item--quantity\">\n                    <input type=\"number\" class=\"update-cart-qunatity\" min=\"0\" max=\"" + (cartProductQuantity + storeProduct.inStock) + "\" value=\"" + cartProductQuantity + "\" />\n                </div>\n            </div>";
+                    productElement = document.querySelector('.product-large');
+                    if (productElement)
+                        productElement.remove();
                     mainElement = document.querySelector('.main');
                     mainElement.insertAdjacentHTML('beforeend', productHtml);
                 }

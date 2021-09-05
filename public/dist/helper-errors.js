@@ -24,7 +24,7 @@ window.axios.interceptors.response.use(function (response) {
     if (error.response.status) {
         if ((error.response.status === 401) && ((window.location.pathname === '/') || (window.location.pathname === '/index.html')))
             return;
-        if (error.response.status !== 409) {
+        if ((error.response.status !== 409) && (error.response.status !== 404) && (error.response.status !== 500)) {
             swal({
                 title: title,
                 text: text,

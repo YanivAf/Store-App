@@ -86,7 +86,7 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
 function renderProductForm() {
     try {
         const addProductForm: HTMLFormElement = document.querySelector('#add-product-form')
-        addProductForm.style.display = 'unset';
+        addProductForm.style.display = 'grid';
         
         const formInnerHTML: string = `
         <h3 class="product-large__item product-large__item--title" >Add a new product</h3>

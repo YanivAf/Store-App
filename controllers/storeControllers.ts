@@ -63,7 +63,8 @@ export const addProduct = (req, res)=> { // store.html
   try {
     const { storeUuid, productName, productDescription, productPrice, productImage, productInStock } = req.body;
     const store = new Store(); // storeUuid would be used if more than 1 store
-    const { filename } = req.file;
+
+    const filename = (req.file) ? req.file : undefined;
 
     store.addProduct(productName, productDescription, productPrice, filename, productInStock);
 
@@ -78,9 +79,11 @@ export const addProduct = (req, res)=> { // store.html
 export const editProduct = (req, res)=> { // product.html
   try {
 
-    const { storeUuid, productUuid, productName, productDescription, productPrice, productImage, productInStock } = req.body;
+    const { storeUuid, productName, productDescription, productPrice, productImage, productInStock } = req.body;
     const store = new Store(); // storeUuid would be used if more than 1 store
-    const { filename } = req.file;
+    const productUuid: string = req.params.productUuid;
+
+    const filename = (req.file) ? req.file : undefined;
 
     store.editProduct(productUuid, productName, productDescription, productPrice, filename, productInStock);
 
@@ -94,8 +97,12 @@ export const editProduct = (req, res)=> { // product.html
 
 export const deleteProduct = (req, res)=> { // store.html
   try {
+    const store = new Store(); // storeUuid would be used if more than 1 store
+    const productUuid: string = req.params.productUuid;
 
-    // res.send({ deleteProduct:true });
+    store.deleteProduct(productUuid);
+    
+    res.send({ deleteProduct:true });
 
   } catch (error) {
     console.error(error);

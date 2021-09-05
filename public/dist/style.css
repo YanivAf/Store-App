@@ -262,9 +262,6 @@ a:hover {
   margin: 20px auto;
   padding: 10px 0;
 }
-.main__item--add-product-form {
-  background-color: lightgreen;
-}
 .main .product-large {
   margin: 20px auto;
   padding: 15px;
@@ -480,6 +477,13 @@ a:hover {
 }
 .product-buttons__item--cart-added:hover {
   color: green;
+}
+.product-buttons__item--delete {
+  color: darkred;
+  cursor: pointer;
+}
+.product-buttons__item--delete:hover {
+  color: red;
 }
 
 .hide {

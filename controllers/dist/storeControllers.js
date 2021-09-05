@@ -54,7 +54,7 @@ exports.addProduct = function (req, res) {
     try {
         var _a = req.body, storeUuid = _a.storeUuid, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
         var store = new Store(); // storeUuid would be used if more than 1 store
-        var filename = req.file.filename;
+        var filename = (req.file) ? req.file : undefined;
         store.addProduct(productName, productDescription, productPrice, filename, productInStock);
         res.send({ store: store });
     }
@@ -65,9 +65,10 @@ exports.addProduct = function (req, res) {
 };
 exports.editProduct = function (req, res) {
     try {
-        var _a = req.body, storeUuid = _a.storeUuid, productUuid = _a.productUuid, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
+        var _a = req.body, storeUuid = _a.storeUuid, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
         var store = new Store(); // storeUuid would be used if more than 1 store
-        var filename = req.file.filename;
+        var productUuid = req.params.productUuid;
+        var filename = (req.file) ? req.file : undefined;
         store.editProduct(productUuid, productName, productDescription, productPrice, filename, productInStock);
         res.send({ productUpdate: true });
     }
@@ -78,7 +79,10 @@ exports.editProduct = function (req, res) {
 };
 exports.deleteProduct = function (req, res) {
     try {
-        // res.send({ deleteProduct:true });
+        var store = new Store(); // storeUuid would be used if more than 1 store
+        var productUuid = req.params.productUuid;
+        store.deleteProduct(productUuid);
+        res.send({ deleteProduct: true });
     }
     catch (error) {
         console.error(error);

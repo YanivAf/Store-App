@@ -307,10 +307,6 @@ a {
             margin: 20px auto;
             padding: 10px 0;
         }
-
-        &--add-product-form {
-            background-color: lightgreen;
-        }
     }
 
     .product-large {
@@ -582,6 +578,15 @@ a {
 
             &:hover {
                 color: green;
+            }
+        }
+
+        &--delete {
+            color: darkred;
+            cursor: pointer;
+
+            &:hover {
+                color:red;
             }
         }
     }
