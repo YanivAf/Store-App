@@ -1,11 +1,11 @@
-import { uuid } from "uuidv4";
-
 export {};
 
 const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const path = require("path");
 const storeJsonPath = path.resolve(__dirname, "../store.json");
+
+const { CartProduct } = require('./usersModel');
 
 export const readStoreJson = () => {
     try {
@@ -25,8 +25,9 @@ export class Product {
     productImage: string; // upload file
     inStock: number; // how many in stock
 
-    constructor (productName: string, productDescription: string, productPrice: number, productImage: string, inStock: number) {
-        this.productUuid = uuidv4();
+    constructor (productUuid: string, storeUuid: string, productName: string, productDescription: string, productPrice: number, productImage: string, inStock: number) {
+        this.productUuid = (productUuid) ? productUuid : uuidv4();
+        this.storeUuid = storeUuid;
         this.productName = productName;
         this.productDescription = productDescription;
         this.productPrice = productPrice;
@@ -35,21 +36,37 @@ export class Product {
     }
 }
 
+export class PurchasedCart {
+    purchasedCartProducts: Array<CartProduct>;
+    shopperEmail: string;
+    shopperUsername: string;
+    shopperUuid: string;
+
+    constructor(purchasedCartProducts: Array<CartProduct>, shopperEmail: string, shopperUsername: string, shopperUuid: string) {
+        this.purchasedCartProducts = purchasedCartProducts;
+        this.shopperEmail = shopperEmail;
+        this.shopperUsername = shopperUsername;
+        this.shopperUuid = shopperUuid;
+    }
+}
+
 export class Store {
     storeUuid: string;
     storeName: string; // set after registration
     products: Array<Product>; // all products in store
+    purchasedCarts: Array<PurchasedCart>;
     
     constructor() {
         const store = readStoreJson();
         this.storeUuid = store.storeUuid;
         this.storeName = store.storeName;
         this.products = store.products;
+        this.purchasedCarts = store.purchasedCarts;
     }
 
     updateStoreJson() {
         try {
-            fs.writeFileSync(storeJsonPath, JSON.stringify({ storeUuid: this.storeUuid, storeName: this.storeName, products: this.products }));
+            fs.writeFileSync(storeJsonPath, JSON.stringify({ storeUuid: this.storeUuid, storeName: this.storeName, products: this.products, purchasedCarts: this.purchasedCarts }));
         } catch (error) {
             console.error(error.message);
         }
@@ -79,8 +96,7 @@ export class Store {
 
     addProduct(productName: string, productDescription: string, productPrice: number, productImage: string, inStock: number, storeUuid: string) {
         try {
-            const product = new Product(productName, productDescription, productPrice, productImage, inStock);
-            product.storeUuid = this.storeUuid;
+            const product = new Product(undefined, this.storeUuid, productName, productDescription, productPrice, productImage, inStock);
 
             this.products.push(product);
 
@@ -91,8 +107,15 @@ export class Store {
         }
     }
 
-    editProduct() {
+    editProduct(productUuid: string, productName: string, productDescription: string, productPrice: number, productImage: string, inStock: number) {
         try {
+            const product = new Product(productUuid, this.storeUuid, productName, productDescription, productPrice, productImage, inStock);
+
+            const productIndex: number = this.findProductIndex(productUuid);
+            
+            this.products[productIndex] = product;
+
+            this.updateStoreJson();
 
         } catch (error) {
             console.error(error.message);
@@ -102,6 +125,18 @@ export class Store {
     deleteProduct(productUuid: string) {
         try {
             this.products = this.products.filter(product => product.productUuid !== productUuid);
+
+            this.updateStoreJson();
+
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
+    addPurchesedCart(purchasedCartProducts: Array<CartProduct>, shopperEmail: string, shopperUsername: string, shopperUuid: string) {
+        try {
+            const purchasedCart = new PurchasedCart(purchasedCartProducts, shopperEmail, shopperUsername, shopperUuid);
+            this.purchasedCarts.push(purchasedCart);
 
             this.updateStoreJson();
 

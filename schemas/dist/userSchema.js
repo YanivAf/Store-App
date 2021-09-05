@@ -5,7 +5,7 @@ exports.userSchema = {
     type: "object",
     properties: {
         email: { type: "string", format: 'email' },
-        username: { type: "string", pattern: '^[a-zA-Z ]{2,40}$' },
+        username: { type: "string", pattern: '^[a-zA-Z0-9 ]{2,20}$' },
         password: { type: "string", pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$" },
         adminRegisterForm: { type: "boolean" },
         adminLoginForm: { type: "boolean" }

@@ -9,6 +9,7 @@
         integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://kit.fontawesome.com/3d6c8f810b.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
@@ -28,25 +29,11 @@
     <main class="main" id="productUuid">
         <h1 class="main__item main__item--product-name" id="product-name">productName</h1>
 
-        <div class="main__item product">
-            <div class="product__item product__item--description">
-                product description 
-            </div>
-            <div class="product__item product__item--price ">
-                product price
-            </div>
-            <div class="product__item product__item--image">
-                <img src="" />
-            </div>
-            <div class="product__item product__item--in-stock">
-                x in stock
-            </div>
-        </div>
     </main>
 
     <script src="./dist/helper-errors.min.js"></script>
-    <script src="./dist/helper-user-details.min.js"></script>
-    <script src="./dist/product.min.js"></script>
+    <script async src="./dist/helper-user-details.min.js"></script>
+    <script async id="async-script" data-src="./dist/product.min.js"></script>
     <script src="./dist/helper-shopper-options.min.js"></script>
     <script src="./dist/helper-admin-options.min.js"></script>
 </body>

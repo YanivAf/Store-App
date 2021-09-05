@@ -85,23 +85,60 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
     }
 }
 
+const addProductForm: HTMLFormElement = document.querySelector('#add-product-form')
+
 function renderProductForm() {
-    const productsElement: HTMLElement = document.querySelector('.products');
-    const formHTML: string = `
-    <form class="main__item main__item--add-product-form product-large" id="add-product-form">
+    try {
+        addProductForm.style.display = 'unset';
+        const formInnerHTML: string = `
         <h3 class="product-large__item product-large__item--title" >Add a new product</h3>
-        <input class="product-large__item product-large__item--name" type="text" minLength="2" maxLength="40" placeholder="Product Name" />
+        <input class="product-large__item product-large__item--name" type="text" name="productName" minLength="2" maxLength="40" placeholder="Product Name" required />
         <div class="product-large__item product-large__item--img">
             <img id="productImg" src="./images/cart-wp.png">
-            <input class="product-large__item product-large__item--img" type="file" name="image" onchange="readURL(this)" />
+            <input class="button" type="file" name="productImage" onchange="readURL(this)" required />
         </div>
-        <textarea class="product-large__item product-large__item--description" minLength="10" maxLength="500" placeholder="Product Description"></textarea>
-        <input class="product-large__item product-large__item--price" type="number" min="0" max="5000" placeholder="Price ($)" />
-        <input class="product-large__item product-large__item--in-stock" type="number" min="0" max="500" placeholder="In Stock" />
-        <input class="product-large__item product-large__item--submit" type="submit" value="Add" />
-    </form>`;
+        <textarea class="product-large__item product-large__item--description" name="productDescription" minLength="10" maxLength="300" placeholder="Product Description (10-300 characters)" required></textarea>
+        <input class="product-large__item product-large__item--price" type="number" name="productPrice" min="0" max="5000" placeholder="Price ($)" required />
+        <input class="product-large__item product-large__item--in-stock" type="number" name="productInStock" min="0" max="500" placeholder="In Stock" required />
+        <input class="product-large__item product-large__item--submit button" type="submit" value="Add" />`;
 
-    productsElement.insertAdjacentHTML('afterend',formHTML);
+        addProductForm.innerHTML = formInnerHTML;
+    } catch (error) {
+        console.error(error.message);
+    }
 }
 
 getStore();
+
+addProductForm.addEventListener('submit', ev => addProduct(ev));
+
+async function addProduct(ev) {
+    try {
+
+        ev.target.preventDefault();
+
+        let { productName, productDescription, productPrice, productImage, productInStock } = ev.target.elements;
+        productName = productName.value;
+        productDescription = productDescription.value;
+        productPrice = productPrice.value;
+        productImage = productImage.value;
+        productInStock = productInStock.value;
+
+        ev.target.reset();
+        
+        const addProductToStore = await axios.post(`/store/product`, { storeUuid, productName, productDescription, productPrice, productImage, productInStock });
+        const { store } = addProductToStore.data;
+        
+        swal({
+            title: 'Congrats!',
+            text: `${productName} was added to your store!`,
+            icon: "success",
+            button: "Cool",
+        });
+
+        renderStore(store, true);
+
+    } catch (error) {
+        console.error(error.message);
+    }
+}

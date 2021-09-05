@@ -1,7 +1,14 @@
-const updateQuantityAncestor: HTMLElement = document.querySelector('.products');
+let updateQuantityAncestor: HTMLElement
 
-updateQuantityAncestor.addEventListener('click', ev => updateQuantity(ev));
-updateQuantityAncestor.addEventListener('change', ev => updateQuantity(ev));
+if (window.location.pathname === '/store.html') {
+  updateQuantityAncestor = document.querySelector('.products');
+  updateQuantityAncestor.addEventListener('click', ev => updateQuantity(ev));
+  updateQuantityAncestor.addEventListener('change', ev => updateQuantity(ev));
+} else {
+  updateQuantityAncestor = document.querySelector('.main');
+  updateQuantityAncestor.addEventListener('click', ev => updateQuantity(ev));
+  updateQuantityAncestor.addEventListener('change', ev => updateQuantity(ev));
+}
 
 async function updateQuantity(ev: any) {
   try {
@@ -24,13 +31,14 @@ async function updateQuantity(ev: any) {
     else productQuantity = ev.target.valueAsNumber;
 
     const productDiv: HTMLElement = ev.target.parentElement.parentElement;
-    const productUuid: string = productDiv.getAttribute('id');
+    const productUuid: string = (window.location.pathname === '/product.html') ? productUuidParams : productDiv.getAttribute('id') ;
 
     const updateCartProductQuantity = await axios.put('/user/cart', { productUuid, productQuantity });
     const { cartProducts, storeProducts } = updateCartProductQuantity.data;
 
-    renderShopperCart(cartProducts);
+    await renderShopperCart(cartProducts);
     if (ev.target.getAttribute('id') === 'add-to-cart') renderStoreProducts(storeProducts, cartProducts, false);
+    else if (window.location.pathname === '/product.html') getProduct();
     else renderCartProducts(storeProducts, cartProducts);
     
   } catch (error) {

@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var whichHtmlFile = window.location.pathname;
 function getUserDetails() {
     return __awaiter(this, void 0, void 0, function () {
-        var userDetails, _a, user, isAdmin, isCartEmpty, error_1;
+        var userDetails, _a, user, isAdmin, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -46,17 +46,7 @@ function getUserDetails() {
                 case 1:
                     userDetails = _b.sent();
                     _a = userDetails.data, user = _a.user, isAdmin = _a.isAdmin;
-                    isCartEmpty = renderUserDetails(user, isAdmin);
-                    if ((!isAdmin) && (isCartEmpty === false) && (whichHtmlFile === '/store.html')) {
-                        swal({
-                            title: "You have items in your cart!",
-                            text: "What do you wanna do?",
-                            buttons: ['More Shopping', 'Go to Cart']
-                        }).then(function (willGoToCart) {
-                            if (willGoToCart)
-                                window.location.href = "./cart.html";
-                        });
-                    }
+                    renderUserDetails(user, isAdmin);
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _b.sent();
@@ -68,17 +58,19 @@ function getUserDetails() {
     });
 }
 getUserDetails();
+var isCartEmpty;
 var cartProductsToRender;
+var purchasedProductsToRender;
 function renderUserDetails(user, isAdmin) {
     try {
         var usernameElement = document.querySelector('.header__item--username');
         usernameElement.innerText = "Logged in as " + user.username;
         var additionalHeaderElementsHtml = '';
-        var isCartEmpty = void 0;
         cartProductsToRender = user.cart;
+        purchasedProductsToRender = user.purchased;
         if (!isAdmin) {
-            var shopperCart = renderShopperCart(cartProductsToRender);
-            isCartEmpty = shopperCart.isCartEmpty;
+            renderShopperCart(cartProductsToRender);
+            isCartEmpty = (user.cart.length === 0) ? true : false;
         }
         else {
             var navBar = { store: { aOrDiv: 'a', href: " href=\"./store.html?storeUuid=" + user.stores[0] + "\"" } };
@@ -93,18 +85,14 @@ function renderUserDetails(user, isAdmin) {
         var headerTitleElement = document.querySelector('.header__item--h1');
         headerTitleElement.insertAdjacentHTML("afterend", additionalHeaderElementsHtml);
     }
-    finally {
+    catch (error) {
+        console.error(error.message);
     }
-    return isCartEmpty;
-}
-try { }
-catch (error) {
-    console.error(error.message);
 }
 function renderShopperCart(cartProducts) {
     try {
         var inCartSum = cartProducts.reduce(function (previousValue, currentValue) { return previousValue + currentValue.quantity; }, 0);
-        var isCartEmpty = (inCartSum > 0) ? false : true;
+        var isCartEmpty_1 = (inCartSum > 0) ? false : true;
         var navBar = {
             purchased: { aOrDiv: 'a', href: ' href="./purchased.html"' },
             cart: { aOrDiv: 'a', href: ' href="./cart.html"' },
@@ -142,7 +130,6 @@ function renderShopperCart(cartProducts) {
             var headerTitleElement = document.querySelector('.header__item--h1');
             headerTitleElement.insertAdjacentHTML("afterend", shopperHeaderElementsHtml);
         }
-        return { isCartEmpty: isCartEmpty };
     }
     catch (error) {
         console.error(error.message);
@@ -154,31 +141,44 @@ function logout(ev) {
     var _this = this;
     try {
         swal({
-            title: "Bye!",
-            text: "Hope to see you again soon!",
-            buttons: ["Stay", "Byeee"],
-            dangerMode: true
-        }).then(function (willLogout) { return __awaiter(_this, void 0, void 0, function () {
-            var doLogout, username;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!willLogout) return [3 /*break*/, 2];
-                        return [4 /*yield*/, axios.get('/user/logout')];
-                    case 1:
-                        doLogout = _a.sent();
-                        username = doLogout.data.username;
-                        swal(username + ", you are now logged out \uD83D\uDD90", {
-                            icon: "success",
-                            button: "🖐"
-                        }).then(function () { window.location.href = '/'; });
-                        _a.label = 2;
-                    case 2: return [2 /*return*/];
-                }
-            });
-        }); });
+            title: "You have items in your cart!",
+            text: "What do you wanna do?",
+            buttons: ['Logout anyway', 'Go to Cart']
+        }).then(function (willGoToCart) {
+            if (willGoToCart)
+                window.location.href = "./cart.html";
+            else {
+                swal({
+                    title: "Bye!",
+                    text: "Hope to see you again soon!",
+                    buttons: ["Mmm... Stay", "Byeee"],
+                    dangerMode: true
+                }).then(function (willLogout) { return __awaiter(_this, void 0, void 0, function () {
+                    var doLogout, username;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!willLogout) return [3 /*break*/, 2];
+                                return [4 /*yield*/, axios.get('/user/logout')];
+                            case 1:
+                                doLogout = _a.sent();
+                                username = doLogout.data.username;
+                                swal(username + ", you are now logged out \uD83D\uDD90", {
+                                    icon: "success",
+                                    button: "🖐"
+                                }).then(function () { window.location.href = '/'; });
+                                _a.label = 2;
+                            case 2: return [2 /*return*/];
+                        }
+                    });
+                }); });
+            }
+        });
     }
     catch (error) {
         console.error(error.message);
     }
 }
+var asyncScript = document.querySelector('#async-script');
+asyncScript.setAttribute('src', asyncScript.getAttribute('data-src'));
+asyncScript.removeAttribute('data-src');

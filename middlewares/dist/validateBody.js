@@ -11,7 +11,8 @@ function validateBody(schema) {
             try {
                 var valid = ajv.validate(schema, req.body);
                 if (!valid) {
-                    res.status(409).send("The data you enter doesn't comply with the requirements. Please verify and try again.");
+                    console.log(ajv.errors[0]["message"]);
+                    res.status(409).send({ message: "The data you enter doesn't comply with the requirements:\n" + ajv.errors[0]["message"] + "\n\nPlease verify and try again." });
                     return;
                 }
                 next();

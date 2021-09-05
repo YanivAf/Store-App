@@ -38,7 +38,7 @@ export const showProduct = (req, res)=> { // product.html
     const users = new Users();
 
     const storeProduct: Product = store.products[productIndex];
-    const cartProduct: CartProduct = ((isAdmin) || (cartProductIndex)) ? undefined : users.users[userIndex].cart[cartProductIndex];
+    const cartProduct: CartProduct = ((isAdmin) || (cartProductIndex === -1)) ? undefined : users.users[userIndex].cart[cartProductIndex];
 
     res.send({ storeProduct, cartProduct, isAdmin });
 
@@ -61,8 +61,12 @@ export const editStoreName = (req, res)=> { // store.html
 
 export const addProduct = (req, res)=> { // store.html
   try {
+    const { storeUuid, productName, productDescription, productPrice, productImage, productInStock } = req.body;
+    const store = new Store(); // storeUuid would be used if more than 1 store
 
-    // res.send({ addProduct:true });
+    store.addProduct(productName, productDescription, productPrice, productImage, productInStock);
+
+    res.send({ store });
 
   } catch (error) {
     console.error(error);

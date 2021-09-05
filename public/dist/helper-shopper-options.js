@@ -34,16 +34,24 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var updateQuantityAncestor = document.querySelector('.products');
-updateQuantityAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
-updateQuantityAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
+var updateQuantityAncestor;
+if (window.location.pathname === '/store.html') {
+    updateQuantityAncestor = document.querySelector('.products');
+    updateQuantityAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
+    updateQuantityAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
+}
+else {
+    updateQuantityAncestor = document.querySelector('.main');
+    updateQuantityAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
+    updateQuantityAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
+}
 function updateQuantity(ev) {
     return __awaiter(this, void 0, void 0, function () {
         var productQuantity, cancelDelete, productDiv, productUuid, updateCartProductQuantity, _a, cartProducts, storeProducts, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 6, , 7]);
+                    _b.trys.push([0, 7, , 8]);
                     if (((ev.target.getAttribute('id') !== 'add-to-cart') && (!ev.target.classList.contains('update-cart-qunatity')) && (!ev.target.classList.contains('remove-from-cart')))
                         || ((ev.type === 'click') && (ev.target.classList.contains('update-cart-qunatity'))))
                         return [2 /*return*/];
@@ -71,22 +79,26 @@ function updateQuantity(ev) {
                     _b.label = 4;
                 case 4:
                     productDiv = ev.target.parentElement.parentElement;
-                    productUuid = productDiv.getAttribute('id');
+                    productUuid = (window.location.pathname === '/product.html') ? productUuidParams : productDiv.getAttribute('id');
                     return [4 /*yield*/, axios.put('/user/cart', { productUuid: productUuid, productQuantity: productQuantity })];
                 case 5:
                     updateCartProductQuantity = _b.sent();
                     _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts;
-                    renderShopperCart(cartProducts);
+                    return [4 /*yield*/, renderShopperCart(cartProducts)];
+                case 6:
+                    _b.sent();
                     if (ev.target.getAttribute('id') === 'add-to-cart')
                         renderStoreProducts(storeProducts, cartProducts, false);
+                    else if (window.location.pathname === '/product.html')
+                        getProduct();
                     else
                         renderCartProducts(storeProducts, cartProducts);
-                    return [3 /*break*/, 7];
-                case 6:
+                    return [3 /*break*/, 8];
+                case 7:
                     error_1 = _b.sent();
                     console.error(error_1.message);
-                    return [3 /*break*/, 7];
-                case 7: return [2 /*return*/];
+                    return [3 /*break*/, 8];
+                case 8: return [2 /*return*/];
             }
         });
     });

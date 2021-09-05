@@ -5,17 +5,7 @@ async function getUserDetails() {
         const userDetails = await axios.get('/user/details');
         const { user, isAdmin } = userDetails.data;
 
-        const isCartEmpty: boolean = renderUserDetails(user, isAdmin);
-
-        if ((!isAdmin) && (isCartEmpty === false) && (whichHtmlFile === '/store.html')) {
-            swal({
-                title: `You have items in your cart!`,
-                text: `What do you wanna do?`,
-                buttons: ['More Shopping', 'Go to Cart'],
-            }).then((willGoToCart) => {
-                if (willGoToCart) window.location.href = `./cart.html`;
-            });
-        }
+        renderUserDetails(user, isAdmin);
                 
     } catch (error) {
         console.error(error.message);
@@ -24,7 +14,9 @@ async function getUserDetails() {
 
 getUserDetails();
 
+let isCartEmpty: boolean;
 let cartProductsToRender: Array<any>;
+let purchasedProductsToRender: Array<any>;
 
 function renderUserDetails(user: any, isAdmin: boolean) {
     try {
@@ -32,12 +24,12 @@ function renderUserDetails(user: any, isAdmin: boolean) {
         usernameElement.innerText = `Logged in as ${user.username}`;
 
         let additionalHeaderElementsHtml: string = '';
-        let isCartEmpty: boolean;
         cartProductsToRender = user.cart;
+        purchasedProductsToRender = user.purchased;
 
         if (!isAdmin) {
-            const shopperCart: any = renderShopperCart(cartProductsToRender);
-            isCartEmpty = shopperCart.isCartEmpty;
+            renderShopperCart(cartProductsToRender);
+            isCartEmpty = (user.cart.length === 0) ? true : false;
         } else {
             const navBar: any = { store: { aOrDiv: 'a', href: ` href="./store.html?storeUuid=${user.stores[0]}"` } }
             let addProductHtml: string = '';
@@ -56,12 +48,10 @@ function renderUserDetails(user: any, isAdmin: boolean) {
                 <img src="./images/store.png" title="Your store" />
             </${navBar.store.aOrDiv}>
             ${addProductHtml}`;
-            }
-            const headerTitleElement: HTMLElement = document.querySelector('.header__item--h1');
-            headerTitleElement.insertAdjacentHTML("afterend",additionalHeaderElementsHtml);
         }
-
-        return isCartEmpty;
+        
+        const headerTitleElement: HTMLElement = document.querySelector('.header__item--h1');
+        headerTitleElement.insertAdjacentHTML("afterend",additionalHeaderElementsHtml);
 
     } catch (error) {
         console.error(error.message);
@@ -133,8 +123,6 @@ function renderShopperCart(cartProducts: Array<any>) {
             headerTitleElement.insertAdjacentHTML("afterend",shopperHeaderElementsHtml);
         }
 
-        return { isCartEmpty };
-
     } catch (error) {
         console.error(error.message);
     }
@@ -146,23 +134,38 @@ logoutBtn.addEventListener('click', ev => logout(ev));
 
 function logout(ev: any) {
   try {
-      swal({
-          title: `Bye!`,
-          text: `Hope to see you again soon!`,
-          buttons: ["Stay", "Byeee"],
-          dangerMode: true
-        }).then( async (willLogout) => {
-            if (willLogout) {
-                const doLogout = await axios.get('/user/logout');
-                const { username } = doLogout.data;
-                swal(`${username}, you are now logged out 🖐`, {
-                    icon: "success",
-                    button: "🖐"
-                }).then( () => {window.location.href = '/';});
-            }
-        });
+    swal({
+        title: `You have items in your cart!`,
+        text: `What do you wanna do?`,
+        buttons: ['Logout anyway', 'Go to Cart'],
+    }).then((willGoToCart) => {
+        if (willGoToCart) window.location.href = `./cart.html`;
+        else {
+            swal({
+                title: `Bye!`,
+                text: `Hope to see you again soon!`,
+                buttons: ["Mmm... Stay", "Byeee"],
+                dangerMode: true
+            }).then( async (willLogout) => {
+                if (willLogout) {
+                    const doLogout = await axios.get('/user/logout');
+                    const { username } = doLogout.data;
+                    swal(`${username}, you are now logged out 🖐`, {
+                        icon: "success",
+                        button: "🖐"
+                    }).then( () => { window.location.href = '/'; });
+                  }
+            })
+        }
+    });
+      
 
     } catch (error) {
     console.error(error.message);
     }
 }
+
+const asyncScript: HTMLScriptElement = document.querySelector('#async-script');
+
+asyncScript.setAttribute('src', asyncScript.getAttribute('data-src'));
+asyncScript.removeAttribute('data-src');

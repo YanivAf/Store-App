@@ -84,7 +84,8 @@ export class Users {
                 storeUuid = uuidv4(); /// if a store doesn't exist - create it
                 const store = new Store();
                 store.storeUuid = storeUuid;
-                fs.writeFileSync(storeJsonPath, JSON.stringify(store)); 
+                store.updateStoreJson();
+
             } else storeUuid = this.users[firstAdminIndex].stores[0]; // else - assign the existing store (currently only 1 exists)
 
             return storeUuid;
@@ -188,7 +189,7 @@ export class Users {
                 this.users[shopperIndex].cart[cartProductIndex].productName = cartProductName;
             }
 
-            fs.writeFileSync(storeJsonPath, JSON.stringify(store));
+            store.updateStoreJson();
             this.updateUsersJson();
 
             return this.users[shopperIndex].cart;
@@ -208,6 +209,13 @@ export class Users {
                     this.users[shopperIndex].purchased[cartProductIndex].totalPrice += cartProduct.totalPrice;
                 }
             });
+
+            const purchasedCartProducts: Array<CartProduct> = this.users[shopperIndex].cart;
+            const shopperEmail: string = this.users[shopperIndex].email;
+            const shopperUsername: string = this.users[shopperIndex].username;
+            const shopperUuid: string = this.users[shopperIndex].userUuid;
+            const store = new Store();
+            store.addPurchesedCart(purchasedCartProducts, shopperEmail, shopperUsername, shopperUuid);
 
         } catch (error) {
             console.error(error.message);

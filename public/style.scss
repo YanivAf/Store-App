@@ -54,10 +54,6 @@ a {
     }
   }
 
-  .hide {
-      display: none;
-  }
-
   .form-inputs {
     display: flex;
     flex-direction: column;
@@ -331,18 +327,24 @@ a {
         display: grid;
         align-items: center;
         grid-template-columns: 1fr 1fr 1fr 1fr;
-        grid-template-rows: 0.5fr 0.5fr 1fr 1fr 1fr 1fr 0.5fr;
+        grid-template-rows: 0.5fr 0.5fr 1fr 0.5fr 0.5fr 1fr 1fr 1fr 0.5fr;
         grid-template-areas:
         "title title title title"
         "product product product product"
         "img img img price"
         "img img img stock"
+        "img img img quantity"
+        "desc desc desc desc"
         "desc desc desc desc"
         "desc desc desc desc"
         ". submit submit .";
     
         &__item {
             margin: 0 auto;
+
+            &--buttons {
+                grid-area: title;
+            }
 
             &--title {
                 grid-area: title;
@@ -358,26 +360,45 @@ a {
                 display: flex;
                 flex-direction: column;
                 
-                img {
-                    max-width: 75%;
-                    max-height: 120px;
+                img,input {
+                    margin: 0 auto;
+                    font-size: clamp(8px, 2vw, 16px);
+                    border-radius: 5px;
+                    max-width: 25vw;
+                    max-height: 12.5vw;
                 }
             }
 
             &--description {
                 grid-area: desc;
                 text-align: left;
+                border: 1px solid black;
+                border-radius: 10px;
+                padding: 5px;
                 resize: none;
-                width: 90%;
+                width: 95%;
                 height: 90%;
             }
 
             &--price {
                 grid-area: price;
+                
+                h3,p {
+                    margin: 0;
+                }
             }
 
             &--in-stock {
                 grid-area: stock;
+            }
+
+            &--quantity {
+                grid-area: quantity;
+
+                input {
+                    font-size: clamp(8px, 2vw, 16px);
+                    width: 7.5vw;
+                }
             }
 
             &--submit {
@@ -406,6 +427,7 @@ a {
             width: 90vw;
 
             h4 {
+                margin: 0;
                 flex: 1;
             }
         }
@@ -442,51 +464,6 @@ a {
                 -webkit-line-clamp: 1;
                 width: 70%;
                 -webkit-box-orient: vertical;
-            }
-
-            &--price {
-
-            }
-
-            &--stock {
-
-            }
-        }
-        
-        .product-buttons {
-            width: 70%;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-
-            &__item {
-                border: 0;
-                padding: 0;
-
-                &--info {
-                    color: gray;
-
-                    &:hover {
-                        color: lightgray;
-                    }
-                }
-
-                &--cart-add {
-                    color: darkgreen;
-                    cursor: pointer;
-
-                    &:hover {
-                        color: green;
-                    }
-                }
-
-                &--cart-added {
-                    color: lightgreen;
-
-                    &:hover {
-                        color: green;
-                    }
-                }
             }
         }
     }
@@ -570,4 +547,45 @@ a {
             margin: 0;
         }
     }
+}
+
+.product-buttons {
+    width: 70%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    &__item {
+        border: 0;
+        padding: 0;
+
+        &--info {
+            color: gray;
+
+            &:hover {
+                color: lightgray;
+            }
+        }
+
+        &--cart-add {
+            color: darkgreen;
+            cursor: pointer;
+
+            &:hover {
+                color: green;
+            }
+        }
+
+        &--cart-added {
+            color: lightgreen;
+
+            &:hover {
+                color: green;
+            }
+        }
+    }
+}
+
+.hide {
+    display: none;
 }

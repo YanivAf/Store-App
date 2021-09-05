@@ -33,7 +33,7 @@ exports.showProduct = function (req, res) {
         var store = new Store();
         var users = new Users();
         var storeProduct = store.products[productIndex];
-        var cartProduct = ((isAdmin) || (cartProductIndex)) ? undefined : users.users[userIndex].cart[cartProductIndex];
+        var cartProduct = ((isAdmin) || (cartProductIndex === -1)) ? undefined : users.users[userIndex].cart[cartProductIndex];
         res.send({ storeProduct: storeProduct, cartProduct: cartProduct, isAdmin: isAdmin });
     }
     catch (error) {
@@ -52,7 +52,10 @@ exports.editStoreName = function (req, res) {
 };
 exports.addProduct = function (req, res) {
     try {
-        // res.send({ addProduct:true });
+        var _a = req.body, storeUuid = _a.storeUuid, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productImage = _a.productImage, productInStock = _a.productInStock;
+        var store = new Store(); // storeUuid would be used if more than 1 store
+        store.addProduct(productName, productDescription, productPrice, productImage, productInStock);
+        res.send({ store: store });
     }
     catch (error) {
         console.error(error);

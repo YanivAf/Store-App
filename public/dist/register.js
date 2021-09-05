@@ -50,12 +50,12 @@ function register(ev) {
                     password = password.value;
                     passwordVerify = passwordVerify.value;
                     adminRegisterForm_1 = window.location.href.indexOf("shopper") === -1 ? true : false;
-                    passRegExRule = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,8}$/;
+                    passRegExRule = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
                     passRegEx = new RegExp(passRegExRule, "gm");
                     if (!passRegEx.test(password)) {
                         swal({
                             title: 'Password Not Secured Enough',
-                            text: "Your password must contain 6-8 characters, at least one uppercase letter, one lowercase letter, one number and one special character. Please try again",
+                            text: "Your password must contain at least 8 characters, at least one uppercase letter, one lowercase letter, one number and one special character. Please try again",
                             icon: "warning",
                             button: "Try again"
                         });

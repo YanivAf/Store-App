@@ -1,6 +1,12 @@
-const updateProductAncestor: HTMLElement = document.querySelector('.product');
+let updateProductAncestor: HTMLElement
 
-updateProductAncestor.addEventListener('submit', ev => updateProduct(ev));
+if (window.location.pathname === '/store.html') {
+  updateProductAncestor = document.querySelector('.products');
+  updateProductAncestor.addEventListener('click', ev => updateProduct(ev));
+} else {
+  updateProductAncestor = document.querySelector('.main');
+  updateProductAncestor.addEventListener('submit', ev => updateProduct(ev));
+}
 
 async function updateProduct(ev: any) {
   try {

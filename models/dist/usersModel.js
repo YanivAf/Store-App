@@ -67,7 +67,7 @@ var Users = /** @class */ (function () {
                 storeUuid = uuidv4(); /// if a store doesn't exist - create it
                 var store = new Store();
                 store.storeUuid = storeUuid;
-                fs.writeFileSync(storeJsonPath, JSON.stringify(store));
+                store.updateStoreJson();
             }
             else
                 storeUuid = this.users[firstAdminIndex].stores[0]; // else - assign the existing store (currently only 1 exists)
@@ -154,7 +154,7 @@ var Users = /** @class */ (function () {
                 this.users[shopperIndex].cart[cartProductIndex].totalPrice = cartProductQuantity * cartProductPrice;
                 this.users[shopperIndex].cart[cartProductIndex].productName = cartProductName;
             }
-            fs.writeFileSync(storeJsonPath, JSON.stringify(store));
+            store.updateStoreJson();
             this.updateUsersJson();
             return this.users[shopperIndex].cart;
         }
@@ -174,6 +174,12 @@ var Users = /** @class */ (function () {
                     _this.users[shopperIndex].purchased[cartProductIndex].totalPrice += cartProduct.totalPrice;
                 }
             });
+            var purchasedCartProducts = this.users[shopperIndex].cart;
+            var shopperEmail = this.users[shopperIndex].email;
+            var shopperUsername = this.users[shopperIndex].username;
+            var shopperUuid = this.users[shopperIndex].userUuid;
+            var store = new Store();
+            store.addPurchesedCart(purchasedCartProducts, shopperEmail, shopperUsername, shopperUuid);
         }
         catch (error) {
             console.error(error.message);
