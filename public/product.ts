@@ -1,10 +1,7 @@
 async function getProduct() {
     try {
-        const url = new URL(window.location.href);
-        const productUuidParams = url.searchParams.get("productUuid");
-        
-        const getProductDetails = await axios.get(`/store/product/${productUuidParams}`);
-        const { storeProduct, cartProduct, isAdmin } = getProductDetails.data;
+        const getProductDetails = await axios.get(`/store/${storeUuid}/product/${productUuid}`);
+        const { storeProduct, cartProduct } = getProductDetails.data;
 
         renderProduct(storeProduct, cartProduct, isAdmin);
 
@@ -35,12 +32,16 @@ async function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boole
             </div>
             <textarea class="product-large__item product-large__item--description" name="productDescription" minLength="10" maxLength="300" placeholder="Product Description (10-300 characters)" required>${storeProduct.productDescription}</textarea>
             <div class="product-large__item product-large__item--price">
-                <label for="productPrice">Price ($)</label>
                 <input type="number" name="productPrice" min="0" max="5000" placeholder="Price ($)" step=".01" pattern="^\\d+(?:\\.\\d{1,2})?$" value="${(Math.round(storeProduct.productPrice * 100) / 100).toFixed(2)}" required />
+                <label for="productPrice">Price ($)</label>
             </div>
-            <div lass="product-large__item product-large__item--in-stock">
-                <label for="productInStock">In Stock</label>
+            <div class="product-large__item product-large__item--sale">
+                <input type="number" name="precentsOff" min="0" max="100" placeholder="% Off" value="${storeProduct.precentsOff}" />
+                <label for="precentsOff">% Off</label>
+            </div>
+            <div class="product-large__item product-large__item--in-stock">
                 <input type="number" name="productInStock" min="0" max="500" placeholder="In Stock" value="${storeProduct.inStock}" required />
+                <label for="productInStock">In Stock</label>
             </div>
             <input class="product-large__item product-large__item--submit button" type="submit" value="Update" />`;
 
@@ -71,15 +72,24 @@ async function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boole
                 </a>`;
             }
 
+            let saleTagHtml: string = ``;
+            let salePriceHtml: string = ``;
+            const isOnSale: boolean = (storeProduct.precentsOff > 0) ? true : false;
+            if (isOnSale) {
+                saleTagHtml = `<h5 class="product-large__item product-large__item--sale">${storeProduct.precentsOff}% off!</h5>`;
+                salePriceHtml = `<br /><span style="font-size: 12px; color: lightgrey; text-decoration: line-through;">${(Math.round(storeProduct.productPrice * 100) / 100).toFixed(2)}$</span>`;
+            }
+
             productHtml = `
             <div class="main__item main__item--product-details product-large">
+                ${saleTagHtml}
                 <div class="product-large__item product-large__item--buttons product-buttons">${buttonsByRole}</div>
                 <div class="product-large__item product-large__item--img">
                     <img id="productImg" src="${storeProduct.productImage}" title="${storeProduct.productName}">
                 </div>
                 <article class="product-large__item product-large__item--description" title="Product Description">${storeProduct.productDescription}</article>
                 <div class="product-large__item product-large__item--price">
-                    <h3>${(Math.round(storeProduct.productPrice * 100) / 100).toFixed(2)}$</h3>
+                    <h3>${(Math.round((storeProduct.productPrice - storeProduct.productPrice * (storeProduct.precentsOff / 100)) * 100) / 100).toFixed(2)}$${salePriceHtml}</h3>
                     <p>per unit</p>
                 </div>
                 <p class="product-large__item product-large__item--in-stock" title="In Stock" style="color:${inStockColor}">${inStockText}</p>

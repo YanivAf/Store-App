@@ -7,16 +7,27 @@ const { productSchema } = require('../../schemas/dist/productSchema');
 const { uploadImage } = require('../../middlewares/dist/uploadImage');
 const { validateBody } = require('../../middlewares/dist/validateBody');
 const { isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin } = require('../../middlewares/dist/userMiddlewares');
-const { doesProductExist } = require('../../middlewares/dist/storeMiddlewares');
+const { doesStoreExist, doesProductExist } = require('../../middlewares/dist/storeMiddlewares');
 const { showStores, showProducts, showProduct, editStoreName, addProduct, editProduct, deleteProduct } = require('../../controllers/dist/storeControllers');
 
 router
-    .get('/list', isLoggedInAndAuthenticated, doesUserExist, isAdmin, showStores)
-    .get('/:storeUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, showProducts)
-    .get('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, doesProductExist, showProduct)
-    .put('/', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, editStoreName)
-    .put('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, uploadImage.single('productImage'), validateBody(productSchema), editProduct)
-    .post('/addProduct', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, uploadImage.single('productImage'), validateBody(productSchema), addProduct)
-    .delete('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, deleteProduct);
+    .use(isLoggedInAndAuthenticated, doesUserExist, isAdmin)
+    .use('/:storeUuid', doesStoreExist)
+    .use('/:storeUuid/product/:productUuid', doesProductExist);
+
+router
+    .get('/list', showStores)
+    .get('/:storeUuid', showProducts)
+    .get('/:storeUuid/product/:productUuid', showProduct);
+
+router.use('/:storeUuid', onlyAdmin);
+
+router
+    .put('/:storeUuid', editStoreName)
+    .put('/:storeUuid/product/:productUuid', uploadImage.single('productImage'), validateBody(productSchema), editProduct)
+    .post('/:storeUuid/product', uploadImage.single('productImage'), validateBody(productSchema), addProduct)
+    .delete('/:storeUuid/product/:productUuid', deleteProduct);
 
 module.exports = router;
+
+// TODO for modifying a store - add middleware to check if the admin is the edited sotre's admin, not just any admin

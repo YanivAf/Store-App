@@ -26,14 +26,20 @@ async function updateQuantity(ev: any) {
         buttons: ['Nope', 'Yup'],
     });
       if (!cancelDelete) return;
-      productQuantity = 0;
+      productQuantity = -1;
     }
     else productQuantity = ev.target.valueAsNumber;
 
     const productDiv: HTMLElement = ev.target.parentElement.parentElement;
-    const productUuid: string = (whichHtmlFile === '/product.html') ? productUuidParams : productDiv.getAttribute('id') ;
-
-    const updateCartProductQuantity = await axios.put('/user/cart', { productUuid, productQuantity });
+    
+    productUuid = url.searchParams.get("productUuid");
+    productUuid = productUuid ?? productDiv.getAttribute('id');
+    let storeA: HTMLElement = productDiv.querySelector('.product__item--img');
+    if (whichHtmlFile === '/product.html') storeA = productDiv.querySelector('.product-large__item--img');
+    else if (whichHtmlFile === '/cart.html') storeA = productDiv.querySelector('.product-row__item--img');
+    storeUuid = url.searchParams.get("storeUuid");
+    storeUuid = ((!storeUuid) || (storeUuid === 'mall')) ? storeA.getAttribute('href').replace(/^(.)*storeUuid=/g, '').replace(/[&](.)*$/g, '') : storeUuid;
+    const updateCartProductQuantity = await axios.put('/user/cart', { storeUuid, productUuid, productQuantity });
     const { cartProducts, storeProducts } = updateCartProductQuantity.data;
 
     await renderShopperCart(cartProducts);

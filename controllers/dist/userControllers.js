@@ -4,7 +4,7 @@ exports.purchaseCart = exports.deleteFromCart = exports.updateQuantity = exports
 var secret = require('../../secret/dist/secret').secret;
 var jwt = require('jsonwebtoken');
 var _a = require('../../models/dist/usersModel'), Users = _a.Users, User = _a.User, CartProduct = _a.CartProduct;
-var _b = require('../../models/dist/storeModel'), Product = _b.Product, Store = _b.Store;
+var _b = require('../../models/dist/storesModel'), Product = _b.Product, Store = _b.Store, Stores = _b.Stores;
 function welcome(req, res) {
     try {
         var userIndex = req.userIndex, isAdmin = req.isAdmin;
@@ -75,11 +75,10 @@ function logout(req, res) {
 exports.logout = logout;
 exports.details = function (req, res) {
     try {
-        var userIndex = req.userIndex;
-        var isAdmin = req.isAdmin;
+        var userIndex = req.userIndex, isAdmin = req.isAdmin;
         var users = new Users();
         var user = users.users[userIndex];
-        res.send({ user: user, isAdmin: isAdmin });
+        res.send({ user: user, isUserAdmin: isAdmin });
     }
     catch (error) {
         console.error(error);
@@ -90,10 +89,10 @@ function updateQuantity(req, res) {
     try {
         var _a = req.body, productUuid = _a.productUuid, productQuantity = _a.productQuantity;
         var users = new Users();
-        var userUuid = req.userUuid;
-        var cartProducts = users.updateCartProductQuantity(userUuid, productUuid, productQuantity);
-        var store = new Store();
-        res.send({ cartProducts: cartProducts, storeProducts: store.products });
+        var userIndex = req.userIndex, cartProductIndex = req.cartProductIndex, storeUuid = req.storeUuid, storeIndex = req.storeIndex, productIndex = req.productIndex;
+        var cartProducts = users.updateCartProductQuantity(userIndex, cartProductIndex, storeUuid, storeIndex, productUuid, productIndex, productQuantity);
+        var stores = new Stores();
+        res.send({ cartProducts: cartProducts, storeProducts: stores.stores[storeIndex].products });
     }
     catch (error) {
         console.error(error);

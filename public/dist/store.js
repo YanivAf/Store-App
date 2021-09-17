@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function getStore() {
     return __awaiter(this, void 0, void 0, function () {
-        var getStoreDetails, _a, store, isAdmin, error_1;
+        var getStoreDetails, _a, stores, store, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -44,8 +44,8 @@ function getStore() {
                     return [4 /*yield*/, axios.get("/store/" + storeUuid)];
                 case 1:
                     getStoreDetails = _b.sent();
-                    _a = getStoreDetails.data, store = _a.store, isAdmin = _a.isAdmin;
-                    renderStore(store, isAdmin);
+                    _a = getStoreDetails.data, stores = _a.stores, store = _a.store;
+                    renderStore(stores, store, isAdmin);
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _b.sent();
@@ -56,14 +56,23 @@ function getStore() {
         });
     });
 }
-function renderStore(store, isAdmin) {
+function renderStore(stores, store, isAdmin) {
     try {
-        var storeName = store.storeName, products = store.products;
+        var storeName = void 0, products_1;
+        if (stores) {
+            storeName = 'Virtual Mall';
+            products_1 = [];
+            stores.stores.forEach(function (store) { products_1 = products_1.concat(store.products); });
+        }
+        else {
+            storeName = store.storeName;
+            products_1 = store.products;
+        }
         var storeNameElement = document.querySelector('.main__item--store-name');
         storeNameElement.innerText = storeName;
         var pageTitle = document.querySelector('title');
         pageTitle.innerText = storeName;
-        renderStoreProducts(products, cartProductsToRender, isAdmin);
+        renderStoreProducts(products_1, cartProductsToRender, isAdmin);
         if (isAdmin)
             renderProductForm();
     }
@@ -79,20 +88,22 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
         productsHtml = (!AreThereProducts) ? 'no products to show!'
             :
                 products.map(function (product) {
-                    var buttonsByRole;
+                    var buttonsByRole = "";
                     if (isAdmin)
                         buttonsByRole = "\n                <a href=\"./product.html?productUuid=" + product.productUuid + "\" class=\"product-buttons__item product-buttons__item--info fas fa-info\" >\n                    <i title=\"View & change " + product.productName + "\"></i>\n                </a>";
                     else {
+                        if (storeUuid)
+                            buttonsByRole = "\n                <a href=\"./store.html?storeUuid=" + product.storeUuid + "\" class=\"product-buttons__item product-buttons__item--store\">\n                    <i class=\"fas fa-store\" title=\"See all store's products\"></i>\n                </a>";
                         var cartProductIndex = cartProducts.findIndex(function (cartProduct) { return cartProduct.productUuid === product.productUuid; });
                         if (cartProductIndex === -1)
-                            buttonsByRole = "<i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus\" id=\"add-to-cart\" title=\"Add " + product.productName + " to cart\"></i>";
+                            buttonsByRole += "<i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus\" id=\"add-to-cart\" title=\"Add " + product.productName + " to cart\"></i>";
                         else
-                            buttonsByRole = "<a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\"><i class=\"fas fa-shopping-cart\" title=\"See " + product.productName + " in your cart\"></i></a>";
+                            buttonsByRole += "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + product.productName + " in your cart\"></i>\n                </a>";
                     }
                     var inStockText;
                     var inStockColor;
                     var isInStock = (product.inStock > 0) ? true : false;
-                    if (product.inStock > 0) {
+                    if (isInStock) {
                         inStockText = product.inStock + " left";
                         inStockColor = (product.inStock > 5) ? 'green' : 'orange';
                     }
@@ -100,9 +111,16 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
                         inStockText = 'Out of Stock';
                         inStockColor = 'red';
                     }
+                    var saleTagHtml = "";
+                    var salePriceHtml = "";
+                    var isOnSale = (product.precentsOff > 0) ? true : false;
+                    if (isOnSale) {
+                        saleTagHtml = "<h5 class=\"product__item product__item--sale\">" + product.precentsOff + "% off!</h5>";
+                        salePriceHtml = "<br /><span style=\"font-size: 12px; color: lightgrey; text-decoration: line-through;\">" + (Math.round(product.productPrice * 100) / 100).toFixed(2) + "$</span>";
+                    }
                     var productHtml = ((!isAdmin) && (!isInStock)) ? ''
                         :
-                            "<div class=\"products__item product\" id=\"" + product.productUuid + "\">\n                <h3 class=\"product__item product__item--name\">" + product.productName + "</h3>\n                <a href=\"./product.html?productUuid=" + product.productUuid + "\" class=\"product__item product__item--img\">\n                    <img src=\"" + product.productImage + "\" title=\"" + product.productName + "\"/>\n                </a>\n                <a href=\"./product.html?productUuid=" + product.productUuid + "\" title=\"Click for full description\" class=\"product__item product__item--description\">" + product.productDescription + "</a>\n                <h4 class=\"product__item product__item--price\">" + (Math.round(product.productPrice * 100) / 100).toFixed(2) + "$</h4>\n                <div class=\"product__item product__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                <div class=\"product__item product-buttons\">" + buttonsByRole + "</div>\n                \n            </div>";
+                            "<div class=\"products__item product\" id=\"" + product.productUuid + "\">\n                " + saleTagHtml + "\n                <h3 class=\"product__item product__item--name\">" + product.productName + "</h3>\n                <a href=\"./product.html?storeUuid=" + product.storeUuid + "&productUuid=" + product.productUuid + "\" class=\"product__item product__item--img\">\n                    <img src=\"" + product.productImage + "\" title=\"" + product.productName + "\"/>\n                </a>\n                <a href=\"./product.html?storeUuid=" + product.storeUuid + "&productUuid=" + product.productUuid + "\" title=\"Click for full description\" class=\"product__item product__item--description\">" + product.productDescription + "</a>\n                <h4 class=\"product__item product__item--price\">" + (Math.round((product.productPrice - product.productPrice * (product.precentsOff / 100)) * 100) / 100).toFixed(2) + "$" + salePriceHtml + "</h4>\n                <div class=\"product__item product__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                <div class=\"product__item product-buttons\">" + buttonsByRole + "</div>\n                \n            </div>";
                     return productHtml;
                 }).join('');
         productsElement.innerHTML = productsHtml;
@@ -115,7 +133,7 @@ function renderProductForm() {
     try {
         var addProductForm = document.querySelector('#add-product-form');
         addProductForm.style.display = 'grid';
-        var formInnerHTML = "\n        <h3 class=\"product-large__item product-large__item--title\" >Add a new product</h3>\n        <input class=\"product-large__item product-large__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" required />\n        <div class=\"product-large__item product-large__item--img\">\n            <img id=\"product-preview\" src=\"./images/cart-wp.png\">\n            <input id=\"product-image\" class=\"button\" type=\"file\" name=\"productImage\" accept=\"image/*\" onchange=\"readURL(this)\" />\n        </div>\n        <textarea class=\"product-large__item product-large__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required></textarea>\n        <input class=\"product-large__item product-large__item--price\" type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" required />\n        <input class=\"product-large__item product-large__item--in-stock\" type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" required />\n        <input class=\"product-large__item product-large__item--submit button\" type=\"submit\" value=\"Add\" />";
+        var formInnerHTML = "\n        <h3 class=\"product-large__item product-large__item--title\" >Add a new product</h3>\n        <input class=\"product-large__item product-large__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" required />\n        <div class=\"product-large__item product-large__item--img\">\n            <img id=\"product-preview\" src=\"./images/cart-wp.png\">\n            <input id=\"product-image\" class=\"button\" type=\"file\" name=\"productImage\" accept=\"image/*\" onchange=\"readURL(this)\" />\n        </div>\n        <textarea class=\"product-large__item product-large__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required></textarea>\n        <div class=\"product-large__item product-large__item--price\">\n            <input type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" required />\n            <label for=\"productPrice\">Price ($)</label>\n        </div>\n        <div class=\"product-large__item product-large__item--sale\">\n            <input type=\"number\" name=\"precentsOff\" min=\"0\" max=\"100\" placeholder=\"% Off\" />\n            <label for=\"precentsOff\">% Off</label>\n        </div>\n        <div class=\"product-large__item product-large__item--in-stock\">\n            <input type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" required />\n            <label for=\"productInStock\">In Stock</label>\n        </div>        \n        <input class=\"product-large__item product-large__item--submit button\" type=\"submit\" value=\"Add\" />";
         addProductForm.innerHTML = formInnerHTML;
     }
     catch (error) {

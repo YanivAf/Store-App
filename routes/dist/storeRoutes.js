@@ -7,13 +7,20 @@ var productSchema = require('../../schemas/dist/productSchema').productSchema;
 var uploadImage = require('../../middlewares/dist/uploadImage').uploadImage;
 var validateBody = require('../../middlewares/dist/validateBody').validateBody;
 var _a = require('../../middlewares/dist/userMiddlewares'), isLoggedInAndAuthenticated = _a.isLoggedInAndAuthenticated, doesUserExist = _a.doesUserExist, isAdmin = _a.isAdmin, onlyAdmin = _a.onlyAdmin;
-var doesProductExist = require('../../middlewares/dist/storeMiddlewares').doesProductExist;
-var _b = require('../../controllers/dist/storeControllers'), showStores = _b.showStores, showProducts = _b.showProducts, showProduct = _b.showProduct, editStoreName = _b.editStoreName, addProduct = _b.addProduct, editProduct = _b.editProduct, deleteProduct = _b.deleteProduct;
+var _b = require('../../middlewares/dist/storeMiddlewares'), doesStoreExist = _b.doesStoreExist, doesProductExist = _b.doesProductExist;
+var _c = require('../../controllers/dist/storeControllers'), showStores = _c.showStores, showProducts = _c.showProducts, showProduct = _c.showProduct, editStoreName = _c.editStoreName, addProduct = _c.addProduct, editProduct = _c.editProduct, deleteProduct = _c.deleteProduct;
 router
-    .get('/list', isLoggedInAndAuthenticated, doesUserExist, isAdmin, showStores)
-    .get('/:storeUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, showProducts)
-    .get('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, doesProductExist, showProduct)
-    .put('/', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, editStoreName)
-    .put('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, uploadImage.single('productImage'), validateBody(productSchema), editProduct)
-    .post('/addProduct', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, uploadImage.single('productImage'), validateBody(productSchema), addProduct)["delete"]('/product/:productUuid', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyAdmin, deleteProduct);
+    .use(isLoggedInAndAuthenticated, doesUserExist, isAdmin)
+    .use('/:storeUuid', doesStoreExist)
+    .use('/:storeUuid/product/:productUuid', doesProductExist);
+router
+    .get('/list', showStores)
+    .get('/:storeUuid', showProducts)
+    .get('/:storeUuid/product/:productUuid', showProduct);
+router.use('/:storeUuid', onlyAdmin);
+router
+    .put('/:storeUuid', editStoreName)
+    .put('/:storeUuid/product/:productUuid', uploadImage.single('productImage'), validateBody(productSchema), editProduct)
+    .post('/:storeUuid/product', uploadImage.single('productImage'), validateBody(productSchema), addProduct)["delete"]('/:storeUuid/product/:productUuid', deleteProduct);
 module.exports = router;
+// TODO for modifying a store - add middleware to check if the admin is the edited sotre's admin, not just any admin

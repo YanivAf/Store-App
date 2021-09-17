@@ -47,7 +47,7 @@ else {
 }
 function updateQuantity(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var productQuantity, cancelDelete, productDiv, productUuid, updateCartProductQuantity, _a, cartProducts, storeProducts, error_1;
+        var productQuantity, cancelDelete, productDiv, storeA, updateCartProductQuantity, _a, cartProducts, storeProducts, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -72,15 +72,23 @@ function updateQuantity(ev) {
                     cancelDelete = _b.sent();
                     if (!cancelDelete)
                         return [2 /*return*/];
-                    productQuantity = 0;
+                    productQuantity = -1;
                     return [3 /*break*/, 4];
                 case 3:
                     productQuantity = ev.target.valueAsNumber;
                     _b.label = 4;
                 case 4:
                     productDiv = ev.target.parentElement.parentElement;
-                    productUuid = (whichHtmlFile === '/product.html') ? productUuidParams : productDiv.getAttribute('id');
-                    return [4 /*yield*/, axios.put('/user/cart', { productUuid: productUuid, productQuantity: productQuantity })];
+                    productUuid = url.searchParams.get("productUuid");
+                    productUuid = productUuid !== null && productUuid !== void 0 ? productUuid : productDiv.getAttribute('id');
+                    storeA = productDiv.querySelector('.product__item--img');
+                    if (whichHtmlFile === '/product.html')
+                        storeA = productDiv.querySelector('.product-large__item--img');
+                    else if (whichHtmlFile === '/cart.html')
+                        storeA = productDiv.querySelector('.product-row__item--img');
+                    storeUuid = url.searchParams.get("storeUuid");
+                    storeUuid = ((!storeUuid) || (storeUuid === 'mall')) ? storeA.getAttribute('href').replace(/^(.)*storeUuid=/g, '').replace(/[&](.)*$/g, '') : storeUuid;
+                    return [4 /*yield*/, axios.put('/user/cart', { storeUuid: storeUuid, productUuid: productUuid, productQuantity: productQuantity })];
                 case 5:
                     updateCartProductQuantity = _b.sent();
                     _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts;

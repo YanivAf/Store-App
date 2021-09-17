@@ -44,7 +44,7 @@ async function register(ev) {
       password,
       adminRegisterForm,
     });
-    const { title, text, storeUuid, isRegistered } = registerUser.data;
+    const { title, text, storeUuid } = registerUser.data;
 
     swal({
       title: title,

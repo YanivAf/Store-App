@@ -38,7 +38,7 @@ var registerForm = document.querySelector("#register-form");
 registerForm.addEventListener("submit", register);
 function register(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, email, username, password, passwordVerify, adminRegisterForm_1, passRegExRule, passRegEx, registerUser, _b, title, text, storeUuid_1, isRegistered, error_1;
+        var _a, email, username, password, passwordVerify, adminRegisterForm_1, passRegExRule, passRegEx, registerUser, _b, title, text, storeUuid_1, error_1;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -79,7 +79,7 @@ function register(ev) {
                         })];
                 case 1:
                     registerUser = _c.sent();
-                    _b = registerUser.data, title = _b.title, text = _b.text, storeUuid_1 = _b.storeUuid, isRegistered = _b.isRegistered;
+                    _b = registerUser.data, title = _b.title, text = _b.text, storeUuid_1 = _b.storeUuid;
                     swal({
                         title: title,
                         text: text,

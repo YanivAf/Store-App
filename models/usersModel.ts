@@ -4,9 +4,8 @@ const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const path = require("path");
 const usersJsonPath = path.resolve(__dirname, "../users.json");
-const storeJsonPath = path.resolve(__dirname, "../store.json");
 
-const { Product, Store } = require('./storeModel');
+const { Product, Store, Stores } = require('./storesModel');
 
 const readUsersJson = () => {
   try {
@@ -18,14 +17,33 @@ const readUsersJson = () => {
 }
 
 export class CartProduct {
+    storeUuid: string;
     productUuid: string;
     productName: string;
     totalPrice: number;
     quantity: number;
+    status: string;
+    purchasedAt: Date;
     
-    constructor(productUuid: string) {
+    constructor(storeUuid: string, productUuid: string) {
+        this.storeUuid = storeUuid;
         this.productUuid = productUuid;
         this.quantity = 1;
+        this.status = 'Awaiting Shipping';
+    }
+}
+
+export class PurchasedCart {
+    purchasedCartUuid: string;
+    purchasedCartProducts: Array<CartProduct>;
+    shippingAddress: string;
+    purchasedAt: Date;
+
+    constructor(purchasedCartProducts: Array<CartProduct>, shippingAddress: string) {
+        this.purchasedCartUuid = uuidv4();
+        this.purchasedCartProducts = purchasedCartProducts;
+        this.shippingAddress = shippingAddress;
+        this.purchasedAt = new Date();
     }
 }
 
@@ -33,19 +51,21 @@ export class User {
     userUuid: string;
     email: string;
     username: string;
+    shippingAddress: string;
     password: string;
     stores: Array<string>; // for admins
     cart: Array<CartProduct>;
-    purchased: Array<CartProduct>; // previous carts products
+    purchasedCarts: Array<PurchasedCart>; // previous carts products
     
     constructor(email: string, username: string, password: string) {
         this.userUuid = uuidv4();
         this.email = email;
         this.username = username;
+        this.shippingAddress = 'No. StreetName st., CityName, CountryName';
         this.password = password;
         this.stores = [];
         this.cart = [];
-        this.purchased = [];
+        this.purchasedCarts = [];
     }
 }
 
@@ -76,35 +96,18 @@ export class Users {
         }
     }
 
-    storeUuid(): string {
+    addUser(userEmail: string, userUsername: string, userPassword: string, shopperToAdmin: boolean, userIndex: number, role: string/*, storeUuid: string, joinStoreToken: string*/): object {
         try {
-            const firstAdminIndex: number = this.users.findIndex(user => user.stores.length > 0); 
-            let storeUuid: string;
-            if (firstAdminIndex === -1) {
-                storeUuid = uuidv4(); /// if a store doesn't exist - create it
-                const store = new Store();
-                store.storeUuid = storeUuid;
-                store.updateStoreJson();
-
-            } else storeUuid = this.users[firstAdminIndex].stores[0]; // else - assign the existing store (currently only 1 exists)
-
-            return storeUuid;
-            
-        } catch (error) {
-            console.error(error.message);
-        }
-    }
-
-    addUser(userEmail: string, userUsername: string, userPassword: string, shopperToAdmin: boolean, userIndex: number, role: string): object {
-        try {
-
             const user = new User(userEmail, userUsername, userPassword);
-
-            const storeUuid: string = (role === 'admin') ? this.storeUuid() : undefined;
-            const userUuid: string = (shopperToAdmin) ? this.users[userIndex].userUuid : user.userUuid;
             
+            const userUuid: string = (shopperToAdmin) ? this.users[userIndex].userUuid : user.userUuid;
+            let storeUuid: string = undefined;
+
             if (role === 'admin') {
-                
+                const stores = new Stores();
+                const storeIndex: number = stores.addStore([userUuid]);
+                storeUuid = stores.stores[storeIndex].storeUuid;
+
                 if (shopperToAdmin) {                        
                     this.users[userIndex].stores.push(storeUuid); // convert shopper to admin
 
@@ -112,6 +115,9 @@ export class Users {
                     user.stores.push(storeUuid);
                     this.users.push(user); // add admin
                 }
+
+                stores.updateStoresJson();
+
             } else this.users.push(user); // add shopper
 
             this.updateUsersJson();
@@ -123,9 +129,9 @@ export class Users {
         }
     }
 
-    addCartProduct(shopperIndex: number, productUuid: string): number {
+    addCartProduct(shopperIndex: number, productUuid: string, storeUuid: string): number {
         try {
-            const cartProduct = new CartProduct(productUuid);
+            const cartProduct = new CartProduct(storeUuid, productUuid);
 
             this.users[shopperIndex].cart.push(cartProduct);
             const cartProductIndex: number = this.users[shopperIndex].cart.length - 1;
@@ -150,10 +156,8 @@ export class Users {
         }
     }
 
-    deleteCartProduct(shopperUuid: string, productUuid: string) { // on direct deletion or when quantity === 0
+    deleteCartProduct(shopperIndex: number, productUuid: string) {
         try {
-            const shopperIndex: number = this.findUserIndex(shopperUuid, null);
-
             this.users[shopperIndex].cart = this.users[shopperIndex].cart.filter(cartProduct => cartProduct.productUuid !== productUuid);
 
             this.updateUsersJson();
@@ -163,33 +167,32 @@ export class Users {
         }
     }
 
-    updateCartProductQuantity(shopperUuid: string, productUuid: string, productQuantity: number): Array<CartProduct> {
+    updateCartProductQuantity(shopperIndex: number, cartProductIndex: number, storeUuid: string, storeIndex: number, productUuid: string, productIndex: number, productQuantity: number): Array<CartProduct> {
         try {
-            const shopperIndex: number = this.findUserIndex(shopperUuid, null);
-            let cartProductIndex: number = this.findCartProduct(shopperIndex, productUuid);
             const isNew: boolean = (cartProductIndex === -1) ? true : false;
-            if (isNew) cartProductIndex = this.addCartProduct(shopperIndex, productUuid);
+            if (isNew) cartProductIndex = this.addCartProduct(shopperIndex, productUuid, storeUuid);
 
-            const store = new Store();
-            const productIndex: number = store.findProductIndex(productUuid);
+            const stores = new Stores();
             const cartQuantityChange: number = (isNew) ? productQuantity : productQuantity - this.users[shopperIndex].cart[cartProductIndex].quantity;
 
-            if (productQuantity === 0) {
-                store.products[productIndex].inStock += this.users[shopperIndex].cart[cartProductIndex].quantity;
-                this.deleteCartProduct(shopperUuid, productUuid);
+            if (productQuantity === -1) {
+                stores.stores[storeIndex].products[productIndex].inStock += this.users[shopperIndex].cart[cartProductIndex].quantity;
+                this.deleteCartProduct(shopperIndex, productUuid);
             } else {
-                store.products[productIndex].inStock -= cartQuantityChange;
+                stores.stores[storeIndex].products[productIndex].inStock -= cartQuantityChange;
                 this.users[shopperIndex].cart[cartProductIndex].quantity = productQuantity;
 
                 const cartProductQuantity: number = this.users[shopperIndex].cart[cartProductIndex].quantity;
-                const cartProductPrice: number = store.products[productIndex].productPrice;
-                const cartProductName: string = store.products[productIndex].productName;
+                const productPrice: number = stores.stores[storeIndex].products[productIndex].productPrice;
+                const productPrecentsOff: number = stores.stores[storeIndex].products[productIndex].precentsOff;
+                const cartProductPrice: number = productPrice - productPrice * (productPrecentsOff / 100);
+                const cartProductName: string = stores.stores[storeIndex].products[productIndex].productName;
                 
                 this.users[shopperIndex].cart[cartProductIndex].totalPrice = cartProductQuantity * cartProductPrice;
                 this.users[shopperIndex].cart[cartProductIndex].productName = cartProductName;
             }
 
-            store.updateStoreJson();
+            stores.updateStoresJson();
             this.updateUsersJson();
 
             return this.users[shopperIndex].cart;
@@ -199,33 +202,28 @@ export class Users {
         }
     }
 
-    updatePurcased(shopperIndex: number/*, storeUuid: string*/) {
+    addPurchesedCart(shopperIndex: number) {
         try {
-            this.users[shopperIndex].cart.forEach(cartProduct => { // update quantities&totalPrice in purchased according to shppoer purchase
-                const cartProductIndex: number = this.users[shopperIndex].purchased.findIndex(cartProductPurchased => cartProductPurchased.productUuid == cartProduct.productUuid);
-                if (cartProductIndex === -1) this.users[shopperIndex].purchased.push(cartProduct);
-                else {
-                    this.users[shopperIndex].purchased[cartProductIndex].quantity += cartProduct.quantity;
-                    this.users[shopperIndex].purchased[cartProductIndex].totalPrice += cartProduct.totalPrice;
-                }
-            });
+            const purchasedCartProducts: Array<CartProduct> = this.users[shopperIndex].cart.filter(cartProduct => cartProduct.quantity > 0);
+            const shippingAddress: string = this.users[shopperIndex].shippingAddress
+            const purchasedCart = new PurchasedCart(purchasedCartProducts, shippingAddress);
+            this.users[shopperIndex].purchasedCarts.push(purchasedCart);
 
-            const purchasedCartProducts: Array<CartProduct> = this.users[shopperIndex].cart;
             const shopperEmail: string = this.users[shopperIndex].email;
             const shopperUsername: string = this.users[shopperIndex].username;
             const shopperUuid: string = this.users[shopperIndex].userUuid;
-            const store = new Store();
-            store.addPurchesedCart(purchasedCartProducts, shopperEmail, shopperUsername, shopperUuid);
+            const stores = new Stores();
+            stores.addPurchesedCart(purchasedCartProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
 
         } catch (error) {
             console.error(error.message);
         }
     }
 
-    emptyCart(userIndex: number/*, storeUuid: string*/) { // after payment.
+    emptyCart(userIndex: number) { // after payment.
         try {
-            this.updatePurcased(userIndex/*, storeUuid*/); // storeUuid will be used when there is more than 1 store
-            this.users[userIndex].cart = [];
+            this.addPurchesedCart(userIndex);
+            this.users[userIndex].cart = this.users[userIndex].cart.filter(cartProduct => cartProduct.quantity === 0);
 
             this.updateUsersJson();
 

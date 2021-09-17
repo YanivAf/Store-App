@@ -41,6 +41,7 @@ a {
     text-decoration: none;
     font-weight: bold;
     font-size: clamp(10px, 4vw, 16px);
+    cursor: pointer;
 
     &:hover {
         background-color: var(--hover-bg-color);
@@ -51,6 +52,11 @@ a {
         -moz-box-shadow: 0 0 10px var(--main-color);
         -webkit-box-shadow: 0 0 10px var(--main-color);
         box-shadow: 0 0 10px var(--main-color);
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        background-color: lightgray;
     }
   }
 
@@ -317,16 +323,15 @@ a {
         width: 60vw;
         min-height: 270px;
         min-width: 270px;
-        // max-height: 470px;
-        // max-width: 470px;
         background-color: white;
         display: grid;
         align-items: center;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        grid-template-rows: 0.5fr 0.5fr 1fr 0.5fr 0.5fr 1fr 1fr 1fr 0.5fr;
+        grid-template-columns: repeat(4,1fr);
+        grid-template-rows: 0.5fr repeat(8,1fr) 0.5fr;
         grid-template-areas:
         "title title title title"
         "product product product product"
+        "img img img price"
         "img img img price"
         "img img img stock"
         "img img img quantity"
@@ -334,12 +339,27 @@ a {
         "desc desc desc desc"
         "desc desc desc desc"
         ". submit submit .";
+        position: relative;
     
         &__item {
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+
+            &--sale {
+                position: absolute;
+                background-color: mediumvioletred;
+                color: white;
+                border-radius: 2px;
+                font-weight: bold;
+                padding: 2px;
+                top: 0;
+                right: 0;
+            }
 
             &--buttons {
                 grid-area: title;
+                flex-direction: row;
             }
 
             &--title {
@@ -427,6 +447,28 @@ a {
                 flex: 1;
             }
         }
+
+        &--footers {
+            padding: 15px 0;
+            border-bottom: 3px solid lightgray;
+            background-color: var(--links-color);
+            color: white;
+            display: flex;
+            word-wrap: normal;
+            font-size: clamp(8px, 3vw, 16px);
+            justify-content: flex-end;
+            width: 90vw;
+
+            h3 {
+                margin: 0;
+                flex: 1;
+            }
+
+            h4 {
+                margin: 0;
+                flex: 4;
+            }
+        }
     }
 
     .product {
@@ -442,9 +484,21 @@ a {
         flex-direction: column;
         justify-content: space-between;
         align-items: center;
+        position: relative;
 
         &__item {
             margin: 0;
+
+            &--sale {
+                position: absolute;
+                background-color: mediumvioletred;
+                color: white;
+                border-radius: 2px;
+                font-weight: bold;
+                padding: 2px;
+                top: 0;
+                right: 0;
+            }
 
             &--img {
                 max-height: 50%;
@@ -533,17 +587,49 @@ a {
         }
     }
 
-    .total {
-        padding: 0;
-        height: 5vw;
-        background-color: var(--links-color);
-        color: white;
-        word-wrap: normal;
+//     .cartSummary {
+//         margin: 0 auto;
+//         padding: 0;
+//         border-radius: 2px;
+//         border-bottom: 3px solid lightgray;
+//         height: 5vw;
+//         width: 90vw;
+//         font-size: clamp(10px, 2vw, 16px);
+//         word-wrap: normal;
+//         color: white;
+//         background-color: var(--links-color);
+//         display: grid;
+//         align-items: center;
+//         grid-template-columns: repeat(6, 15vw);
+//         grid-template-rows: 1fr;
+//         grid-template-areas:
+//         "title address address address price quantity";
+    
+//         &__item {
+//             margin: 0 auto;
 
-        h3 {
-            margin: 0;
-        }
-    }
+//             &--title {
+//                 grid-area: title;
+
+//                 h3 {
+//                     margin: 0;
+//                     width: 15vw;
+//                     word-wrap: break-word;
+//                 }
+//             }
+
+//             &--address {
+//                 grid-area: address;
+//             }
+
+//             &--total {
+//                 grid-area: price;
+//             }
+
+//             &--quantity {
+//                 grid-area: quantity;
+//             }
+//     }
 }
 
 .product-buttons {
@@ -578,6 +664,14 @@ a {
 
             &:hover {
                 color: green;
+            }
+        }
+
+        &--store {
+            color: black;
+
+            &:hover {
+                color: gray;
             }
         }
 

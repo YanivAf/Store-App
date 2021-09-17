@@ -1,11 +1,7 @@
 let updateProductForm: HTMLFormElement;
 let addProductForm: HTMLFormElement;
 
-const url = new URL(window.location.href);
-let productUuidParams;
-
 if (whichHtmlFile === '/product.html') {
-  productUuidParams = url.searchParams.get("productUuid");
   updateProductForm = document.querySelector('#edit-product-form');
   updateProductForm.addEventListener('submit', ev => updateProduct(ev));
 } else if (whichHtmlFile === '/store.html') {
@@ -34,10 +30,9 @@ async function updateProduct(ev: any) {
     fd.append('productInStock', productInStock);
     fd.append('storeUuid', storeUuid);
 
-    const productUuid = productUuidParams;
     ev.target.reset();
 
-    await axios.put(`/store/product/${productUuid}`, fd);
+    await axios.put(`/store/${storeUuid}/product/${productUuid}`, fd);
 
     swal({
         title: 'Congrats!',
@@ -55,10 +50,11 @@ async function addProduct(ev) {
     try {
         ev.preventDefault();
 
-        let { productName, productDescription, productPrice, productInStock } = ev.target.elements;
+        let { productName, productDescription, productPrice, precentsOff, productInStock } = ev.target.elements;
         productName = productName.value;
         productDescription = productDescription.value;
         productPrice = productPrice.valueAsNumber;
+        precentsOff = precentsOff.valueAsNumber;
         productInStock = productInStock.valueAsNumber;
 
         const fd:FormData = new FormData();
@@ -68,14 +64,13 @@ async function addProduct(ev) {
         fd.append('productName', productName);
         fd.append('productDescription', productDescription);
         fd.append('productPrice', productPrice);
+        fd.append('precentsOff', precentsOff);
         fd.append('productInStock', productInStock);
         fd.append('storeUuid', storeUuid);
 
-        const productUuid = productUuidParams;
-
         ev.target.reset();
         
-        const addProductToStore = await axios.post(`/store/addProduct`, fd);
+        const addProductToStore = await axios.post(`/store/${storeUuid}/product`, fd);
         const { store } = addProductToStore.data;
         
         swal({
@@ -85,7 +80,7 @@ async function addProduct(ev) {
             button: "Cool",
         });
 
-        renderStore(store, true);
+        renderStore(undefined, store, true);
 
     } catch (error) {
         console.error(error.message);
@@ -103,11 +98,10 @@ async function deleteProduct(ev: any) {
       });
       if (!cancelDelete) return;
     
-      const productUuid: string = productUuidParams;
       const productNameElement: HTMLElement = document.querySelector('#product-name');
       const productName: string = productNameElement.innerText;
 
-      await axios.delete(`/store/product/${productUuid}`);
+      await axios.delete(`/store/${storeUuid}/product/${productUuid}`);
 
       swal({
         title: 'Done!',

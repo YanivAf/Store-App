@@ -1,11 +1,19 @@
 const whichHtmlFile: string = window.location.pathname;
+const url = new URL(window.location.href);
+
 let storeUuid: string;
+let productUuid = url.searchParams.get("productUuid");
+let isAdmin: boolean;
+let shippingAddress: string;
 
 async function getUserDetails() {
     try {
         const userDetails = await axios.get('/user/details');
-        const { user, isAdmin } = userDetails.data;
-        if (isAdmin) storeUuid = user.stores[0];
+        const { user, isUserAdmin } = userDetails.data;
+
+        isAdmin = isUserAdmin;
+        storeUuid = (isAdmin) ? user.stores[0] : url.searchParams.get("storeUuid");
+        shippingAddress = user.shippingAddress;
         renderUserDetails(user, isAdmin);
                 
     } catch (error) {
@@ -17,7 +25,7 @@ getUserDetails();
 
 let isCartEmpty: boolean = true;
 let cartProductsToRender: Array<any>;
-let purchasedProductsToRender: Array<any>;
+let purchasedCartsToRender: Array<any>;
 
 function renderUserDetails(user: any, isAdmin: boolean) {
     try {
@@ -26,7 +34,7 @@ function renderUserDetails(user: any, isAdmin: boolean) {
 
         let additionalHeaderElementsHtml: string = '';
         cartProductsToRender = user.cart;
-        purchasedProductsToRender = user.purchased;
+        purchasedCartsToRender = user.purchasedCarts;
 
         if (!isAdmin) {
             renderShopperCart(cartProductsToRender);
@@ -93,8 +101,10 @@ function renderShopperCart(cartProducts: Array<any>) {
                 navBar.storesList.href = '';
                 break;
             case '/store.html':
-                navBar.mall.aOrDiv = 'div';
-                navBar.mall.href = '';
+                if (storeUuid === 'mall') {
+                    navBar.mall.aOrDiv = 'div';
+                    navBar.mall.href = '';
+                }
                 break;
         }
 
@@ -127,7 +137,6 @@ function renderShopperCart(cartProducts: Array<any>) {
         console.error(error.message);
     }
 }
-
 
 const logoutBtn: HTMLElement = document.querySelector('#logout');
 

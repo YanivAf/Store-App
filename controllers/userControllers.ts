@@ -3,7 +3,7 @@ export {};
 const { secret } = require('../../secret/dist/secret');
 const jwt = require('jsonwebtoken');
 const { Users, User, CartProduct } = require('../../models/dist/usersModel');
-const { Product, Store } = require('../../models/dist/storeModel');
+const { Product, Store, Stores } = require('../../models/dist/storesModel');
 
 export function welcome(req, res) {
   try {
@@ -83,13 +83,12 @@ export function logout(req, res) { // index.html
 
 export const details = (req, res)=> { // all htmls except for index.html,  register.html, shopper-register.html
   try {
-    const userIndex: string = req.userIndex;
-    const isAdmin: boolean = req.isAdmin;
+    const { userIndex, isAdmin } = req;
         
     const users = new Users();
     const user = users.users[userIndex];
     
-    res.send({ user, isAdmin });
+    res.send({ user, isUserAdmin: isAdmin });
 
 
   } catch (error) {
@@ -102,11 +101,11 @@ export function updateQuantity(req, res) { // store.html + cart.html
   try {
     const { productUuid, productQuantity } = req.body;
     const users = new Users();
-    const { userUuid } = req;
-    const cartProducts: Array<CartProduct> = users.updateCartProductQuantity(userUuid, productUuid, productQuantity);
-    const store = new Store();
+    const { userIndex, cartProductIndex, storeUuid, storeIndex, productIndex } = req;
 
-    res.send({ cartProducts, storeProducts: store.products });
+    const cartProducts: Array<CartProduct> = users.updateCartProductQuantity(userIndex, cartProductIndex, storeUuid, storeIndex, productUuid, productIndex, productQuantity);
+    const stores = new Stores();
+    res.send({ cartProducts, storeProducts: stores.stores[storeIndex].products });
 
   } catch (error) {
     console.error(error);

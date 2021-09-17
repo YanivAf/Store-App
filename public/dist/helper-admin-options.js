@@ -36,10 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var updateProductForm;
 var addProductForm;
-var url = new URL(window.location.href);
-var productUuidParams;
 if (whichHtmlFile === '/product.html') {
-    productUuidParams = url.searchParams.get("productUuid");
     updateProductForm = document.querySelector('#edit-product-form');
     updateProductForm.addEventListener('submit', function (ev) { return updateProduct(ev); });
 }
@@ -49,7 +46,7 @@ else if (whichHtmlFile === '/store.html') {
 }
 function updateProduct(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, productName, productDescription, productPrice, productInStock, fd, imageInput, productImage, productUuid, error_1;
+        var _a, productName, productDescription, productPrice, productInStock, fd, imageInput, productImage, error_1;
         var _this = this;
         return __generator(this, function (_b) {
             switch (_b.label) {
@@ -71,9 +68,8 @@ function updateProduct(ev) {
                     fd.append('productPrice', productPrice);
                     fd.append('productInStock', productInStock);
                     fd.append('storeUuid', storeUuid);
-                    productUuid = productUuidParams;
                     ev.target.reset();
-                    return [4 /*yield*/, axios.put("/store/product/" + productUuid, fd)];
+                    return [4 /*yield*/, axios.put("/store/" + storeUuid + "/product/" + productUuid, fd)];
                 case 1:
                     _b.sent();
                     swal({
@@ -97,16 +93,17 @@ function updateProduct(ev) {
 }
 function addProduct(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, productName, productDescription, productPrice, productInStock, fd, imageInput, productImage, productUuid, addProductToStore, store, error_2;
+        var _a, productName, productDescription, productPrice, precentsOff, productInStock, fd, imageInput, productImage, addProductToStore, store, error_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
                     ev.preventDefault();
-                    _a = ev.target.elements, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productInStock = _a.productInStock;
+                    _a = ev.target.elements, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, precentsOff = _a.precentsOff, productInStock = _a.productInStock;
                     productName = productName.value;
                     productDescription = productDescription.value;
                     productPrice = productPrice.valueAsNumber;
+                    precentsOff = precentsOff.valueAsNumber;
                     productInStock = productInStock.valueAsNumber;
                     fd = new FormData();
                     imageInput = document.querySelector('#product-image');
@@ -116,11 +113,11 @@ function addProduct(ev) {
                     fd.append('productName', productName);
                     fd.append('productDescription', productDescription);
                     fd.append('productPrice', productPrice);
+                    fd.append('precentsOff', precentsOff);
                     fd.append('productInStock', productInStock);
                     fd.append('storeUuid', storeUuid);
-                    productUuid = productUuidParams;
                     ev.target.reset();
-                    return [4 /*yield*/, axios.post("/store/addProduct", fd)];
+                    return [4 /*yield*/, axios.post("/store/" + storeUuid + "/product", fd)];
                 case 1:
                     addProductToStore = _b.sent();
                     store = addProductToStore.data.store;
@@ -130,7 +127,7 @@ function addProduct(ev) {
                         icon: "success",
                         button: "Cool"
                     });
-                    renderStore(store, true);
+                    renderStore(undefined, store, true);
                     return [3 /*break*/, 3];
                 case 2:
                     error_2 = _b.sent();
@@ -143,7 +140,7 @@ function addProduct(ev) {
 }
 function deleteProduct(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var cancelDelete, productUuid, productNameElement, productName, error_3;
+        var cancelDelete, productNameElement, productName, error_3;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -159,10 +156,9 @@ function deleteProduct(ev) {
                     cancelDelete = _a.sent();
                     if (!cancelDelete)
                         return [2 /*return*/];
-                    productUuid = productUuidParams;
                     productNameElement = document.querySelector('#product-name');
                     productName = productNameElement.innerText;
-                    return [4 /*yield*/, axios["delete"]("/store/product/" + productUuid)];
+                    return [4 /*yield*/, axios["delete"]("/store/" + storeUuid + "/product/" + productUuid)];
                 case 2:
                     _a.sent();
                     swal({

@@ -1,12 +1,12 @@
 export {};
 
-const { Product, Store } = require('../../models/dist/storeModel');
+const { Product, Store, Stores } = require('../../models/dist/storesModel');
 const { CartProduct, User, Users } = require('../../models/dist/usersModel');
 
 export const showStores = (req, res)=> {
   try {
-    const store = new Store();
-    res.send({ storeUuid: store.storeUuid, storeName: store.storeName });
+    const stores = new Stores();
+    res.send({ stores });
 
   } catch (error) {
     console.error(error);
@@ -16,13 +16,13 @@ export const showStores = (req, res)=> {
 
 export const showProducts = (req, res)=> { // store.html
   try {
-    const isAdmin = req.isAdmin;
+    const { storeUuid } = req.params;
+    const stores = new Stores();
+    const storeIndex: number = stores.findStoreIndex(storeUuid);
+    const store = stores.stores[storeIndex];
 
-    const storeUuid: string = req.params.storeUuid;
-    const store = new Store();
-    if (storeUuid === 'mall') store.storeName = 'Virtual Mall'; // show from all stores (needed if more than 1 store. for now only title changes)
-    
-    res.send({ store, isAdmin });
+    if (storeUuid === 'mall') res.send({ stores }); // show from all stores
+    else res.send({ store });
 
   } catch (error) {
     console.error(error);
@@ -32,15 +32,18 @@ export const showProducts = (req, res)=> { // store.html
 
 export const showProduct = (req, res)=> { // product.html
   try {
-    const { isAdmin, userIndex, cartProductIndex, productIndex } = req;
+    const { isAdmin, userIndex, cartProductIndex, storeIndex, productIndex } = req;
 
-    const store = new Store();
+    const stores = new Stores();
+    const store = stores.stores[storeIndex];
+
     const users = new Users();
 
     const storeProduct: Product = store.products[productIndex];
-    const cartProduct: CartProduct = ((isAdmin) || (cartProductIndex === -1)) ? undefined : users.users[userIndex].cart[cartProductIndex];
+    let cartProduct: CartProduct = undefined;
+    if ((!isAdmin) && (cartProductIndex !== -1)) cartProduct = users.users[userIndex].cart[cartProductIndex];
 
-    res.send({ storeProduct, cartProduct, isAdmin });
+    res.send({ storeProduct, cartProduct });
 
   } catch (error) {
     console.error(error);
@@ -61,12 +64,12 @@ export const editStoreName = (req, res)=> { // store.html
 
 export const addProduct = (req, res)=> { // store.html
   try {
-    const { storeUuid, productName, productDescription, productPrice, productImage, productInStock } = req.body;
-    const store = new Store(); // storeUuid would be used if more than 1 store
+    const { storeUuid, productName, productDescription, productPrice, precentsOff, productImage, productInStock } = req.body;
+    const stores = new Stores();
 
-    const filename = (req.file) ? req.file : undefined;
+    const filename = (req.file) ? req.file.filename : undefined;
 
-    store.addProduct(productName, productDescription, productPrice, filename, productInStock);
+    const store: Store = stores.addProduct(storeUuid, productName, productDescription, productPrice, precentsOff, filename, productInStock);
 
     res.send({ store });
 
@@ -79,13 +82,14 @@ export const addProduct = (req, res)=> { // store.html
 export const editProduct = (req, res)=> { // product.html
   try {
 
-    const { storeUuid, productName, productDescription, productPrice, productImage, productInStock } = req.body;
-    const store = new Store(); // storeUuid would be used if more than 1 store
-    const productUuid: string = req.params.productUuid;
+    const { storeUuid, productName, productDescription, productPrice, precentsOff, productImage, productInStock } = req.body;
+    const { userUuid } = req;
+    const stores = new Stores();
+    const { productUuid } = req.params;
 
-    const filename = (req.file) ? req.file : undefined;
+    const filename = (req.file) ? req.file.filename : undefined;
 
-    store.editProduct(productUuid, productName, productDescription, productPrice, filename, productInStock);
+    stores.editProduct(storeUuid, userUuid, productUuid, productName, productDescription, productPrice, precentsOff, filename, productInStock);
 
     res.send({ productUpdate: true });
 
@@ -97,12 +101,12 @@ export const editProduct = (req, res)=> { // product.html
 
 export const deleteProduct = (req, res)=> { // store.html
   try {
-    const store = new Store(); // storeUuid would be used if more than 1 store
-    const productUuid: string = req.params.productUuid;
+    const stores = new Stores();
+    const { storeUuid, productUuid } = req.params;
 
-    store.deleteProduct(productUuid);
-    
-    res.send({ deleteProduct:true });
+    stores.deleteProduct(storeUuid, productUuid);
+
+    res.send({ deleteProduct: true });
 
   } catch (error) {
     console.error(error);

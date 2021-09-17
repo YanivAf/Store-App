@@ -35,10 +35,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var whichHtmlFile = window.location.pathname;
+var url = new URL(window.location.href);
 var storeUuid;
+var productUuid = url.searchParams.get("productUuid");
+var isAdmin;
+var shippingAddress;
 function getUserDetails() {
     return __awaiter(this, void 0, void 0, function () {
-        var userDetails, _a, user, isAdmin, error_1;
+        var userDetails, _a, user, isUserAdmin, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -46,9 +50,10 @@ function getUserDetails() {
                     return [4 /*yield*/, axios.get('/user/details')];
                 case 1:
                     userDetails = _b.sent();
-                    _a = userDetails.data, user = _a.user, isAdmin = _a.isAdmin;
-                    if (isAdmin)
-                        storeUuid = user.stores[0];
+                    _a = userDetails.data, user = _a.user, isUserAdmin = _a.isUserAdmin;
+                    isAdmin = isUserAdmin;
+                    storeUuid = (isAdmin) ? user.stores[0] : url.searchParams.get("storeUuid");
+                    shippingAddress = user.shippingAddress;
                     renderUserDetails(user, isAdmin);
                     return [3 /*break*/, 3];
                 case 2:
@@ -63,14 +68,14 @@ function getUserDetails() {
 getUserDetails();
 var isCartEmpty = true;
 var cartProductsToRender;
-var purchasedProductsToRender;
+var purchasedCartsToRender;
 function renderUserDetails(user, isAdmin) {
     try {
         var usernameElement = document.querySelector('.header__item--username');
         usernameElement.innerText = "Logged in as " + user.username;
         var additionalHeaderElementsHtml = '';
         cartProductsToRender = user.cart;
-        purchasedProductsToRender = user.purchased;
+        purchasedCartsToRender = user.purchasedCarts;
         if (!isAdmin) {
             renderShopperCart(cartProductsToRender);
             isCartEmpty = (user.cart.length === 0) ? true : false;
@@ -119,8 +124,10 @@ function renderShopperCart(cartProducts) {
                 navBar.storesList.href = '';
                 break;
             case '/store.html':
-                navBar.mall.aOrDiv = 'div';
-                navBar.mall.href = '';
+                if (storeUuid === 'mall') {
+                    navBar.mall.aOrDiv = 'div';
+                    navBar.mall.href = '';
+                }
                 break;
         }
         var shopperHeaderElementsHtml = "<" + navBar.cart.aOrDiv + navBar.cart.href + " class=\"header__item header__item--cart\">\n            " + navBar.cart.innerHTML + "\n        </" + navBar.cart.aOrDiv + ">\n\n        <" + navBar.purchased.aOrDiv + navBar.purchased.href + " class=\"header__item header__item--history\">\n            <img src=\"./images/history-cart.png\" title=\"Purchase history\" />\n        </" + navBar.purchased.aOrDiv + ">\n        \n        <" + navBar.mall.aOrDiv + navBar.mall.href + " class=\"header__item header__item--mall\">\n            <img src=\"./images/mall.png\" title=\"Virtual mall\" />\n        </" + navBar.mall.aOrDiv + ">\n        \n        <" + navBar.storesList.aOrDiv + navBar.storesList.href + " class=\"header__item header__item--stores-list\">\n            <img src=\"./images/stores-list.png\" title=\"Stores list\" />\n        </" + navBar.storesList.aOrDiv + ">";

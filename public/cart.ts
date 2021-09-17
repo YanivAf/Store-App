@@ -1,8 +1,9 @@
-async function getStore() {
+async function getStoresProducts() {
     try {
-        const getStoreDetails = await axios.get('/store/mall');
-        const { store } = getStoreDetails.data;
-        const { products } = store;
+        const getStoreDetails = await axios.get(`/store/mall`);
+        const { stores } = getStoreDetails.data;
+        let products = [];
+        stores.stores.forEach(store => {products = products.concat(store.products)});
 
         renderCartProducts(products, cartProductsToRender);
 
@@ -48,10 +49,10 @@ function renderCartProducts(products: Array<any>, cartProducts: Array<any>) {
                     <div class="product-row__item product-row__item--remove">
                         <i class="fas fa-trash remove-from-cart" title="Remove ${cartProduct.productName} from cart"></i>
                     </div>
-                    <a href="./product.html?productUuid=${cartProduct.productUuid}" class="product-row__item product-row__item--img">
+                    <a href="./product.html?storeUuid=${products[productIndex].storeUuid}&productUuid=${products[productIndex].productUuid}" class="product-row__item product-row__item--img">
                         <img src="${products[productIndex].productImage}" title="${cartProduct.productName}"/>
                     </a>
-                    <a href="./product.html?productUuid=${cartProduct.productUuid}" class="product-row__item product-row__item--name">
+                    <a href="./product.html?storeUuid=${products[productIndex].storeUuid}&productUuid=${products[productIndex].productUuid}" class="product-row__item product-row__item--name">
                         <h3>${cartProduct.productName}</h3>
                     </a>
                     <div class="product-row__item product-row__item--stock" style="color:${inStockColor}">${inStockText}</div>
@@ -64,16 +65,25 @@ function renderCartProducts(products: Array<any>, cartProducts: Array<any>) {
             }).join('');
             
             const totalHtml: string = `
-            <div class="products__item product-row total">
+            <div class="products__item products__item--footers">
                 <h3>Total:</h3>
-                <h3 class="product-row__item product-row__item--total">${(Math.round(totalCartPrice * 100) / 100).toFixed(2)}$</h3>
-                <div class="product-row__item product-row__item--quantity">
-                    <h3>${totalQuantity}</h3>
-                </div>
+                <h3></h3>
+                <h3></h3>
+                <h3></h3>
+                <h3>${(Math.round(totalCartPrice * 100) / 100).toFixed(2)}$</h3>
+                <h3>${totalQuantity}</h3>
+            </div>`;
+            const shippingHtml: string = `
+            <div class="products__item products__item--footers">
+                <h3>Shipping Address:</h3>
+                <h4>${shippingAddress}</h4>
             </div>`;
 
-            cartProductsHtml = headersHtml + productsHtml + totalHtml;
+
+            cartProductsHtml = headersHtml + productsHtml + totalHtml + shippingHtml;
             payBtn.classList.remove('hide');
+            if (totalQuantity === 0) payBtn.disabled = true;
+            else payBtn.disabled = false;
         }
 
         productsElement.innerHTML = cartProductsHtml;
@@ -83,4 +93,4 @@ function renderCartProducts(products: Array<any>, cartProducts: Array<any>) {
     }
 }
 
-getStore();
+getStoresProducts();

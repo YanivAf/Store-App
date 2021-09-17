@@ -1,15 +1,15 @@
-function renderPurchasedProducts(purchased: Array<any>) {
+function renderPurchasedCarts(purchasedCarts: Array<any>) {
     try {
 
         const productsElement: HTMLElement = document.querySelector('.products');
 
-        let purchasedProductsHtml: string;
-        const AreThereProducts: boolean = (purchased.length > 0) ? true : false;
+        let purchasedCartsHtml: string;
+        const AreThereProducts: boolean = (purchasedCarts.length > 0) ? true : false;
 
         let totalPurchasedPrice: number = 0;
         let totalQuantity: number = 0;
         if (!AreThereProducts) {
-            purchasedProductsHtml = `<p>You haven't purchased anything yet... <a href="./store.html?storeUuid=mall">Click here</a> to do some shopping!</p>`;
+            purchasedCartsHtml = `<p>You haven't purchased anything yet... <a href="./store.html?storeUuid=mall">Click here</a> to do some shopping!</p>`;
         } else {
             const headersHtml: string = `
             <div class="products__item products__item--headers">
@@ -21,21 +21,21 @@ function renderPurchasedProducts(purchased: Array<any>) {
                 <h4>Quantity</h4>
             </div>`;
 
-            const productsHtml: string = purchased.map((purchasedProduct) => {
-                totalPurchasedPrice += purchasedProduct.totalPrice;
-                totalQuantity += purchasedProduct.quantity;
+            const productsHtml: string = purchasedCarts.map((purchasedCart) => {
+                totalPurchasedPrice += purchasedCart.totalPrice;
+                totalQuantity += purchasedCart.quantity;
 
-                const purchasedProductHtml: string = `
-                <div class="products__item product-row" id="${purchasedProduct.productUuid}">
-                    <a href="./product.html?productUuid=${purchasedProduct.productUuid}" class="product-row__item product-row__item--name">
-                        <h3>${purchasedProduct.productName}</h3>
+                const purchasedCartHtml: string = `
+                <div class="products__item product-row" id="${purchasedCart.productUuid}">
+                    <a href="./product.html?productUuid=${purchasedCart.productUuid}" class="product-row__item product-row__item--name">
+                        <h3>${purchasedCart.productName}</h3>
                     </a>
-                    <h4 class="product-row__item product-row__item--total">${(Math.round(purchasedProduct.totalPrice * 100) / 100).toFixed(2)}$</h4>
+                    <h4 class="product-row__item product-row__item--total">${(Math.round(purchasedCart.totalPrice * 100) / 100).toFixed(2)}$</h4>
                     <div class="product-row__item product-row__item--quantity">
-                        <p>${purchasedProduct.quantity}<p/>
+                        <p>${purchasedCart.quantity}<p/>
                     </div>
                 </div>`;
-                return purchasedProductHtml;
+                return purchasedCartHtml;
             }).join('');
             
             const totalHtml: string = `
@@ -47,14 +47,14 @@ function renderPurchasedProducts(purchased: Array<any>) {
                 </div>
             </div>`;
 
-            purchasedProductsHtml = headersHtml + productsHtml + totalHtml;
+            purchasedCartsHtml = headersHtml + productsHtml + totalHtml;
         }
 
-        productsElement.innerHTML = purchasedProductsHtml;
+        productsElement.innerHTML = purchasedCartsHtml;
 
     } catch (error) {
         console.error(error.message);
     }
 }
 
-renderPurchasedProducts(purchasedProductsToRender);
+renderPurchasedCarts(purchasedCartsToRender);
