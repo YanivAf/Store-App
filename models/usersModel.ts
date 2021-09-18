@@ -213,7 +213,7 @@ export class Users {
             const shopperUsername: string = this.users[shopperIndex].username;
             const shopperUuid: string = this.users[shopperIndex].userUuid;
             const stores = new Stores();
-            stores.addPurchesedCart(purchasedCartProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
+            stores.addPurchesedCart(purchasedCart.purchasedCartUuid, purchasedCartProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
 
         } catch (error) {
             console.error(error.message);

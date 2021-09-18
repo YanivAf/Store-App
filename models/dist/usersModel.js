@@ -168,7 +168,7 @@ var Users = /** @class */ (function () {
             var shopperUsername = this.users[shopperIndex].username;
             var shopperUuid = this.users[shopperIndex].userUuid;
             var stores = new Stores();
-            stores.addPurchesedCart(purchasedCartProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
+            stores.addPurchesedCart(purchasedCart.purchasedCartUuid, purchasedCartProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
         }
         catch (error) {
             console.error(error.message);

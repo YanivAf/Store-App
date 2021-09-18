@@ -39,7 +39,6 @@ var url = new URL(window.location.href);
 var storeUuid;
 var productUuid = url.searchParams.get("productUuid");
 var isAdmin;
-var shippingAddress;
 function getUserDetails() {
     return __awaiter(this, void 0, void 0, function () {
         var userDetails, _a, user, isUserAdmin, error_1;
@@ -53,7 +52,6 @@ function getUserDetails() {
                     _a = userDetails.data, user = _a.user, isUserAdmin = _a.isUserAdmin;
                     isAdmin = isUserAdmin;
                     storeUuid = (isAdmin) ? user.stores[0] : url.searchParams.get("storeUuid");
-                    shippingAddress = user.shippingAddress;
                     renderUserDetails(user, isAdmin);
                     return [3 /*break*/, 3];
                 case 2:
@@ -68,17 +66,19 @@ function getUserDetails() {
 getUserDetails();
 var isCartEmpty = true;
 var cartProductsToRender;
-var purchasedCartsToRender;
+var shopperPurchasedCartsToRender;
+var shippingAddress;
 function renderUserDetails(user, isAdmin) {
     try {
         var usernameElement = document.querySelector('.header__item--username');
         usernameElement.innerText = "Logged in as " + user.username;
         var additionalHeaderElementsHtml = '';
-        cartProductsToRender = user.cart;
-        purchasedCartsToRender = user.purchasedCarts;
         if (!isAdmin) {
-            renderShopperCart(cartProductsToRender);
             isCartEmpty = (user.cart.length === 0) ? true : false;
+            cartProductsToRender = user.cart;
+            shopperPurchasedCartsToRender = user.purchasedCarts;
+            shippingAddress = user.shippingAddress;
+            renderShopperCart(cartProductsToRender);
         }
         else {
             var navBar = { store: { aOrDiv: 'a', href: " href=\"./store.html?storeUuid=" + storeUuid + "\"" } };

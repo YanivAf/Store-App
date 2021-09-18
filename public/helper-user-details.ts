@@ -4,7 +4,6 @@ const url = new URL(window.location.href);
 let storeUuid: string;
 let productUuid = url.searchParams.get("productUuid");
 let isAdmin: boolean;
-let shippingAddress: string;
 
 async function getUserDetails() {
     try {
@@ -13,7 +12,6 @@ async function getUserDetails() {
 
         isAdmin = isUserAdmin;
         storeUuid = (isAdmin) ? user.stores[0] : url.searchParams.get("storeUuid");
-        shippingAddress = user.shippingAddress;
         renderUserDetails(user, isAdmin);
                 
     } catch (error) {
@@ -25,7 +23,8 @@ getUserDetails();
 
 let isCartEmpty: boolean = true;
 let cartProductsToRender: Array<any>;
-let purchasedCartsToRender: Array<any>;
+let shopperPurchasedCartsToRender: Array<any>;
+let shippingAddress: string;
 
 function renderUserDetails(user: any, isAdmin: boolean) {
     try {
@@ -33,12 +32,13 @@ function renderUserDetails(user: any, isAdmin: boolean) {
         usernameElement.innerText = `Logged in as ${user.username}`;
 
         let additionalHeaderElementsHtml: string = '';
-        cartProductsToRender = user.cart;
-        purchasedCartsToRender = user.purchasedCarts;
 
         if (!isAdmin) {
-            renderShopperCart(cartProductsToRender);
             isCartEmpty = (user.cart.length === 0) ? true : false;
+            cartProductsToRender = user.cart;
+            shopperPurchasedCartsToRender = user.purchasedCarts;
+            shippingAddress = user.shippingAddress;    
+            renderShopperCart(cartProductsToRender);
         } else {
             const navBar: any = { store: { aOrDiv: 'a', href: ` href="./store.html?storeUuid=${storeUuid}"` } }
             let addProductHtml: string = '';

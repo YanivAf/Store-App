@@ -33,8 +33,8 @@ var Product = /** @class */ (function () {
 }());
 exports.Product = Product;
 var PurchasedCart = /** @class */ (function () {
-    function PurchasedCart(purchasedCartProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid) {
-        this.purchasedCartUuid = uuidv4();
+    function PurchasedCart(shopperPurchasedCartUuid, purchasedCartProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid) {
+        this.shopperPurchasedCartUuid = shopperPurchasedCartUuid;
         this.purchasedCartProducts = purchasedCartProducts;
         this.shopperEmail = shopperEmail;
         this.shopperUsername = shopperUsername;
@@ -147,13 +147,13 @@ var Stores = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Stores.prototype.addPurchesedCart = function (purchasedCartProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid) {
+    Stores.prototype.addPurchesedCart = function (shopperPurchasedCartUuid, purchasedCartProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid) {
         try {
             var purchasedCart_1;
             var purchasedStoreProducts_1;
             this.stores.forEach(function (store) {
                 purchasedStoreProducts_1 = purchasedCartProducts.filter(function (cartProduct) { return cartProduct.storeUuid === store.storeUuid; });
-                purchasedCart_1 = new PurchasedCart(purchasedStoreProducts_1, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
+                purchasedCart_1 = new PurchasedCart(shopperPurchasedCartUuid, purchasedStoreProducts_1, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
                 store.purchasedCarts.push(purchasedCart_1);
             });
             this.updateStoresJson();

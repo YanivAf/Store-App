@@ -1,3 +1,15 @@
+async function getStorePurchasedCarts() {
+    try {
+        const getStoreDetails = await axios.get(`/store/${storeUuid}`);
+        const { stores, store } = getStoreDetails.data;
+        
+        renderStore(stores, store, isAdmin);
+
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
 function renderPurchasedCarts(purchasedCarts: Array<any>) {
     try {
 
@@ -57,4 +69,4 @@ function renderPurchasedCarts(purchasedCarts: Array<any>) {
     }
 }
 
-renderPurchasedCarts(purchasedCartsToRender);
+renderPurchasedCarts(shopperPurchasedCartsToRender);

@@ -46,7 +46,7 @@ export class Product {
 }
 
 export class PurchasedCart {
-    purchasedCartUuid: string;
+    shopperPurchasedCartUuid: string;
     purchasedCartProducts: Array<CartProduct>;
     shippingAddress: string;
     shopperEmail: string;
@@ -54,8 +54,8 @@ export class PurchasedCart {
     shopperUuid: string;
     purchasedAt: Date;
 
-    constructor(purchasedCartProducts: Array<CartProduct>, shippingAddress: string, shopperEmail: string, shopperUsername: string, shopperUuid: string) {
-        this.purchasedCartUuid = uuidv4();
+    constructor(shopperPurchasedCartUuid: string, purchasedCartProducts: Array<CartProduct>, shippingAddress: string, shopperEmail: string, shopperUsername: string, shopperUuid: string) {
+        this.shopperPurchasedCartUuid = shopperPurchasedCartUuid;
         this.purchasedCartProducts = purchasedCartProducts;
         this.shopperEmail = shopperEmail;
         this.shopperUsername = shopperUsername;
@@ -197,14 +197,14 @@ export class Stores {
         }
     }
     
-    addPurchesedCart(purchasedCartProducts: Array<CartProduct>, shippingAddress: string, shopperEmail: string, shopperUsername: string, shopperUuid: string) {
+    addPurchesedCart(shopperPurchasedCartUuid: string, purchasedCartProducts: Array<CartProduct>, shippingAddress: string, shopperEmail: string, shopperUsername: string, shopperUuid: string) {
         try {
             let purchasedCart: PurchasedCart;
             let purchasedStoreProducts: Array<CartProduct>;
 
             this.stores.forEach(store => {
                 purchasedStoreProducts = purchasedCartProducts.filter(cartProduct => cartProduct.storeUuid === store.storeUuid);
-                purchasedCart = new PurchasedCart(purchasedStoreProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
+                purchasedCart = new PurchasedCart(shopperPurchasedCartUuid, purchasedStoreProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
                 store.purchasedCarts.push(purchasedCart);
             });
 
