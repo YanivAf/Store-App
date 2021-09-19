@@ -99,13 +99,22 @@ export const details = (req, res)=> { // all htmls except for index.html,  regis
 
 export function updateQuantity(req, res) { // store.html + cart.html
   try {
-    const { productUuid, productQuantity } = req.body;
+    const { productUuid, productQuantity, allStoresInfo } = req.body;
     const users = new Users();
     const { userIndex, cartProductIndex, storeUuid, storeIndex, productIndex } = req;
 
     const cartProducts: Array<CartProduct> = users.updateCartProductQuantity(userIndex, cartProductIndex, storeUuid, storeIndex, productUuid, productIndex, productQuantity);
+    const shippingAddress: string = users.users[userIndex].shippingAddress;
     const stores = new Stores();
-    res.send({ cartProducts, storeProducts: stores.stores[storeIndex].products });
+
+    let allMallProducts: Array<Product>;
+    if (allStoresInfo) {
+      allMallProducts = [];
+      stores.stores.forEach(store => {allMallProducts = allMallProducts.concat(store.products)});
+    }
+    const storeProducts: Array<Product> = allMallProducts ?? stores.stores[storeIndex].products;
+    
+    res.send({ cartProducts, storeProducts, shippingAddress });
 
   } catch (error) {
     console.error(error);

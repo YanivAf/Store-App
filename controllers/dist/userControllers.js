@@ -87,12 +87,19 @@ exports.details = function (req, res) {
 };
 function updateQuantity(req, res) {
     try {
-        var _a = req.body, productUuid = _a.productUuid, productQuantity = _a.productQuantity;
+        var _a = req.body, productUuid = _a.productUuid, productQuantity = _a.productQuantity, allStoresInfo = _a.allStoresInfo;
         var users = new Users();
         var userIndex = req.userIndex, cartProductIndex = req.cartProductIndex, storeUuid = req.storeUuid, storeIndex = req.storeIndex, productIndex = req.productIndex;
         var cartProducts = users.updateCartProductQuantity(userIndex, cartProductIndex, storeUuid, storeIndex, productUuid, productIndex, productQuantity);
+        var shippingAddress = users.users[userIndex].shippingAddress;
         var stores = new Stores();
-        res.send({ cartProducts: cartProducts, storeProducts: stores.stores[storeIndex].products });
+        var allMallProducts_1;
+        if (allStoresInfo) {
+            allMallProducts_1 = [];
+            stores.stores.forEach(function (store) { allMallProducts_1 = allMallProducts_1.concat(store.products); });
+        }
+        var storeProducts = allMallProducts_1 !== null && allMallProducts_1 !== void 0 ? allMallProducts_1 : stores.stores[storeIndex].products;
+        res.send({ cartProducts: cartProducts, storeProducts: storeProducts, shippingAddress: shippingAddress });
     }
     catch (error) {
         console.error(error);

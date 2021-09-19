@@ -46,17 +46,18 @@ else if (whichHtmlFile === '/store.html') {
 }
 function updateProduct(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, productName, productDescription, productPrice, productInStock, fd, imageInput, productImage, error_1;
+        var _a, productName, productDescription, productPrice, precentsOff, productInStock, fd, imageInput, productImage, error_1;
         var _this = this;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
                     ev.preventDefault();
-                    _a = ev.target.elements, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, productInStock = _a.productInStock;
+                    _a = ev.target.elements, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, precentsOff = _a.precentsOff, productInStock = _a.productInStock;
                     productName = productName.value;
                     productDescription = productDescription.value;
                     productPrice = productPrice.valueAsNumber;
+                    precentsOff = (precentsOff.value === '') ? 0 : precentsOff.valueAsNumber;
                     productInStock = productInStock.valueAsNumber;
                     fd = new FormData();
                     imageInput = document.querySelector('#product-image');
@@ -66,6 +67,7 @@ function updateProduct(ev) {
                     fd.append('productName', productName);
                     fd.append('productDescription', productDescription);
                     fd.append('productPrice', productPrice);
+                    fd.append('precentsOff', precentsOff);
                     fd.append('productInStock', productInStock);
                     fd.append('storeUuid', storeUuid);
                     ev.target.reset();
@@ -103,7 +105,7 @@ function addProduct(ev) {
                     productName = productName.value;
                     productDescription = productDescription.value;
                     productPrice = productPrice.valueAsNumber;
-                    precentsOff = precentsOff.valueAsNumber;
+                    precentsOff = (precentsOff.value === '') ? 0 : precentsOff.valueAsNumber;
                     productInStock = productInStock.valueAsNumber;
                     fd = new FormData();
                     imageInput = document.querySelector('#product-image');
@@ -181,7 +183,7 @@ var readURL = function (input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
         reader.onload = function (ev) {
-            document.querySelector('#product-preview').setAttribute("src", "" + ev.target.result);
+            document.querySelector('#productImg').setAttribute("src", "" + ev.target.result);
             return ev.target.result;
         };
         reader.readAsDataURL(input.files[0]);

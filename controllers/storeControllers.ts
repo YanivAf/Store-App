@@ -21,7 +21,12 @@ export const showProducts = (req, res)=> { // store.html
     const storeIndex: number = stores.findStoreIndex(storeUuid);
     const store = stores.stores[storeIndex];
 
-    if (storeUuid === 'mall') res.send({ stores }); // show from all stores
+    if (storeUuid === 'mall') {
+      const { userIndex } = req;
+      const users = new Users();
+      const shippingAddress: string = users.users[userIndex].shippingAddress;
+      res.send({ stores, shippingAddress });
+    }
     else res.send({ store });
 
   } catch (error) {

@@ -33,8 +33,8 @@ var Product = /** @class */ (function () {
 }());
 exports.Product = Product;
 var PurchasedCart = /** @class */ (function () {
-    function PurchasedCart(shopperPurchasedCartUuid, purchasedCartProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid) {
-        this.shopperPurchasedCartUuid = shopperPurchasedCartUuid;
+    function PurchasedCart(purchasedCartUuid, purchasedCartProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid) {
+        this.purchasedCartUuid = purchasedCartUuid;
         this.purchasedCartProducts = purchasedCartProducts;
         this.shopperEmail = shopperEmail;
         this.shopperUsername = shopperUsername;

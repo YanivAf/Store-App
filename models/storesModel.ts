@@ -46,7 +46,7 @@ export class Product {
 }
 
 export class PurchasedCart {
-    shopperPurchasedCartUuid: string;
+    purchasedCartUuid: string; // retreived from the shopper
     purchasedCartProducts: Array<CartProduct>;
     shippingAddress: string;
     shopperEmail: string;
@@ -54,8 +54,8 @@ export class PurchasedCart {
     shopperUuid: string;
     purchasedAt: Date;
 
-    constructor(shopperPurchasedCartUuid: string, purchasedCartProducts: Array<CartProduct>, shippingAddress: string, shopperEmail: string, shopperUsername: string, shopperUuid: string) {
-        this.shopperPurchasedCartUuid = shopperPurchasedCartUuid;
+    constructor(purchasedCartUuid: string, purchasedCartProducts: Array<CartProduct>, shippingAddress: string, shopperEmail: string, shopperUsername: string, shopperUuid: string) {
+        this.purchasedCartUuid = purchasedCartUuid;
         this.purchasedCartProducts = purchasedCartProducts;
         this.shopperEmail = shopperEmail;
         this.shopperUsername = shopperUsername;

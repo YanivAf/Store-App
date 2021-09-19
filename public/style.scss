@@ -1,7 +1,7 @@
 :root {
     --main-color: #7cd1f9;
     --main-bg-color: #dbf4ff;
-    --hover-bg-color: #7cd1f9;
+    --hover-bg-color: #2dbbfd;
     --hover-color: darkorange;
     --links-color: #518da8;
   }
@@ -182,7 +182,7 @@ a {
             }
         }
 
-        &--history {
+        &--purchased {
             grid-area: item2;
             width: clamp(20px, 4vw, 40px);
             height: clamp(20px, 4vw, 40px);
@@ -375,6 +375,7 @@ a {
                 grid-area: img;
                 display: flex;
                 flex-direction: column;
+                position: relative;
                 
                 img,input {
                     margin: 0 auto;
@@ -383,6 +384,15 @@ a {
                     max-width: 25vw;
                     max-height: 12.5vw;
                 }
+
+                .img-magnifier-glass {
+                    position: absolute;
+                    border: 3px solid var(--main-color);
+                    border-radius: 50%;
+                    cursor: none;
+                    width: 100px;
+                    height: 100px;
+                  }                  
             }
 
             &--description {
@@ -425,11 +435,12 @@ a {
     }
 }
 
-.products {
+.products, .carts, .cart {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    margin-bottom: 20px;
     
     &__item {
         &--headers {
@@ -451,7 +462,7 @@ a {
         &--footers {
             padding: 15px 0;
             border-bottom: 3px solid lightgray;
-            background-color: var(--links-color);
+            background-color: var(--hover-bg-color);
             color: white;
             display: flex;
             word-wrap: normal;

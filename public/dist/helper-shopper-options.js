@@ -47,7 +47,7 @@ else {
 }
 function updateQuantity(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var productQuantity, cancelDelete, productDiv, storeA, updateCartProductQuantity, _a, cartProducts, storeProducts, error_1;
+        var productQuantity, cancelDelete, productDiv, storeA, allStoresInfo, updateCartProductQuantity, _a, cartProducts, storeProducts, shippingAddress, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -87,11 +87,12 @@ function updateQuantity(ev) {
                     else if (whichHtmlFile === '/cart.html')
                         storeA = productDiv.querySelector('.product-row__item--img');
                     storeUuid = url.searchParams.get("storeUuid");
+                    allStoresInfo = ((storeUuid === 'mall') || (whichHtmlFile === '/cart.html')) ? true : false;
                     storeUuid = ((!storeUuid) || (storeUuid === 'mall')) ? storeA.getAttribute('href').replace(/^(.)*storeUuid=/g, '').replace(/[&](.)*$/g, '') : storeUuid;
-                    return [4 /*yield*/, axios.put('/user/cart', { storeUuid: storeUuid, productUuid: productUuid, productQuantity: productQuantity })];
+                    return [4 /*yield*/, axios.put('/user/cart', { allStoresInfo: allStoresInfo, storeUuid: storeUuid, productUuid: productUuid, productQuantity: productQuantity })];
                 case 5:
                     updateCartProductQuantity = _b.sent();
-                    _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts;
+                    _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts, shippingAddress = _a.shippingAddress;
                     return [4 /*yield*/, renderShopperCart(cartProducts)];
                 case 6:
                     _b.sent();
@@ -100,7 +101,7 @@ function updateQuantity(ev) {
                     else if (whichHtmlFile === '/product.html')
                         getProduct();
                     else if (whichHtmlFile === '/cart.html')
-                        renderCartProducts(storeProducts, cartProducts);
+                        renderCartProducts(storeProducts, cartProducts, shippingAddress);
                     return [3 /*break*/, 8];
                 case 7:
                     error_1 = _b.sent();

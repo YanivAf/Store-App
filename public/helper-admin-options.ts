@@ -14,10 +14,11 @@ async function updateProduct(ev: any) {
     
     ev.preventDefault();
 
-    let { productName, productDescription, productPrice, productInStock } = ev.target.elements;
+    let { productName, productDescription, productPrice, precentsOff, productInStock } = ev.target.elements;
     productName = productName.value;
     productDescription = productDescription.value;
     productPrice = productPrice.valueAsNumber;
+    precentsOff = (precentsOff.value === '') ? 0 : precentsOff.valueAsNumber;
     productInStock = productInStock.valueAsNumber;
 
     const fd:FormData = new FormData();
@@ -27,6 +28,7 @@ async function updateProduct(ev: any) {
     fd.append('productName', productName);
     fd.append('productDescription', productDescription);
     fd.append('productPrice', productPrice);
+    fd.append('precentsOff', precentsOff);
     fd.append('productInStock', productInStock);
     fd.append('storeUuid', storeUuid);
 
@@ -54,7 +56,7 @@ async function addProduct(ev) {
         productName = productName.value;
         productDescription = productDescription.value;
         productPrice = productPrice.valueAsNumber;
-        precentsOff = precentsOff.valueAsNumber;
+        precentsOff = (precentsOff.value === '') ? 0 : precentsOff.valueAsNumber;
         productInStock = productInStock.valueAsNumber;
 
         const fd:FormData = new FormData();
@@ -121,7 +123,7 @@ const readURL = (input: any) => {
     let reader = new FileReader();
 
     reader.onload = (ev)=> {
-     document.querySelector('#product-preview').setAttribute("src", `${ev.target.result}`);
+     document.querySelector('#productImg').setAttribute("src", `${ev.target.result}`);
       return ev.target.result
     }
     reader.readAsDataURL(input.files[0]);

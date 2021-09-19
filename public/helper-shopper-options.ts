@@ -38,14 +38,14 @@ async function updateQuantity(ev: any) {
     if (whichHtmlFile === '/product.html') storeA = productDiv.querySelector('.product-large__item--img');
     else if (whichHtmlFile === '/cart.html') storeA = productDiv.querySelector('.product-row__item--img');
     storeUuid = url.searchParams.get("storeUuid");
+    const allStoresInfo: boolean = ((storeUuid === 'mall') || (whichHtmlFile === '/cart.html')) ? true : false;
     storeUuid = ((!storeUuid) || (storeUuid === 'mall')) ? storeA.getAttribute('href').replace(/^(.)*storeUuid=/g, '').replace(/[&](.)*$/g, '') : storeUuid;
-    const updateCartProductQuantity = await axios.put('/user/cart', { storeUuid, productUuid, productQuantity });
-    const { cartProducts, storeProducts } = updateCartProductQuantity.data;
-
+    const updateCartProductQuantity = await axios.put('/user/cart', { allStoresInfo, storeUuid, productUuid, productQuantity });
+    const { cartProducts, storeProducts, shippingAddress } = updateCartProductQuantity.data;
     await renderShopperCart(cartProducts);
     if ((ev.target.getAttribute('id') === 'add-to-cart') && (whichHtmlFile === '/store.html')) renderStoreProducts(storeProducts, cartProducts, false);
     else if (whichHtmlFile === '/product.html') getProduct();
-    else if  (whichHtmlFile === '/cart.html') renderCartProducts(storeProducts, cartProducts);
+    else if  (whichHtmlFile === '/cart.html') renderCartProducts(storeProducts, cartProducts, shippingAddress);
     
   } catch (error) {
       console.error(error.message);

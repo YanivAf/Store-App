@@ -10,7 +10,7 @@ async function getProduct() {
     }
 }
 
-async function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boolean) {
+function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boolean) {
     try {
         const updateProductForm: HTMLFormElement = document.querySelector('#edit-product-form')
         const productNameElement: HTMLElement = document.querySelector('#product-name');
@@ -27,7 +27,7 @@ async function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boole
             <div class="product-large__item product-large__item--buttons product-buttons">${buttonsByRole}</div>
             <input class="product-large__item product-large__item--name" type="text" name="productName" minLength="2" maxLength="40" placeholder="Product Name" value="${storeProduct.productName}" required />
             <div class="product-large__item product-large__item--img">
-                <img id="product-preview" src="${storeProduct.productImage}" title="${storeProduct.productName}">
+                <img id="productImg" src="${storeProduct.productImage}" title="${storeProduct.productName}">
                 <input id="product-image" class="button" type="file" name="productImage" accept="image/*" onchange="readURL(this)" />
             </div>
             <textarea class="product-large__item product-large__item--description" name="productDescription" minLength="10" maxLength="300" placeholder="Product Description (10-300 characters)" required>${storeProduct.productDescription}</textarea>
@@ -103,9 +103,69 @@ async function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boole
             
             const mainElement: HTMLElement = document.querySelector('.main');
             mainElement.insertAdjacentHTML('beforeend', productHtml);
+
+            magnifyImg();
         }
         
+    } catch (error) {
+        console.error(error.message);
+    }
+}
 
+function magnifyImg() {
+    try {
+        const productImg: HTMLImageElement = document.querySelector('#productImg');
+        const zoom: number = 3;
+        const magnifierGlass: HTMLElement = document.createElement('div');
+        magnifierGlass.setAttribute('class', 'img-magnifier-glass');
+    
+        productImg.parentElement.insertBefore(magnifierGlass, productImg);
+    
+        magnifierGlass.addEventListener("mousemove", moveMagnifier);
+        productImg.addEventListener("mousemove", moveMagnifier);
+        magnifierGlass.addEventListener("touchmove", moveMagnifier);
+        productImg.addEventListener("touchmove", moveMagnifier);
+
+        function moveMagnifier(ev) {
+            ev.preventDefault();
+            magnifierGlass.style.display = 'unset';
+            
+            magnifierGlass.style.backgroundImage = `url('${productImg.src}')`;
+            magnifierGlass.style.backgroundRepeat = "no-repeat";
+            magnifierGlass.style.backgroundSize = `${(productImg.width * zoom)}px ${(productImg.height * zoom)}px`;
+            const bw: number = 1.1;
+            const w: number = magnifierGlass.offsetWidth / 2;
+            const h: number = magnifierGlass.offsetHeight / 2;
+
+            const pos: any = getCursorPos(ev);
+            let x = pos.x, y = pos.y;
+            
+            if ((x > productImg.width - (w / zoom)) || (x < w / zoom) || (y > productImg.height - (h / zoom)) || (y < h / zoom)) magnifierGlass.style.display = 'none';
+            
+            if (x > productImg.width - (w / zoom)) x = productImg.width - (w / zoom);
+            if (x < w / zoom) x = w / zoom;
+            if (y > productImg.height - (h / zoom)) y = productImg.height - (h / zoom);
+            if (y < h / zoom) y = h / zoom;
+
+            magnifierGlass.style.left = `${(x - w)}px`;
+            magnifierGlass.style.top = `${(y - h)}px`;
+
+            magnifierGlass.style.backgroundPosition = `-${((x * zoom) - w + bw)}px -${((y * zoom) - h + bw)}px`;
+        }
+    
+        function getCursorPos(ev) {
+            let x: number = 0, y: number = 0;
+            ev = ev || window.event;
+
+            const a: any = productImg.getBoundingClientRect();
+
+            x = ev.pageX - a.left;
+            y = ev.pageY - a.top;
+
+            x = x - window.pageXOffset;
+            y = y - window.pageYOffset;
+            return { x , y };
+        }
 
     } catch (error) {
         console.error(error.message);

@@ -21,6 +21,7 @@ var CartProduct = /** @class */ (function () {
         this.productUuid = productUuid;
         this.quantity = 1;
         this.status = 'Awaiting Shipping';
+        this.statusUpdatedAt = new Date();
     }
     return CartProduct;
 }());
@@ -163,7 +164,7 @@ var Users = /** @class */ (function () {
             var purchasedCartProducts = this.users[shopperIndex].cart.filter(function (cartProduct) { return cartProduct.quantity > 0; });
             var shippingAddress = this.users[shopperIndex].shippingAddress;
             var purchasedCart = new PurchasedCart(purchasedCartProducts, shippingAddress);
-            this.users[shopperIndex].purchasedCarts.push(purchasedCart);
+            this.users[shopperIndex].purchasedCarts.unshift(purchasedCart);
             var shopperEmail = this.users[shopperIndex].email;
             var shopperUsername = this.users[shopperIndex].username;
             var shopperUuid = this.users[shopperIndex].userUuid;

@@ -63,11 +63,9 @@ function getUserDetails() {
         });
     });
 }
-getUserDetails();
 var isCartEmpty = true;
 var cartProductsToRender;
 var shopperPurchasedCartsToRender;
-var shippingAddress;
 function renderUserDetails(user, isAdmin) {
     try {
         var usernameElement = document.querySelector('.header__item--username');
@@ -77,18 +75,26 @@ function renderUserDetails(user, isAdmin) {
             isCartEmpty = (user.cart.length === 0) ? true : false;
             cartProductsToRender = user.cart;
             shopperPurchasedCartsToRender = user.purchasedCarts;
-            shippingAddress = user.shippingAddress;
             renderShopperCart(cartProductsToRender);
         }
         else {
-            var navBar = { store: { aOrDiv: 'a', href: " href=\"./store.html?storeUuid=" + storeUuid + "\"" } };
+            var navBar = {
+                purchased: { aOrDiv: 'a', href: " href=\"./purchased.html\"" },
+                store: { aOrDiv: 'a', href: " href=\"./store.html?storeUuid=" + storeUuid + "\"" }
+            };
             var addProductHtml = '';
-            if (whichHtmlFile === '/store.html') {
-                addProductHtml = "\n                <a href=\"#add-product-form\" class=\"header__item header__item--add-product\" title=\"Add new product\">\n                    <img src=\"./images/add-product.png\" title=\"Add new product\" />\n                </a>";
-                navBar.store.aOrDiv = 'div';
-                navBar.store.href = '';
+            switch (whichHtmlFile) {
+                case '/purchased.html':
+                    navBar.purchased.aOrDiv = 'div';
+                    navBar.purchased.href = '';
+                    break;
+                case '/store.html':
+                    addProductHtml = "\n                    <a href=\"#add-product-form\" class=\"header__item header__item--add-product\" title=\"Add new product\">\n                        <img src=\"./images/add-product.png\" title=\"Add new product\" />\n                    </a>";
+                    navBar.store.aOrDiv = 'div';
+                    navBar.store.href = '';
+                    break;
             }
-            additionalHeaderElementsHtml = "\n            <" + navBar.store.aOrDiv + navBar.store.href + " class=\"header__item header__item--store\">\n                <img src=\"./images/store.png\" title=\"Your store\" />\n            </" + navBar.store.aOrDiv + ">\n            " + addProductHtml;
+            additionalHeaderElementsHtml = "\n            <" + navBar.store.aOrDiv + navBar.store.href + " class=\"header__item header__item--store\">\n                <img src=\"./images/store.png\" title=\"Your store\" />\n            </" + navBar.purchased.aOrDiv + ">\n            <" + navBar.purchased.aOrDiv + navBar.purchased.href + " class=\"header__item header__item--purchased\">\n                <img src=\"./images/store.png\" title=\"Your store\" />\n            </" + navBar.purchased.aOrDiv + ">\n            " + addProductHtml;
         }
         var headerTitleElement = document.querySelector('.header__item--h1');
         headerTitleElement.insertAdjacentHTML("afterend", additionalHeaderElementsHtml);
@@ -130,7 +136,7 @@ function renderShopperCart(cartProducts) {
                 }
                 break;
         }
-        var shopperHeaderElementsHtml = "<" + navBar.cart.aOrDiv + navBar.cart.href + " class=\"header__item header__item--cart\">\n            " + navBar.cart.innerHTML + "\n        </" + navBar.cart.aOrDiv + ">\n\n        <" + navBar.purchased.aOrDiv + navBar.purchased.href + " class=\"header__item header__item--history\">\n            <img src=\"./images/history-cart.png\" title=\"Purchase history\" />\n        </" + navBar.purchased.aOrDiv + ">\n        \n        <" + navBar.mall.aOrDiv + navBar.mall.href + " class=\"header__item header__item--mall\">\n            <img src=\"./images/mall.png\" title=\"Virtual mall\" />\n        </" + navBar.mall.aOrDiv + ">\n        \n        <" + navBar.storesList.aOrDiv + navBar.storesList.href + " class=\"header__item header__item--stores-list\">\n            <img src=\"./images/stores-list.png\" title=\"Stores list\" />\n        </" + navBar.storesList.aOrDiv + ">";
+        var shopperHeaderElementsHtml = "<" + navBar.cart.aOrDiv + navBar.cart.href + " class=\"header__item header__item--cart\">\n            " + navBar.cart.innerHTML + "\n        </" + navBar.cart.aOrDiv + ">\n\n        <" + navBar.purchased.aOrDiv + navBar.purchased.href + " class=\"header__item header__item--purchased\">\n            <img src=\"./images/history-cart.png\" title=\"Purchased carts\" />\n        </" + navBar.purchased.aOrDiv + ">\n        \n        <" + navBar.mall.aOrDiv + navBar.mall.href + " class=\"header__item header__item--mall\">\n            <img src=\"./images/mall.png\" title=\"Virtual mall\" />\n        </" + navBar.mall.aOrDiv + ">\n        \n        <" + navBar.storesList.aOrDiv + navBar.storesList.href + " class=\"header__item header__item--stores-list\">\n            <img src=\"./images/stores-list.png\" title=\"Stores list\" />\n        </" + navBar.storesList.aOrDiv + ">";
         var headerCartElement = document.querySelector('.header__item--cart');
         if (headerCartElement) {
             headerCartElement.innerHTML = "" + navBar.cart.innerHTML;
@@ -202,8 +208,29 @@ function bye() {
     }
 }
 var asyncScripts = document.getElementsByClassName('async-script');
-for (var _i = 0, asyncScripts_1 = asyncScripts; _i < asyncScripts_1.length; _i++) {
-    var asyncScript = asyncScripts_1[_i];
-    asyncScript.setAttribute('src', asyncScript.getAttribute('data-src'));
-    asyncScript.removeAttribute('data-src');
+function asyncScriptFiles() {
+    return __awaiter(this, void 0, void 0, function () {
+        var _i, asyncScripts_1, asyncScript, error_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, getUserDetails()];
+                case 1:
+                    _a.sent();
+                    for (_i = 0, asyncScripts_1 = asyncScripts; _i < asyncScripts_1.length; _i++) {
+                        asyncScript = asyncScripts_1[_i];
+                        asyncScript.setAttribute('src', asyncScript.getAttribute('data-src'));
+                        asyncScript.removeAttribute('data-src');
+                    }
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_2 = _a.sent();
+                    console.error(error_2.message);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
 }
+asyncScriptFiles();

@@ -11,7 +11,6 @@ export function doesStoreExist(req, res, next) {
         let storeUuid: string = req.params.storeUuid ?? req.body.storeUuid;
 
         if (storeUuid === 'mall') {
-            storeUuid = req.body.storeUuid ?? storeUuid;
             next();
             return;
         }

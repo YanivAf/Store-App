@@ -19,8 +19,12 @@ exports.showProducts = function (req, res) {
         var stores = new Stores();
         var storeIndex = stores.findStoreIndex(storeUuid);
         var store = stores.stores[storeIndex];
-        if (storeUuid === 'mall')
-            res.send({ stores: stores }); // show from all stores
+        if (storeUuid === 'mall') {
+            var userIndex = req.userIndex;
+            var users = new Users();
+            var shippingAddress = users.users[userIndex].shippingAddress;
+            res.send({ stores: stores, shippingAddress: shippingAddress });
+        }
         else
             res.send({ store: store });
     }

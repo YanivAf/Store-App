@@ -39,7 +39,6 @@ function renderStore(stores: any, store: any, isAdmin: boolean) {
 
 function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isAdmin: boolean) {
     try {
-
         const productsElement: HTMLElement = document.querySelector('.products');
         let productsHtml: string;
         

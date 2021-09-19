@@ -57,64 +57,110 @@ function getProduct() {
     });
 }
 function renderProduct(storeProduct, cartProduct, isAdmin) {
-    return __awaiter(this, void 0, void 0, function () {
-        var updateProductForm, productNameElement, productHtml, buttonsByRole, cartProductQuantity, inStockText, inStockColor, isInStock, saleTagHtml, salePriceHtml, isOnSale, productElement, mainElement;
-        return __generator(this, function (_a) {
-            try {
-                updateProductForm = document.querySelector('#edit-product-form');
-                productNameElement = document.querySelector('#product-name');
-                productNameElement.innerHTML = storeProduct.productName;
-                productHtml = void 0;
-                buttonsByRole = void 0;
-                cartProductQuantity = void 0;
-                if (isAdmin) {
-                    updateProductForm.style.display = 'grid';
-                    buttonsByRole = "<i class=\"product-buttons__item product-buttons__item--delete fas fa-trash\" id=\"delete-from-store\" onclick=\"deleteProduct(event)\" title=\"Delete " + storeProduct.productName + "\"></i>";
-                    productHtml = "\n            <div class=\"product-large__item product-large__item--buttons product-buttons\">" + buttonsByRole + "</div>\n            <input class=\"product-large__item product-large__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" value=\"" + storeProduct.productName + "\" required />\n            <div class=\"product-large__item product-large__item--img\">\n                <img id=\"product-preview\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n                <input id=\"product-image\" class=\"button\" type=\"file\" name=\"productImage\" accept=\"image/*\" onchange=\"readURL(this)\" />\n            </div>\n            <textarea class=\"product-large__item product-large__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required>" + storeProduct.productDescription + "</textarea>\n            <div class=\"product-large__item product-large__item--price\">\n                <input type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" value=\"" + (Math.round(storeProduct.productPrice * 100) / 100).toFixed(2) + "\" required />\n                <label for=\"productPrice\">Price ($)</label>\n            </div>\n            <div class=\"product-large__item product-large__item--sale\">\n                <input type=\"number\" name=\"precentsOff\" min=\"0\" max=\"100\" placeholder=\"% Off\" value=\"" + storeProduct.precentsOff + "\" />\n                <label for=\"precentsOff\">% Off</label>\n            </div>\n            <div class=\"product-large__item product-large__item--in-stock\">\n                <input type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" value=\"" + storeProduct.inStock + "\" required />\n                <label for=\"productInStock\">In Stock</label>\n            </div>\n            <input class=\"product-large__item product-large__item--submit button\" type=\"submit\" value=\"Update\" />";
-                    updateProductForm.innerHTML = productHtml;
-                }
-                else {
-                    if (updateProductForm)
-                        updateProductForm.remove();
-                    inStockText = void 0;
-                    inStockColor = void 0;
-                    isInStock = (storeProduct.inStock > 0) ? true : false;
-                    if (isInStock) {
-                        inStockText = storeProduct.inStock + " left";
-                        inStockColor = (storeProduct.inStock > 5) ? 'green' : 'orange';
-                    }
-                    else {
-                        inStockText = 'Out of Stock';
-                        inStockColor = 'red';
-                    }
-                    if (cartProduct === undefined) {
-                        buttonsByRole = "<i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus\" id=\"add-to-cart\" title=\"Add " + storeProduct.productName + " to cart\"></i>";
-                        cartProductQuantity = 0;
-                    }
-                    else {
-                        cartProductQuantity = cartProduct.quantity;
-                        buttonsByRole = "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + storeProduct.productName + " in your cart\"></i>\n                </a>";
-                    }
-                    saleTagHtml = "";
-                    salePriceHtml = "";
-                    isOnSale = (storeProduct.precentsOff > 0) ? true : false;
-                    if (isOnSale) {
-                        saleTagHtml = "<h5 class=\"product-large__item product-large__item--sale\">" + storeProduct.precentsOff + "% off!</h5>";
-                        salePriceHtml = "<br /><span style=\"font-size: 12px; color: lightgrey; text-decoration: line-through;\">" + (Math.round(storeProduct.productPrice * 100) / 100).toFixed(2) + "$</span>";
-                    }
-                    productHtml = "\n            <div class=\"main__item main__item--product-details product-large\">\n                " + saleTagHtml + "\n                <div class=\"product-large__item product-large__item--buttons product-buttons\">" + buttonsByRole + "</div>\n                <div class=\"product-large__item product-large__item--img\">\n                    <img id=\"productImg\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n                </div>\n                <article class=\"product-large__item product-large__item--description\" title=\"Product Description\">" + storeProduct.productDescription + "</article>\n                <div class=\"product-large__item product-large__item--price\">\n                    <h3>" + (Math.round((storeProduct.productPrice - storeProduct.productPrice * (storeProduct.precentsOff / 100)) * 100) / 100).toFixed(2) + "$" + salePriceHtml + "</h3>\n                    <p>per unit</p>\n                </div>\n                <p class=\"product-large__item product-large__item--in-stock\" title=\"In Stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</p>\n                <div class=\"product-large__item product-large__item--quantity\">\n                    <input type=\"number\" class=\"update-cart-qunatity\" min=\"0\" max=\"" + (cartProductQuantity + storeProduct.inStock) + "\" value=\"" + cartProductQuantity + "\" />\n                </div>\n            </div>";
-                    productElement = document.querySelector('.product-large');
-                    if (productElement)
-                        productElement.remove();
-                    mainElement = document.querySelector('.main');
-                    mainElement.insertAdjacentHTML('beforeend', productHtml);
-                }
+    try {
+        var updateProductForm = document.querySelector('#edit-product-form');
+        var productNameElement = document.querySelector('#product-name');
+        productNameElement.innerHTML = storeProduct.productName;
+        var productHtml = void 0;
+        var buttonsByRole = void 0;
+        var cartProductQuantity = void 0;
+        if (isAdmin) {
+            updateProductForm.style.display = 'grid';
+            buttonsByRole = "<i class=\"product-buttons__item product-buttons__item--delete fas fa-trash\" id=\"delete-from-store\" onclick=\"deleteProduct(event)\" title=\"Delete " + storeProduct.productName + "\"></i>";
+            productHtml = "\n            <div class=\"product-large__item product-large__item--buttons product-buttons\">" + buttonsByRole + "</div>\n            <input class=\"product-large__item product-large__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" value=\"" + storeProduct.productName + "\" required />\n            <div class=\"product-large__item product-large__item--img\">\n                <img id=\"productImg\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n                <input id=\"product-image\" class=\"button\" type=\"file\" name=\"productImage\" accept=\"image/*\" onchange=\"readURL(this)\" />\n            </div>\n            <textarea class=\"product-large__item product-large__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required>" + storeProduct.productDescription + "</textarea>\n            <div class=\"product-large__item product-large__item--price\">\n                <input type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" value=\"" + (Math.round(storeProduct.productPrice * 100) / 100).toFixed(2) + "\" required />\n                <label for=\"productPrice\">Price ($)</label>\n            </div>\n            <div class=\"product-large__item product-large__item--sale\">\n                <input type=\"number\" name=\"precentsOff\" min=\"0\" max=\"100\" placeholder=\"% Off\" value=\"" + storeProduct.precentsOff + "\" />\n                <label for=\"precentsOff\">% Off</label>\n            </div>\n            <div class=\"product-large__item product-large__item--in-stock\">\n                <input type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" value=\"" + storeProduct.inStock + "\" required />\n                <label for=\"productInStock\">In Stock</label>\n            </div>\n            <input class=\"product-large__item product-large__item--submit button\" type=\"submit\" value=\"Update\" />";
+            updateProductForm.innerHTML = productHtml;
+        }
+        else {
+            if (updateProductForm)
+                updateProductForm.remove();
+            var inStockText = void 0;
+            var inStockColor = void 0;
+            var isInStock = (storeProduct.inStock > 0) ? true : false;
+            if (isInStock) {
+                inStockText = storeProduct.inStock + " left";
+                inStockColor = (storeProduct.inStock > 5) ? 'green' : 'orange';
             }
-            catch (error) {
-                console.error(error.message);
+            else {
+                inStockText = 'Out of Stock';
+                inStockColor = 'red';
             }
-            return [2 /*return*/];
-        });
-    });
+            if (cartProduct === undefined) {
+                buttonsByRole = "<i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus\" id=\"add-to-cart\" title=\"Add " + storeProduct.productName + " to cart\"></i>";
+                cartProductQuantity = 0;
+            }
+            else {
+                cartProductQuantity = cartProduct.quantity;
+                buttonsByRole = "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + storeProduct.productName + " in your cart\"></i>\n                </a>";
+            }
+            var saleTagHtml = "";
+            var salePriceHtml = "";
+            var isOnSale = (storeProduct.precentsOff > 0) ? true : false;
+            if (isOnSale) {
+                saleTagHtml = "<h5 class=\"product-large__item product-large__item--sale\">" + storeProduct.precentsOff + "% off!</h5>";
+                salePriceHtml = "<br /><span style=\"font-size: 12px; color: lightgrey; text-decoration: line-through;\">" + (Math.round(storeProduct.productPrice * 100) / 100).toFixed(2) + "$</span>";
+            }
+            productHtml = "\n            <div class=\"main__item main__item--product-details product-large\">\n                " + saleTagHtml + "\n                <div class=\"product-large__item product-large__item--buttons product-buttons\">" + buttonsByRole + "</div>\n                <div class=\"product-large__item product-large__item--img\">\n                    <img id=\"productImg\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n                </div>\n                <article class=\"product-large__item product-large__item--description\" title=\"Product Description\">" + storeProduct.productDescription + "</article>\n                <div class=\"product-large__item product-large__item--price\">\n                    <h3>" + (Math.round((storeProduct.productPrice - storeProduct.productPrice * (storeProduct.precentsOff / 100)) * 100) / 100).toFixed(2) + "$" + salePriceHtml + "</h3>\n                    <p>per unit</p>\n                </div>\n                <p class=\"product-large__item product-large__item--in-stock\" title=\"In Stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</p>\n                <div class=\"product-large__item product-large__item--quantity\">\n                    <input type=\"number\" class=\"update-cart-qunatity\" min=\"0\" max=\"" + (cartProductQuantity + storeProduct.inStock) + "\" value=\"" + cartProductQuantity + "\" />\n                </div>\n            </div>";
+            var productElement = document.querySelector('.product-large');
+            if (productElement)
+                productElement.remove();
+            var mainElement = document.querySelector('.main');
+            mainElement.insertAdjacentHTML('beforeend', productHtml);
+            magnifyImg();
+        }
+    }
+    catch (error) {
+        console.error(error.message);
+    }
+}
+function magnifyImg() {
+    try {
+        var productImg_1 = document.querySelector('#productImg');
+        var zoom_1 = 3;
+        var magnifierGlass_1 = document.createElement('div');
+        magnifierGlass_1.setAttribute('class', 'img-magnifier-glass');
+        productImg_1.parentElement.insertBefore(magnifierGlass_1, productImg_1);
+        magnifierGlass_1.addEventListener("mousemove", moveMagnifier);
+        productImg_1.addEventListener("mousemove", moveMagnifier);
+        magnifierGlass_1.addEventListener("touchmove", moveMagnifier);
+        productImg_1.addEventListener("touchmove", moveMagnifier);
+        function moveMagnifier(ev) {
+            ev.preventDefault();
+            magnifierGlass_1.style.display = 'unset';
+            magnifierGlass_1.style.backgroundImage = "url('" + productImg_1.src + "')";
+            magnifierGlass_1.style.backgroundRepeat = "no-repeat";
+            magnifierGlass_1.style.backgroundSize = (productImg_1.width * zoom_1) + "px " + (productImg_1.height * zoom_1) + "px";
+            var bw = 1.1;
+            var w = magnifierGlass_1.offsetWidth / 2;
+            var h = magnifierGlass_1.offsetHeight / 2;
+            var pos = getCursorPos(ev);
+            var x = pos.x, y = pos.y;
+            if ((x > productImg_1.width - (w / zoom_1)) || (x < w / zoom_1) || (y > productImg_1.height - (h / zoom_1)) || (y < h / zoom_1))
+                magnifierGlass_1.style.display = 'none';
+            if (x > productImg_1.width - (w / zoom_1))
+                x = productImg_1.width - (w / zoom_1);
+            if (x < w / zoom_1)
+                x = w / zoom_1;
+            if (y > productImg_1.height - (h / zoom_1))
+                y = productImg_1.height - (h / zoom_1);
+            if (y < h / zoom_1)
+                y = h / zoom_1;
+            magnifierGlass_1.style.left = (x - w) + "px";
+            magnifierGlass_1.style.top = (y - h) + "px";
+            magnifierGlass_1.style.backgroundPosition = "-" + ((x * zoom_1) - w + bw) + "px -" + ((y * zoom_1) - h + bw) + "px";
+        }
+        function getCursorPos(ev) {
+            var x = 0, y = 0;
+            ev = ev || window.event;
+            var a = productImg_1.getBoundingClientRect();
+            x = ev.pageX - a.left;
+            y = ev.pageY - a.top;
+            x = x - window.pageXOffset;
+            y = y - window.pageYOffset;
+            return { x: x, y: y };
+        }
+    }
+    catch (error) {
+        console.error(error.message);
+    }
 }
 getProduct();

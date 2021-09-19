@@ -19,12 +19,9 @@ async function getUserDetails() {
     }
 }
 
-getUserDetails();
-
 let isCartEmpty: boolean = true;
 let cartProductsToRender: Array<any>;
 let shopperPurchasedCartsToRender: Array<any>;
-let shippingAddress: string;
 
 function renderUserDetails(user: any, isAdmin: boolean) {
     try {
@@ -37,25 +34,36 @@ function renderUserDetails(user: any, isAdmin: boolean) {
             isCartEmpty = (user.cart.length === 0) ? true : false;
             cartProductsToRender = user.cart;
             shopperPurchasedCartsToRender = user.purchasedCarts;
-            shippingAddress = user.shippingAddress;    
             renderShopperCart(cartProductsToRender);
         } else {
-            const navBar: any = { store: { aOrDiv: 'a', href: ` href="./store.html?storeUuid=${storeUuid}"` } }
+            const navBar: any = {
+                purchased: { aOrDiv: 'a', href: ` href="./purchased.html"` },
+                store: { aOrDiv: 'a', href: ` href="./store.html?storeUuid=${storeUuid}"` },
+            }
             let addProductHtml: string = '';
             
-            if (whichHtmlFile === '/store.html') {
-                addProductHtml = `
-                <a href="#add-product-form" class="header__item header__item--add-product" title="Add new product">
-                    <img src="./images/add-product.png" title="Add new product" />
-                </a>`;
-                navBar.store.aOrDiv = 'div';
-                navBar.store.href = '';
+            switch (whichHtmlFile) {
+                case '/purchased.html':
+                    navBar.purchased.aOrDiv = 'div';
+                    navBar.purchased.href = '';
+                    break;
+                case '/store.html':
+                    addProductHtml = `
+                    <a href="#add-product-form" class="header__item header__item--add-product" title="Add new product">
+                        <img src="./images/add-product.png" title="Add new product" />
+                    </a>`;
+                    navBar.store.aOrDiv = 'div';
+                    navBar.store.href = '';
+                    break;
             }
     
             additionalHeaderElementsHtml = `
             <${navBar.store.aOrDiv}${navBar.store.href} class="header__item header__item--store">
                 <img src="./images/store.png" title="Your store" />
-            </${navBar.store.aOrDiv}>
+            </${navBar.purchased.aOrDiv}>
+            <${navBar.purchased.aOrDiv}${navBar.purchased.href} class="header__item header__item--purchased">
+                <img src="./images/store.png" title="Your store" />
+            </${navBar.purchased.aOrDiv}>
             ${addProductHtml}`;
         }
         
@@ -113,8 +121,8 @@ function renderShopperCart(cartProducts: Array<any>) {
             ${navBar.cart.innerHTML}
         </${navBar.cart.aOrDiv}>
 
-        <${navBar.purchased.aOrDiv}${navBar.purchased.href} class="header__item header__item--history">
-            <img src="./images/history-cart.png" title="Purchase history" />
+        <${navBar.purchased.aOrDiv}${navBar.purchased.href} class="header__item header__item--purchased">
+            <img src="./images/history-cart.png" title="Purchased carts" />
         </${navBar.purchased.aOrDiv}>
         
         <${navBar.mall.aOrDiv}${navBar.mall.href} class="header__item header__item--mall">
@@ -189,7 +197,18 @@ function bye() {
 
 const asyncScripts: HTMLCollection = document.getElementsByClassName('async-script');
 
-for (const asyncScript of asyncScripts){
-    asyncScript.setAttribute('src', asyncScript.getAttribute('data-src'));
-    asyncScript.removeAttribute('data-src');
- }
+async function asyncScriptFiles() {
+    try {
+        await getUserDetails();
+
+        for (const asyncScript of asyncScripts) {
+            asyncScript.setAttribute('src', asyncScript.getAttribute('data-src'));
+            asyncScript.removeAttribute('data-src');
+        }
+
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+asyncScriptFiles();

@@ -23,6 +23,7 @@ export class CartProduct {
     totalPrice: number;
     quantity: number;
     status: string;
+    statusUpdatedAt: Date;
     purchasedAt: Date;
     
     constructor(storeUuid: string, productUuid: string) {
@@ -30,6 +31,7 @@ export class CartProduct {
         this.productUuid = productUuid;
         this.quantity = 1;
         this.status = 'Awaiting Shipping';
+        this.statusUpdatedAt = new Date();
     }
 }
 
@@ -207,7 +209,7 @@ export class Users {
             const purchasedCartProducts: Array<CartProduct> = this.users[shopperIndex].cart.filter(cartProduct => cartProduct.quantity > 0);
             const shippingAddress: string = this.users[shopperIndex].shippingAddress
             const purchasedCart = new PurchasedCart(purchasedCartProducts, shippingAddress);
-            this.users[shopperIndex].purchasedCarts.push(purchasedCart);
+            this.users[shopperIndex].purchasedCarts.unshift(purchasedCart);
 
             const shopperEmail: string = this.users[shopperIndex].email;
             const shopperUsername: string = this.users[shopperIndex].username;

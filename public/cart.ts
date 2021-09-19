@@ -1,20 +1,19 @@
 async function getStoresProducts() {
     try {
         const getStoreDetails = await axios.get(`/store/mall`);
-        const { stores } = getStoreDetails.data;
+        const { stores, shippingAddress } = getStoreDetails.data;
         let products = [];
         stores.stores.forEach(store => {products = products.concat(store.products)});
 
-        renderCartProducts(products, cartProductsToRender);
+        renderCartProducts(products, cartProductsToRender, shippingAddress);
 
     } catch (error) {
         console.error(error.message);
     }
 }
 
-function renderCartProducts(products: Array<any>, cartProducts: Array<any>) {
+function renderCartProducts(products: Array<any>, cartProducts: Array<any>, shippingAddress: string) {
     try {
-
         const productsElement: HTMLElement = document.querySelector('.products');
         const payBtn: HTMLButtonElement = document.querySelector('#pay');
 
@@ -37,8 +36,8 @@ function renderCartProducts(products: Array<any>, cartProducts: Array<any>) {
                 <h4>Quantity</h4>
             </div>`;
 
-            const productsHtml: string = cartProducts.map((cartProduct) => { 
-                const productIndex = products.findIndex(product => product.productUuid === cartProduct.productUuid);           
+            const productsHtml: string = cartProducts.map((cartProduct) => {
+                const productIndex: number = products.findIndex(product => product.productUuid === cartProduct.productUuid);    
                 const inStockText = `${products[productIndex].inStock} left`;
                 const inStockColor = (products[productIndex].inStock > 5) ? 'green' : 'orange';
                 totalCartPrice += cartProduct.totalPrice;

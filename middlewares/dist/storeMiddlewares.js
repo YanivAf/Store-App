@@ -5,12 +5,11 @@ var secret = require('../../secret/dist/secret').secret; // TODO convert secret 
 var _a = require("../../models/dist/storesModel"), Product = _a.Product, Store = _a.Store, Stores = _a.Stores;
 var _b = require("../../models/dist/usersModel"), CartProduct = _b.CartProduct, User = _b.User, Users = _b.Users;
 function doesStoreExist(req, res, next) {
-    var _a, _b;
+    var _a;
     try {
         var stores = new Stores();
         var storeUuid = (_a = req.params.storeUuid) !== null && _a !== void 0 ? _a : req.body.storeUuid;
         if (storeUuid === 'mall') {
-            storeUuid = (_b = req.body.storeUuid) !== null && _b !== void 0 ? _b : storeUuid;
             next();
             return;
         }

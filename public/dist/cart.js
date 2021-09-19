@@ -36,21 +36,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function getStoresProducts() {
     return __awaiter(this, void 0, void 0, function () {
-        var getStoreDetails, stores, products_1, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var getStoreDetails, _a, stores, shippingAddress, products_1, error_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
+                    _b.trys.push([0, 2, , 3]);
                     return [4 /*yield*/, axios.get("/store/mall")];
                 case 1:
-                    getStoreDetails = _a.sent();
-                    stores = getStoreDetails.data.stores;
+                    getStoreDetails = _b.sent();
+                    _a = getStoreDetails.data, stores = _a.stores, shippingAddress = _a.shippingAddress;
                     products_1 = [];
                     stores.stores.forEach(function (store) { products_1 = products_1.concat(store.products); });
-                    renderCartProducts(products_1, cartProductsToRender);
+                    renderCartProducts(products_1, cartProductsToRender, shippingAddress);
                     return [3 /*break*/, 3];
                 case 2:
-                    error_1 = _a.sent();
+                    error_1 = _b.sent();
                     console.error(error_1.message);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
@@ -58,7 +58,7 @@ function getStoresProducts() {
         });
     });
 }
-function renderCartProducts(products, cartProducts) {
+function renderCartProducts(products, cartProducts, shippingAddress) {
     try {
         var productsElement = document.querySelector('.products');
         var payBtn = document.querySelector('#pay');
