@@ -99,7 +99,7 @@ function renderPurchasedCarts(purchasedCarts: Array<any>) {
                         <a href="./product.html?storeUuid=${purchasedCartProduct.storeUuid}&productUuid=${purchasedCartProduct.productUuid}" class="product-row__item product-row__item--name">
                             <h3>${purchasedCartProduct.productName}</h3>
                         </a>
-                        <h4 class="product-row__item product-row__item--total">${(Math.round(purchasedCartProduct.totalPrice * 100) / 100).toFixed(2)}$</h4>
+                        <h4 class="product-row__item product-row__item--price">${(Math.round(purchasedCartProduct.totalPrice * 100) / 100).toFixed(2)}$</h4>
                         <div class="product-row__item product-row__item--quantity">
                             <p>${purchasedCartProduct.quantity}<p/>
                         </div>

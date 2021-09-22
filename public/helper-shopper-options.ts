@@ -1,51 +1,93 @@
-let updateQuantityAncestor: HTMLElement
+let updateAncestor: HTMLElement;
 
 if (whichHtmlFile === '/store.html') {
-  updateQuantityAncestor = document.querySelector('.products');
-  updateQuantityAncestor.addEventListener('click', ev => updateQuantity(ev));
-  updateQuantityAncestor.addEventListener('change', ev => updateQuantity(ev));
+  updateAncestor = document.querySelector('.products');
+  updateAncestor.addEventListener('click', ev => updateQuantity(ev));
+  updateAncestor.addEventListener('change', ev => updateQuantity(ev));
+  updateAncestor.addEventListener('click', ev => updateSaved(ev));
+
 } else {
-  updateQuantityAncestor = document.querySelector('.main');
-  updateQuantityAncestor.addEventListener('click', ev => updateQuantity(ev));
-  updateQuantityAncestor.addEventListener('change', ev => updateQuantity(ev));
+  updateAncestor = document.querySelector('.main');
+  updateAncestor.addEventListener('click', ev => updateQuantity(ev));
+  updateAncestor.addEventListener('change', ev => updateQuantity(ev));
+  updateAncestor.addEventListener('click', ev => updateSaved(ev));
+
 }
 
 async function updateQuantity(ev: any) {
   try {
-    if (((ev.target.getAttribute('id') !== 'add-to-cart') && (!ev.target.classList.contains('update-cart-qunatity')) && (!ev.target.classList.contains('remove-from-cart')))
+    if (((!ev.target.classList.contains('add-to-cart')) && (!ev.target.classList.contains('remove-from-cart')) && (!ev.target.classList.contains('save-for-later')) && (!ev.target.classList.contains('update-cart-qunatity')))
    || ((ev.type === 'click') && (ev.target.classList.contains('update-cart-qunatity')))) return;
 
     let productQuantity: number;
-    if (ev.target.getAttribute('id') === 'add-to-cart') productQuantity = 1;
+    if (ev.target.classList.contains('add-to-cart')) productQuantity = 1;
     else if (ev.target.classList.contains('remove-from-cart')) {
-      const cancelDelete: boolean = await swal({
+      const cancelDelete: boolean|string = await swal({
         title: `Remove from Cart`,
         text: `Are you sure?`,
         icon: `warning`,
         dangerMode: true,
-        buttons: ['Nope', 'Yup'],
+        buttons: {
+          later: 'Save for Later',
+          cancel: 'Nope',
+          confirm: 'Yup',
+        },
     });
       if (!cancelDelete) return;
-      productQuantity = -1;
+      else if (cancelDelete === 'later') productQuantity = -2; // remove from cart & add to saved products
+      else productQuantity = -1; // remove from cart
     }
+    else if ((ev.target.classList.contains('save-for-later')) && (!ev.target.classList.contains('product-buttons__item'))) productQuantity = -2; // // remove from cart & add to saved products (only for cart.html)
     else productQuantity = ev.target.valueAsNumber;
 
     const productDiv: HTMLElement = ev.target.parentElement.parentElement;
     
     productUuid = url.searchParams.get("productUuid");
     productUuid = productUuid ?? productDiv.getAttribute('id');
+
     let storeA: HTMLElement = productDiv.querySelector('.product__item--img');
     if (whichHtmlFile === '/product.html') storeA = productDiv.querySelector('.product-large__item--img');
     else if (whichHtmlFile === '/cart.html') storeA = productDiv.querySelector('.product-row__item--img');
+    
     storeUuid = url.searchParams.get("storeUuid");
     const allStoresInfo: boolean = ((storeUuid === 'mall') || (whichHtmlFile === '/cart.html')) ? true : false;
     storeUuid = ((!storeUuid) || (storeUuid === 'mall')) ? storeA.getAttribute('href').replace(/^(.)*storeUuid=/g, '').replace(/[&](.)*$/g, '') : storeUuid;
+
     const updateCartProductQuantity = await axios.put('/user/cart', { allStoresInfo, storeUuid, productUuid, productQuantity });
-    const { cartProducts, storeProducts, shippingAddress } = updateCartProductQuantity.data;
+    const { cartProducts, storeProducts, savedProducts, shippingAddress } = updateCartProductQuantity.data;
     await renderShopperCart(cartProducts);
-    if ((ev.target.getAttribute('id') === 'add-to-cart') && (whichHtmlFile === '/store.html')) renderStoreProducts(storeProducts, cartProducts, false);
+    if ((ev.target.classList.contains('add-to-cart')) && (whichHtmlFile === '/store.html')) renderStoreProducts(storeProducts, cartProducts, false);
     else if (whichHtmlFile === '/product.html') getProduct();
-    else if  (whichHtmlFile === '/cart.html') renderCartProducts(storeProducts, cartProducts, shippingAddress);
+    else if  (whichHtmlFile === '/cart.html') renderCartPageProducts(storeProducts, cartProducts, savedProducts, shippingAddress);
+    
+  } catch (error) {
+      console.error(error.message);
+  }
+}
+
+async function updateSaved(ev: any) {
+  try {
+    if ((!ev.target.classList.contains('save-for-later')) && (!ev.target.classList.contains('remove-from-saved'))) return;
+
+    const saveOrRemove: number = (ev.target.classList.contains('save-for-later')) ? 1 : 0;
+
+    const productDiv: HTMLElement = ev.target.parentElement.parentElement;
+    
+    productUuid = url.searchParams.get("productUuid");
+    productUuid = productUuid ?? productDiv.getAttribute('id');
+
+    let storeA: HTMLElement = productDiv.querySelector('.product__item--img');
+    if (whichHtmlFile === '/product.html') storeA = productDiv.querySelector('.product-large__item--img');
+    else if (whichHtmlFile === '/cart.html') storeA = productDiv.querySelector('.product-row__item--img');
+    
+    storeUuid = url.searchParams.get("storeUuid");
+    storeUuid = ((!storeUuid) || (storeUuid === 'mall')) ? storeA.getAttribute('href').replace(/^(.)*storeUuid=/g, '').replace(/[&](.)*$/g, '') : storeUuid;
+
+    const updateCartProductQuantity = await axios.put('/user/saved', { storeUuid, productUuid, saveOrRemove });
+    const { cartProducts, storeProducts, savedProducts, shippingAddress } = updateCartProductQuantity.data;
+    if ((ev.target.classList.contains('add-to-cart')) && (whichHtmlFile === '/store.html')) renderStoreProducts(storeProducts, cartProducts, false);
+    else if (whichHtmlFile === '/product.html') getProduct();
+    else if  (whichHtmlFile === '/cart.html') renderCartPageProducts(storeProducts, cartProducts, savedProducts, shippingAddress);
     
   } catch (error) {
       console.error(error.message);
@@ -67,7 +109,7 @@ async function purchaseCart(ev: any) {
         buttons: ['Nope', 'Yup'],
       }).then(async (willPurchase) => {
         if (willPurchase) {
-          const updateCartProductQuantity = await axios.put('/user/cart/purchase');
+          const updateCartProductQuantity = await axios.put('/user/cart/purchase', { storeUuid: 'all cart products stores', productUuid: 'all cart products' });
           await swal({
             title: `Congrats!`,
             text: `You've completed the purchase`,

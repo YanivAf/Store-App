@@ -123,7 +123,7 @@ const readURL = (input: any) => {
     let reader = new FileReader();
 
     reader.onload = (ev)=> {
-     document.querySelector('#productImg').setAttribute("src", `${ev.target.result}`);
+     document.querySelector('#product-preview').setAttribute("src", `${ev.target.result}`);
       return ev.target.result
     }
     reader.readAsDataURL(input.files[0]);

@@ -34,29 +34,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var updateQuantityAncestor;
+var updateAncestor;
 if (whichHtmlFile === '/store.html') {
-    updateQuantityAncestor = document.querySelector('.products');
-    updateQuantityAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
-    updateQuantityAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
+    updateAncestor = document.querySelector('.products');
+    updateAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
+    updateAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
+    updateAncestor.addEventListener('click', function (ev) { return updateSaved(ev); });
 }
 else {
-    updateQuantityAncestor = document.querySelector('.main');
-    updateQuantityAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
-    updateQuantityAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
+    updateAncestor = document.querySelector('.main');
+    updateAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
+    updateAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
+    updateAncestor.addEventListener('click', function (ev) { return updateSaved(ev); });
 }
 function updateQuantity(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var productQuantity, cancelDelete, productDiv, storeA, allStoresInfo, updateCartProductQuantity, _a, cartProducts, storeProducts, shippingAddress, error_1;
+        var productQuantity, cancelDelete, productDiv, storeA, allStoresInfo, updateCartProductQuantity, _a, cartProducts, storeProducts, savedProducts, shippingAddress, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 7, , 8]);
-                    if (((ev.target.getAttribute('id') !== 'add-to-cart') && (!ev.target.classList.contains('update-cart-qunatity')) && (!ev.target.classList.contains('remove-from-cart')))
+                    if (((!ev.target.classList.contains('add-to-cart')) && (!ev.target.classList.contains('remove-from-cart')) && (!ev.target.classList.contains('save-for-later')) && (!ev.target.classList.contains('update-cart-qunatity')))
                         || ((ev.type === 'click') && (ev.target.classList.contains('update-cart-qunatity'))))
                         return [2 /*return*/];
                     productQuantity = void 0;
-                    if (!(ev.target.getAttribute('id') === 'add-to-cart')) return [3 /*break*/, 1];
+                    if (!ev.target.classList.contains('add-to-cart')) return [3 /*break*/, 1];
                     productQuantity = 1;
                     return [3 /*break*/, 4];
                 case 1:
@@ -66,16 +68,26 @@ function updateQuantity(ev) {
                             text: "Are you sure?",
                             icon: "warning",
                             dangerMode: true,
-                            buttons: ['Nope', 'Yup']
+                            buttons: {
+                                later: 'Save for Later',
+                                cancel: 'Nope',
+                                confirm: 'Yup'
+                            }
                         })];
                 case 2:
                     cancelDelete = _b.sent();
                     if (!cancelDelete)
                         return [2 /*return*/];
-                    productQuantity = -1;
+                    else if (cancelDelete === 'later')
+                        productQuantity = -2; // remove from cart & add to saved products
+                    else
+                        productQuantity = -1; // remove from cart
                     return [3 /*break*/, 4];
                 case 3:
-                    productQuantity = ev.target.valueAsNumber;
+                    if ((ev.target.classList.contains('save-for-later')) && (!ev.target.classList.contains('product-buttons__item')))
+                        productQuantity = -2; // // remove from cart & add to saved products (only for cart.html)
+                    else
+                        productQuantity = ev.target.valueAsNumber;
                     _b.label = 4;
                 case 4:
                     productDiv = ev.target.parentElement.parentElement;
@@ -92,16 +104,16 @@ function updateQuantity(ev) {
                     return [4 /*yield*/, axios.put('/user/cart', { allStoresInfo: allStoresInfo, storeUuid: storeUuid, productUuid: productUuid, productQuantity: productQuantity })];
                 case 5:
                     updateCartProductQuantity = _b.sent();
-                    _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts, shippingAddress = _a.shippingAddress;
+                    _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts, savedProducts = _a.savedProducts, shippingAddress = _a.shippingAddress;
                     return [4 /*yield*/, renderShopperCart(cartProducts)];
                 case 6:
                     _b.sent();
-                    if ((ev.target.getAttribute('id') === 'add-to-cart') && (whichHtmlFile === '/store.html'))
+                    if ((ev.target.classList.contains('add-to-cart')) && (whichHtmlFile === '/store.html'))
                         renderStoreProducts(storeProducts, cartProducts, false);
                     else if (whichHtmlFile === '/product.html')
                         getProduct();
                     else if (whichHtmlFile === '/cart.html')
-                        renderCartProducts(storeProducts, cartProducts, shippingAddress);
+                        renderCartPageProducts(storeProducts, cartProducts, savedProducts, shippingAddress);
                     return [3 /*break*/, 8];
                 case 7:
                     error_1 = _b.sent();
@@ -112,13 +124,53 @@ function updateQuantity(ev) {
         });
     });
 }
+function updateSaved(ev) {
+    return __awaiter(this, void 0, void 0, function () {
+        var saveOrRemove, productDiv, storeA, updateCartProductQuantity, _a, cartProducts, storeProducts, savedProducts, shippingAddress, error_2;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _b.trys.push([0, 2, , 3]);
+                    if ((!ev.target.classList.contains('save-for-later')) && (!ev.target.classList.contains('remove-from-saved')))
+                        return [2 /*return*/];
+                    saveOrRemove = (ev.target.classList.contains('save-for-later')) ? 1 : 0;
+                    productDiv = ev.target.parentElement.parentElement;
+                    productUuid = url.searchParams.get("productUuid");
+                    productUuid = productUuid !== null && productUuid !== void 0 ? productUuid : productDiv.getAttribute('id');
+                    storeA = productDiv.querySelector('.product__item--img');
+                    if (whichHtmlFile === '/product.html')
+                        storeA = productDiv.querySelector('.product-large__item--img');
+                    else if (whichHtmlFile === '/cart.html')
+                        storeA = productDiv.querySelector('.product-row__item--img');
+                    storeUuid = url.searchParams.get("storeUuid");
+                    storeUuid = ((!storeUuid) || (storeUuid === 'mall')) ? storeA.getAttribute('href').replace(/^(.)*storeUuid=/g, '').replace(/[&](.)*$/g, '') : storeUuid;
+                    return [4 /*yield*/, axios.put('/user/saved', { storeUuid: storeUuid, productUuid: productUuid, saveOrRemove: saveOrRemove })];
+                case 1:
+                    updateCartProductQuantity = _b.sent();
+                    _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts, savedProducts = _a.savedProducts, shippingAddress = _a.shippingAddress;
+                    if ((ev.target.classList.contains('add-to-cart')) && (whichHtmlFile === '/store.html'))
+                        renderStoreProducts(storeProducts, cartProducts, false);
+                    else if (whichHtmlFile === '/product.html')
+                        getProduct();
+                    else if (whichHtmlFile === '/cart.html')
+                        renderCartPageProducts(storeProducts, cartProducts, savedProducts, shippingAddress);
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_2 = _b.sent();
+                    console.error(error_2.message);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
 if (whichHtmlFile === '/cart.html') {
     var payBtn = document.querySelector('#pay');
     payBtn.addEventListener('click', function (ev) { return purchaseCart(ev); });
 }
 function purchaseCart(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var error_2;
+        var error_3;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -135,7 +187,7 @@ function purchaseCart(ev) {
                                 switch (_a.label) {
                                     case 0:
                                         if (!willPurchase) return [3 /*break*/, 3];
-                                        return [4 /*yield*/, axios.put('/user/cart/purchase')];
+                                        return [4 /*yield*/, axios.put('/user/cart/purchase', { storeUuid: 'all cart products stores', productUuid: 'all cart products' })];
                                     case 1:
                                         updateCartProductQuantity = _a.sent();
                                         return [4 /*yield*/, swal({
@@ -157,8 +209,8 @@ function purchaseCart(ev) {
                     _a.sent();
                     return [3 /*break*/, 3];
                 case 2:
-                    error_2 = _a.sent();
-                    console.error(error_2.message);
+                    error_3 = _a.sent();
+                    console.error(error_3.message);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }

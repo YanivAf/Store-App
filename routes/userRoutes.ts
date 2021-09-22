@@ -9,15 +9,23 @@ const { doesStoreExist, doesProductExist, enoughInStock, allMallProducts } = req
 const { welcome, register, login, logout, details, updateQuantity, deleteFromCart, purchaseCart } = require('../../controllers/dist/userControllers');
 
 router
-    .get('/welcome', isLoggedInAndAuthenticated, doesUserExist, isAdmin, welcome)
     .post('/register', validateBody(userSchema), doesUserExist, validatePassword, encryptPassword, register)
     .post('/login', doesUserExist, validatePassword, login)
-    .get('/logout', isLoggedInAndAuthenticated, doesUserExist, logout)
-    .get('/details', isLoggedInAndAuthenticated, doesUserExist, isAdmin, details)
-    .put('/cart', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, doesStoreExist, doesProductExist, enoughInStock, updateQuantity)
-    .put('/cart/purchase', isLoggedInAndAuthenticated, doesUserExist, isAdmin, onlyShopper, purchaseCart);
+    .get('/logout', isLoggedInAndAuthenticated, doesUserExist, logout);
 
-    // function isWorking(req, res, next) {console.log('working',req.allMallProducts);console.log(req.body);next();}
+router.use(isLoggedInAndAuthenticated, doesUserExist, isAdmin);
+
+router
+    .get('/welcome', welcome)
+    .get('/details', details);
+
+router.use('/cart', onlyShopper, doesStoreExist, doesProductExist, enoughInStock);
+
+router
+    .put('/cart', updateQuantity)
+    .put('/cart/purchase', purchaseCart);
+
+    function isWorking(req, res, next) {console.log('working');console.log(req.body);next();}
 module.exports = router;
 
 // TODO for registered admins - option to join existing store with storeUuid + joinStoreToken (expires after 6h per store)

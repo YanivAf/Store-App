@@ -11,9 +11,6 @@ export function welcome(req, res) {
     const users = new Users();
     const { username, stores } = users.users[userIndex];
 
-    if (isAdmin) {
-
-    }
     res.send({ isAdmin, storeUuid: stores[0], h1Text:`Shop Shop Shop`, message: `${username}, you're already logged in` });
 
   } catch (error) {
@@ -30,9 +27,9 @@ export function register(req, res) { // register.html + shopper-register.html
     const userBasicInfo = users.addUser(email, username, password, shopperToAdmin, userIndex, role);
     const { userUuid, storeUuid } = userBasicInfo;
 
-    const currentUserToken: any = jwt.sign({ userUuid }, secret, { expiresIn: 1800 });
+    const currentUserToken: any = jwt.sign({ userUuid }, secret, { expiresIn: 3600 });
 
-    res.cookie('currentUser', currentUserToken, { maxAge: 1800000, httpOnly: true });
+    res.cookie('currentUser', currentUserToken, { maxAge: 3600000, httpOnly: true });
     res.send({ title: `Cheers, ${username}!`, text: `You are our newest ${role}!`, storeUuid });
 
   } catch (error) {
@@ -53,9 +50,10 @@ export function login(req, res) { // index.html
     
     if (((!adminLoginForm) && (role === 'shopper')) || // check shopper uses shopper-login
         ((adminLoginForm) && (role === 'admin'))) { // and admin uses admin-login
-      const currentUserToken: any = jwt.sign({ userUuid }, secret, { expiresIn: 1800 });
+      const currentUserToken: any = jwt.sign({ userUuid }, secret, { expiresIn: 3600 });
 
-      res.cookie('currentUser', currentUserToken, { maxAge: 1800000, httpOnly: true });
+      res.cookie('currentUser', currentUserToken, { maxAge: 3600000, httpOnly: true });
+      if (role === 'shopper') users.restoreCart(userIndex);
       res.send({ title: `Welcome back, ${username}!`, text: `Enjoy your visit!`, storeUuid: stores[0], isLoggedIn: true});
     } else res.send({ title: `${username}, you are not a${roleText}!`, text: `Please use the right login form!`, isLoggedIn: false});
 
@@ -101,10 +99,11 @@ export function updateQuantity(req, res) { // store.html + cart.html
   try {
     const { productUuid, productQuantity, allStoresInfo } = req.body;
     const users = new Users();
+    
     const { userIndex, cartProductIndex, storeUuid, storeIndex, productIndex } = req;
 
-    const cartProducts: Array<CartProduct> = users.updateCartProductQuantity(userIndex, cartProductIndex, storeUuid, storeIndex, productUuid, productIndex, productQuantity);
-    const shippingAddress: string = users.users[userIndex].shippingAddress;
+    const cartProducts: Array<CartProduct> = users.updateCartProductQuantity(userIndex, cartProductIndex, storeIndex, storeUuid, productUuid, productIndex, productQuantity);
+    const savedProducts: Array<string> = users.users[userIndex].savedForLater;
     const stores = new Stores();
 
     let allMallProducts: Array<Product>;
@@ -112,9 +111,11 @@ export function updateQuantity(req, res) { // store.html + cart.html
       allMallProducts = [];
       stores.stores.forEach(store => {allMallProducts = allMallProducts.concat(store.products)});
     }
+
     const storeProducts: Array<Product> = allMallProducts ?? stores.stores[storeIndex].products;
-    
-    res.send({ cartProducts, storeProducts, shippingAddress });
+    const shippingAddress: string = users.users[userIndex].shippingAddress;
+
+    res.send({ cartProducts, storeProducts, savedProducts, shippingAddress });
 
   } catch (error) {
     console.error(error);

@@ -20,15 +20,18 @@ export class CartProduct {
     storeUuid: string;
     productUuid: string;
     productName: string;
+    inStockMirror: number;
     totalPrice: number;
     quantity: number;
     status: string;
     statusUpdatedAt: Date;
     purchasedAt: Date;
     
-    constructor(storeUuid: string, productUuid: string) {
+    constructor(storeUuid: string, productUuid: string, productName: string, inStockMirror: number) {
         this.storeUuid = storeUuid;
         this.productUuid = productUuid;
+        this.productName = productName;
+        this.inStockMirror = inStockMirror;
         this.quantity = 1;
         this.status = 'Awaiting Shipping';
         this.statusUpdatedAt = new Date();
@@ -57,6 +60,9 @@ export class User {
     password: string;
     stores: Array<string>; // for admins
     cart: Array<CartProduct>;
+    cartBackup: Array<CartProduct>;
+    savedForLater: Array<string>; // products shopper saved for later 
+    loved: Array<string>; // products shopper loved
     purchasedCarts: Array<PurchasedCart>; // previous carts products
     
     constructor(email: string, username: string, password: string) {
@@ -67,6 +73,8 @@ export class User {
         this.password = password;
         this.stores = [];
         this.cart = [];
+        this.savedForLater = [];
+        this.loved = [];
         this.purchasedCarts = [];
     }
 }
@@ -131,13 +139,45 @@ export class Users {
         }
     }
 
-    addCartProduct(shopperIndex: number, productUuid: string, storeUuid: string): number {
+    restoreCart(shopperIndex: string): Array<CartProduct> {
         try {
-            const cartProduct = new CartProduct(storeUuid, productUuid);
+            const stores = new Stores();
+            let storeIndex: number;
+            let productIndex: number;
+            let cantBackup: Array<CartProduct> = [];
+
+            this.users[shopperIndex].cartBackup.forEach(cartProduct => {
+                storeIndex = stores.findStoreIndex(cartProduct.storeUuid);
+                productIndex = stores.findStoreProductIndex(storeIndex, cartProduct.productUuid);
+
+                if (stores.stores[storeIndex].products[productIndex].inStock >= cartProduct.quantity) {
+                    stores.stores[storeIndex].products[productIndex].inStock -= cartProduct.quantity;
+                    this.users[shopperIndex].cart.push(cartProduct);
+                }
+                else cantBackup.push(cartProduct);
+            });
+
+            this.users[shopperIndex].cartBackup = [];
+
+            stores.updateStoresJson();
+            this.updateUsersJson();
+
+            return cantBackup;
+
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
+    addCartProduct(shopperIndex: number, storeUuid: string, productUuid: string, productName: string, inStock: number): number {
+        try {
+            const cartProduct = new CartProduct(storeUuid, productUuid, productName, inStock);
 
             this.users[shopperIndex].cart.push(cartProduct);
             const cartProductIndex: number = this.users[shopperIndex].cart.length - 1;
             
+            this.users[shopperIndex].savedForLater = this.users[shopperIndex].savedForLater.filter(savedProductUuid => savedProductUuid !== productUuid);
+
             this.updateUsersJson();
             
             return cartProductIndex;
@@ -150,7 +190,7 @@ export class Users {
     findCartProduct(shopperIndex: number, productUuid: string): number {
         try {
             let cartProductIndex: number = this.users[shopperIndex].cart.findIndex(cartProduct => cartProduct.productUuid === productUuid);
-            
+
             return cartProductIndex;
 
         } catch (error) {
@@ -169,29 +209,41 @@ export class Users {
         }
     }
 
-    updateCartProductQuantity(shopperIndex: number, cartProductIndex: number, storeUuid: string, storeIndex: number, productUuid: string, productIndex: number, productQuantity: number): Array<CartProduct> {
+    saveForLater(shopperIndex: number, productUuid: string) {
         try {
-            const isNew: boolean = (cartProductIndex === -1) ? true : false;
-            if (isNew) cartProductIndex = this.addCartProduct(shopperIndex, productUuid, storeUuid);
+            this.users[shopperIndex].savedForLater.unshift(productUuid);
 
+            this.updateUsersJson();
+
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
+    updateCartProductQuantity(shopperIndex: number, cartProductIndex: number, storeIndex: number, storeUuid: string, productUuid: string, productIndex: number, productQuantity: number): Array<CartProduct> {
+        try {
             const stores = new Stores();
+
+            const isNew: boolean = (cartProductIndex === -1) ? true : false;
+
+            cartProductIndex = (isNew) ? this.users[shopperIndex].cart.length - 1 : cartProductIndex;
             const cartQuantityChange: number = (isNew) ? productQuantity : productQuantity - this.users[shopperIndex].cart[cartProductIndex].quantity;
 
-            if (productQuantity === -1) {
-                stores.stores[storeIndex].products[productIndex].inStock += this.users[shopperIndex].cart[cartProductIndex].quantity;
+            if (productQuantity < 0) {
                 this.deleteCartProduct(shopperIndex, productUuid);
+                if (productQuantity === -2) this.saveForLater(shopperIndex, productUuid);
             } else {
-                stores.stores[storeIndex].products[productIndex].inStock -= cartQuantityChange;
+
+                this.users[shopperIndex].cart[cartProductIndex].inStockMirror -= cartQuantityChange;
                 this.users[shopperIndex].cart[cartProductIndex].quantity = productQuantity;
 
                 const cartProductQuantity: number = this.users[shopperIndex].cart[cartProductIndex].quantity;
+
                 const productPrice: number = stores.stores[storeIndex].products[productIndex].productPrice;
                 const productPrecentsOff: number = stores.stores[storeIndex].products[productIndex].precentsOff;
                 const cartProductPrice: number = productPrice - productPrice * (productPrecentsOff / 100);
-                const cartProductName: string = stores.stores[storeIndex].products[productIndex].productName;
-                
+
                 this.users[shopperIndex].cart[cartProductIndex].totalPrice = cartProductQuantity * cartProductPrice;
-                this.users[shopperIndex].cart[cartProductIndex].productName = cartProductName;
             }
 
             stores.updateStoresJson();
@@ -204,9 +256,33 @@ export class Users {
         }
     }
 
+    backupCartProducts(shopperIndex: number) {
+        try {
+            const stores = new Stores();
+            let storeIndex: number;
+            let productIndex: number;
+
+            this.users[shopperIndex].cart.forEach(cartProduct => {
+                storeIndex = stores.findStoreIndex(cartProduct.storeUuid);
+                productIndex = stores.findStoreProductIndex(storeIndex, cartProduct.productUuid);
+
+                stores.stores[storeIndex].products[productIndex].inStock += cartProduct.quantity;
+                this.users[shopperIndex].cartBackup.push(cartProduct);
+            });
+
+            this.users[shopperIndex].cart = [];
+
+            stores.updateStoresJson();
+            this.updateUsersJson();
+
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
     addPurchesedCart(shopperIndex: number) {
         try {
-            const purchasedCartProducts: Array<CartProduct> = this.users[shopperIndex].cart.filter(cartProduct => cartProduct.quantity > 0);
+            const purchasedCartProducts: Array<CartProduct> = this.users[shopperIndex].cart;
             const shippingAddress: string = this.users[shopperIndex].shippingAddress
             const purchasedCart = new PurchasedCart(purchasedCartProducts, shippingAddress);
             this.users[shopperIndex].purchasedCarts.unshift(purchasedCart);
@@ -225,7 +301,7 @@ export class Users {
     emptyCart(userIndex: number) { // after payment.
         try {
             this.addPurchesedCart(userIndex);
-            this.users[userIndex].cart = this.users[userIndex].cart.filter(cartProduct => cartProduct.quantity === 0);
+            this.users[userIndex].cart = [];
 
             this.updateUsersJson();
 

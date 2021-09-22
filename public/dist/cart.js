@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function getStoresProducts() {
     return __awaiter(this, void 0, void 0, function () {
-        var getStoreDetails, _a, stores, shippingAddress, products_1, error_1;
+        var getStoreDetails, _a, stores, shippingAddress, storeProducts_1, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -45,9 +45,9 @@ function getStoresProducts() {
                 case 1:
                     getStoreDetails = _b.sent();
                     _a = getStoreDetails.data, stores = _a.stores, shippingAddress = _a.shippingAddress;
-                    products_1 = [];
-                    stores.stores.forEach(function (store) { products_1 = products_1.concat(store.products); });
-                    renderCartProducts(products_1, cartProductsToRender, shippingAddress);
+                    storeProducts_1 = [];
+                    stores.stores.forEach(function (store) { storeProducts_1 = storeProducts_1.concat(store.products); });
+                    renderCartPageProducts(storeProducts_1, cartProductsToRender, savedProducts, shippingAddress);
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _b.sent();
@@ -58,39 +58,84 @@ function getStoresProducts() {
         });
     });
 }
-function renderCartProducts(products, cartProducts, shippingAddress) {
+function renderCartPageProducts(storeProducts, cartProducts, savedProducts, shippingAddress) {
     try {
-        var productsElement = document.querySelector('.products');
+        var productsHtml = void 0;
+        var headersAndProductsHtml = void 0;
+        var cartsElement = document.querySelector('.carts');
         var payBtn = document.querySelector('#pay');
-        var cartProductsHtml = void 0;
-        var AreThereProducts = (cartProducts.length > 0) ? true : false;
+        var AreThereCartProducts = (cartProducts.length > 0) ? true : false;
         var totalCartPrice_1 = 0;
         var totalQuantity_1 = 0;
-        if (!AreThereProducts) {
-            cartProductsHtml = '<p>Your cart is empty... <a href="./store.html?storeUuid=mall">Click here</a> to do some shopping!</p>';
+        if (!AreThereCartProducts) {
+            productsHtml = '<p>Your cart is empty... <a href="./store.html?storeUuid=mall">Click here</a> to do some shopping!</p>';
             payBtn.classList.add('hide');
         }
         else {
-            var headersHtml = "\n            <div class=\"products__item products__item--headers\">\n                <h4>Remove</h4>\n                <h4>Product Image</h4>\n                <h4>Product Name</h4>\n                <h4>Left in Stock</h4>\n                <h4>Total Price</h4>\n                <h4>Quantity</h4>\n            </div>";
-            var productsHtml = cartProducts.map(function (cartProduct) {
-                var productIndex = products.findIndex(function (product) { return product.productUuid === cartProduct.productUuid; });
-                var inStockText = products[productIndex].inStock + " left";
-                var inStockColor = (products[productIndex].inStock > 5) ? 'green' : 'orange';
-                totalCartPrice_1 += cartProduct.totalPrice;
-                totalQuantity_1 += cartProduct.quantity;
-                var cartProductHtml = "\n                <div class=\"products__item product-row\" id=\"" + cartProduct.productUuid + "\">\n                    <div class=\"product-row__item product-row__item--remove\">\n                        <i class=\"fas fa-trash remove-from-cart\" title=\"Remove " + cartProduct.productName + " from cart\"></i>\n                    </div>\n                    <a href=\"./product.html?storeUuid=" + products[productIndex].storeUuid + "&productUuid=" + products[productIndex].productUuid + "\" class=\"product-row__item product-row__item--img\">\n                        <img src=\"" + products[productIndex].productImage + "\" title=\"" + cartProduct.productName + "\"/>\n                    </a>\n                    <a href=\"./product.html?storeUuid=" + products[productIndex].storeUuid + "&productUuid=" + products[productIndex].productUuid + "\" class=\"product-row__item product-row__item--name\">\n                        <h3>" + cartProduct.productName + "</h3>\n                    </a>\n                    <div class=\"product-row__item product-row__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                    <h4 class=\"product-row__item product-row__item--total\">" + (Math.round(cartProduct.totalPrice * 100) / 100).toFixed(2) + "$</h4>\n                    <div class=\"product-row__item product-row__item--quantity\">\n                        <input type=\"number\" class=\"update-cart-qunatity\" min=\"0\" max=\"" + (cartProduct.quantity + products[productIndex].inStock) + "\" value=\"" + cartProduct.quantity + "\" />\n                    </div>\n                </div>";
-                return cartProductHtml;
-            }).join('');
-            var totalHtml = "\n            <div class=\"products__item products__item--footers\">\n                <h3>Total:</h3>\n                <h3></h3>\n                <h3></h3>\n                <h3></h3>\n                <h3>" + (Math.round(totalCartPrice_1 * 100) / 100).toFixed(2) + "$</h3>\n                <h3>" + totalQuantity_1 + "</h3>\n            </div>";
-            var shippingHtml = "\n            <div class=\"products__item products__item--footers\">\n                <h3>Shipping Address:</h3>\n                <h4>" + shippingAddress + "</h4>\n            </div>";
-            cartProductsHtml = headersHtml + productsHtml + totalHtml + shippingHtml;
+            headersAndProductsHtml = headersAndProducts(cartProducts, storeProducts, true);
+            var totalHtml = "\n            <div class=\"carts__item carts__item--footers\">\n                <h3>Total:</h3>\n                <h3></h3>\n                <h3></h3>\n                <h3></h3>\n                <h3>" + (Math.round(totalCartPrice_1 * 100) / 100).toFixed(2) + "$</h3>\n                <h3>" + totalQuantity_1 + "</h3>\n            </div>";
+            var shippingHtml = "\n            <div class=\"carts__item carts__item--footers\">\n                <h3>Shipping Address:</h3>\n                <h4>" + shippingAddress + "</h4>\n            </div>";
+            productsHtml = headersAndProductsHtml + totalHtml + shippingHtml;
             payBtn.classList.remove('hide');
             if (totalQuantity_1 === 0)
                 payBtn.disabled = true;
             else
                 payBtn.disabled = false;
         }
-        productsElement.innerHTML = cartProductsHtml;
+        cartsElement.innerHTML = productsHtml;
+        var savedElement = document.querySelector('.saved');
+        var AreThereSavedProducts = (savedProducts.length > 0) ? true : false;
+        if (!AreThereSavedProducts) {
+            productsHtml = 'You have no saved products';
+        }
+        else {
+            headersAndProductsHtml = headersAndProducts(savedProducts, storeProducts, false);
+            productsHtml = headersAndProductsHtml;
+        }
+        savedElement.innerHTML = productsHtml;
+        function headersAndProducts(products, storeProducts, isCartProducts) {
+            try {
+                var cartClass_1 = (isCartProducts) ? 'carts' : 'saved';
+                var priceTitle = (isCartProducts) ? 'Total' : 'Product';
+                var headersHtml = "\n                <div class=\"" + cartClass_1 + "__item " + cartClass_1 + "__item--headers\">\n                    <h4>Actions</h4>\n                    <h4>Product Image</h4>\n                    <h4>Product Name</h4>\n                    <h4>Stock Status</h4>\n                    <h4>" + priceTitle + " Price</h4>\n                    <h4>Quantity</h4>\n                </div>";
+                var productsHtml_1 = products.map(function (product) {
+                    var productId = (isCartProducts) ? product.productUuid : product;
+                    var storeProductIndex = storeProducts.findIndex(function (storeProduct) { return storeProduct.productUuid === productId; });
+                    var inStockText;
+                    var inStockColor;
+                    var isInStock = (storeProducts[storeProductIndex].inStock > 0) ? true : false;
+                    if (isInStock) {
+                        inStockText = (storeProducts[storeProductIndex].inStock > 5) ? "In Stock" : "Running Out!";
+                        inStockColor = (storeProducts[storeProductIndex].inStock > 5) ? 'green' : 'orange';
+                    }
+                    else {
+                        inStockText = 'Out of Stock';
+                        inStockColor = 'red';
+                    }
+                    totalCartPrice_1 += product.totalPrice;
+                    totalQuantity_1 += product.quantity;
+                    var actionsHtml = (isCartProducts) ?
+                        "<i class=\"fas fa-trash remove-from-cart\" title=\"Remove " + storeProducts[storeProductIndex].productName + " from cart\"></i>\n                    <i class=\"fas fa-save save-for-later\" title=\"Save " + storeProducts[storeProductIndex].productName + " for later\"></i>"
+                        :
+                            "<i class=\"fas fa-trash remove-from-saved\" title=\"Unsave " + storeProducts[storeProductIndex].productName + "\"></i>\n                    <i class=\"fas fa-cart-plus add-to-cart\" title=\"Add " + storeProducts[storeProductIndex].productName + " to cart\"></i>";
+                    var minCartQuantity = (isCartProducts) ? '1' : '0';
+                    var priceHtml = (isCartProducts) ?
+                        (Math.round(product.totalPrice * 100) / 100).toFixed(2)
+                        :
+                            (Math.round((storeProducts[storeProductIndex].productPrice - storeProducts[storeProductIndex].productPrice * (storeProducts[storeProductIndex].precentsOff / 100)) * 100) / 100).toFixed(2);
+                    var quantityHtml = (isCartProducts) ?
+                        "<input type=\"number\" class=\"update-cart-qunatity\" min=\"" + minCartQuantity + "\" max=\"" + storeProducts[storeProductIndex].inStock + "\" value=\"" + product.quantity + "\" />"
+                        :
+                            '0';
+                    var productHtml = "\n                    <div class=\"" + cartClass_1 + "__item product-row\" id=\"" + storeProducts[storeProductIndex].productUuid + "\">\n                        <div class=\"product-row__item product-row__item--actions\">\n                            " + actionsHtml + "\n                        </div>\n                        <a href=\"./product.html?storeUuid=" + storeProducts[storeProductIndex].storeUuid + "&productUuid=" + storeProducts[storeProductIndex].productUuid + "\" class=\"product-row__item product-row__item--img\">\n                            <img src=\"" + storeProducts[storeProductIndex].productImage + "\" title=\"" + storeProducts[storeProductIndex].productName + "\"/>\n                        </a>\n                        <a href=\"./product.html?storeUuid=" + storeProducts[storeProductIndex].storeUuid + "&productUuid=" + storeProducts[storeProductIndex].productUuid + "\" class=\"product-row__item product-row__item--name\">\n                            <h3>" + storeProducts[storeProductIndex].productName + "</h3>\n                        </a>\n                        <div class=\"product-row__item product-row__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                        <h4 class=\"product-row__item product-row__item--price\">" + priceHtml + "$</h4>\n                        <div class=\"product-row__item product-row__item--quantity\">\n                            " + quantityHtml + "\n                        </div>\n                    </div>";
+                    return productHtml;
+                }).join('');
+                return headersHtml + productsHtml_1;
+            }
+            catch (error) {
+                console.error(error.message);
+            }
+        }
     }
     catch (error) {
         console.error(error.message);

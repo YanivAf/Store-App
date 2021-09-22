@@ -69,7 +69,12 @@ export const editStoreName = (req, res)=> { // store.html
 
 export const addProduct = (req, res)=> { // store.html
   try {
-    const { storeUuid, productName, productDescription, productPrice, precentsOff, productImage, productInStock } = req.body;
+    const { storeUuid, productName, productDescription } = req.body;
+    let { productPrice, precentsOff, productInStock } = req.body;
+    productPrice = Number(productPrice);
+    precentsOff = Number(precentsOff);
+    productInStock = Number(productInStock);
+
     const stores = new Stores();
 
     const filename = (req.file) ? req.file.filename : undefined;
@@ -87,7 +92,12 @@ export const addProduct = (req, res)=> { // store.html
 export const editProduct = (req, res)=> { // product.html
   try {
 
-    const { storeUuid, productName, productDescription, productPrice, precentsOff, productImage, productInStock } = req.body;
+    const { storeUuid, productName, productDescription } = req.body;
+    let { productPrice, precentsOff, productInStock } = req.body;
+    productPrice = Number(productPrice);
+    precentsOff = Number(precentsOff);
+    productInStock = Number(productInStock);
+
     const { userUuid } = req;
     const stores = new Stores();
     const { productUuid } = req.params;

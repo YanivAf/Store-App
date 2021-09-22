@@ -204,6 +204,11 @@ export class Stores {
 
             this.stores.forEach(store => {
                 purchasedStoreProducts = purchasedCartProducts.filter(cartProduct => cartProduct.storeUuid === store.storeUuid);
+                purchasedStoreProducts.forEach(purchasedStoreProduct => {
+                    store.products.forEach(product => {
+                        if (purchasedStoreProduct.productUuid === product.productUuid) product.inStock -= purchasedStoreProduct.quantity;
+                    });
+                });
                 purchasedCart = new PurchasedCart(shopperPurchasedCartUuid, purchasedStoreProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
                 store.purchasedCarts.push(purchasedCart);
             });

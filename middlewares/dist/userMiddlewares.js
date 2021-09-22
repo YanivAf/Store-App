@@ -1,7 +1,7 @@
 "use strict";
 exports.__esModule = true;
 exports.onlyAdmin = exports.onlyShopper = exports.isAdmin = exports.validatePassword = exports.encryptPassword = exports.doesUserExist = exports.isLoggedInAndAuthenticated = void 0;
-var secret = require('../../secret/dist/secret').secret;
+var secret = require('../../secret/dist/secret').secret; // TODO convert secret to be used from env
 var _a = require("../../models/dist/usersModel"), User = _a.User, Users = _a.Users;
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt');

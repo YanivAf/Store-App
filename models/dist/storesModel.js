@@ -153,6 +153,12 @@ var Stores = /** @class */ (function () {
             var purchasedStoreProducts_1;
             this.stores.forEach(function (store) {
                 purchasedStoreProducts_1 = purchasedCartProducts.filter(function (cartProduct) { return cartProduct.storeUuid === store.storeUuid; });
+                purchasedStoreProducts_1.forEach(function (purchasedStoreProduct) {
+                    store.products.forEach(function (product) {
+                        if (purchasedStoreProduct.productUuid === product.productUuid)
+                            product.inStock -= purchasedStoreProduct.quantity;
+                    });
+                });
                 purchasedCart_1 = new PurchasedCart(shopperPurchasedCartUuid, purchasedStoreProducts_1, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
                 store.purchasedCarts.push(purchasedCart_1);
             });

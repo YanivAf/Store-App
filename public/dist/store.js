@@ -93,18 +93,21 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
                         buttonsByRole = "\n                <a href=\"./product.html?productUuid=" + product.productUuid + "\" class=\"product-buttons__item product-buttons__item--info fas fa-info\" >\n                    <i title=\"View & change " + product.productName + "\"></i>\n                </a>";
                     else {
                         if (storeUuid)
-                            buttonsByRole = "\n                <a href=\"./store.html?storeUuid=" + product.storeUuid + "\" class=\"product-buttons__item product-buttons__item--store\">\n                    <i class=\"fas fa-store\" title=\"See all store's products\"></i>\n                </a>";
+                            buttonsByRole = "\n                <a href=\"./store.html?storeUuid=" + product.storeUuid + "\" class=\"product-buttons__item product-buttons__item--store\">\n                    <i class=\"fas fa-store\" title=\"Go to " + product.productName + "'s store\"></i>\n                </a>";
                         var cartProductIndex = cartProducts.findIndex(function (cartProduct) { return cartProduct.productUuid === product.productUuid; });
                         if (cartProductIndex === -1)
-                            buttonsByRole += "<i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus\" id=\"add-to-cart\" title=\"Add " + product.productName + " to cart\"></i>";
+                            buttonsByRole = "<i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart\" title=\"Add " + product.productName + " to cart\"></i>" + buttonsByRole;
                         else
-                            buttonsByRole += "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + product.productName + " in your cart\"></i>\n                </a>";
+                            buttonsByRole = "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + product.productName + " in your cart\"></i>\n                </a>" + buttonsByRole;
                     }
                     var inStockText;
                     var inStockColor;
                     var isInStock = (product.inStock > 0) ? true : false;
                     if (isInStock) {
-                        inStockText = product.inStock + " left";
+                        if (isAdmin)
+                            inStockText = product.inStock + " left";
+                        else
+                            inStockText = (product.inStock > 5) ? "In Stock" : "Running Out!";
                         inStockColor = (product.inStock > 5) ? 'green' : 'orange';
                     }
                     else {
@@ -132,8 +135,8 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
 function renderProductForm() {
     try {
         var addProductForm = document.querySelector('#add-product-form');
-        addProductForm.style.display = 'grid';
-        var formInnerHTML = "\n        <h3 class=\"product-large__item product-large__item--title\" >Add a new product</h3>\n        <input class=\"product-large__item product-large__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" required />\n        <div class=\"product-large__item product-large__item--img\">\n            <img id=\"product-preview\" src=\"./images/cart-wp.png\">\n            <input id=\"product-image\" class=\"button\" type=\"file\" name=\"productImage\" accept=\"image/*\" onchange=\"readURL(this)\" />\n        </div>\n        <textarea class=\"product-large__item product-large__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required></textarea>\n        <div class=\"product-large__item product-large__item--price\">\n            <input type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" required />\n            <label for=\"productPrice\">Price ($)</label>\n        </div>\n        <div class=\"product-large__item product-large__item--sale\">\n            <input type=\"number\" name=\"precentsOff\" min=\"0\" max=\"100\" placeholder=\"% Off\" />\n            <label for=\"precentsOff\">% Off</label>\n        </div>\n        <div class=\"product-large__item product-large__item--in-stock\">\n            <input type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" required />\n            <label for=\"productInStock\">In Stock</label>\n        </div>        \n        <input class=\"product-large__item product-large__item--submit button\" type=\"submit\" value=\"Add\" />";
+        addProductForm.style.display = 'flex';
+        var formInnerHTML = "\n        <div class=\"product-large__item product-large__item--img\">\n            <img id=\"product-preview\" src=\"./images/cart-wp.png\">\n            <input id=\"product-image\" class=\"button\" type=\"file\" name=\"productImage\" accept=\"image/*\" onchange=\"readURL(this)\" />\n        </div>\n        <div class=\"product-large__item details\">\n            <input class=\"details__item details__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" required />\n            <div class=\"details__item details__item--sale\">\n                <input type=\"number\" name=\"precentsOff\" min=\"0\" max=\"100\" placeholder=\"% Off\" />\n                <label for=\"precentsOff\">% Off</label>\n            </div>\n            <textarea class=\"details__item details__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required></textarea>\n            <div class=\"details__item details__item--price\">\n                <input type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" required />\n                <label for=\"productPrice\">Price ($)</label>\n            </div>\n            <div class=\"details__item details__item--in-stock\">\n                <input type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" required />\n                <label for=\"productInStock\">In Stock</label>\n            </div>        \n            <input class=\"details__item details__item--submit button\" type=\"submit\" value=\"Add\" />\n        </div>";
         addProductForm.innerHTML = formInnerHTML;
     }
     catch (error) {

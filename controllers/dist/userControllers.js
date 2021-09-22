@@ -10,8 +10,6 @@ function welcome(req, res) {
         var userIndex = req.userIndex, isAdmin = req.isAdmin;
         var users = new Users();
         var _a = users.users[userIndex], username = _a.username, stores = _a.stores;
-        if (isAdmin) {
-        }
         res.send({ isAdmin: isAdmin, storeUuid: stores[0], h1Text: "Shop Shop Shop", message: username + ", you're already logged in" });
     }
     catch (error) {
@@ -27,8 +25,8 @@ function register(req, res) {
         var users = new Users();
         var userBasicInfo = users.addUser(email, username, password, shopperToAdmin, userIndex, role);
         var userUuid = userBasicInfo.userUuid, storeUuid = userBasicInfo.storeUuid;
-        var currentUserToken = jwt.sign({ userUuid: userUuid }, secret, { expiresIn: 1800 });
-        res.cookie('currentUser', currentUserToken, { maxAge: 1800000, httpOnly: true });
+        var currentUserToken = jwt.sign({ userUuid: userUuid }, secret, { expiresIn: 3600 });
+        res.cookie('currentUser', currentUserToken, { maxAge: 3600000, httpOnly: true });
         res.send({ title: "Cheers, " + username + "!", text: "You are our newest " + role + "!", storeUuid: storeUuid });
     }
     catch (error) {
@@ -46,8 +44,10 @@ function login(req, res) {
         var roleText = (role === 'admin') ? 'n admin' : ' shopper';
         if (((!adminLoginForm) && (role === 'shopper')) || // check shopper uses shopper-login
             ((adminLoginForm) && (role === 'admin'))) { // and admin uses admin-login
-            var currentUserToken = jwt.sign({ userUuid: userUuid }, secret, { expiresIn: 1800 });
-            res.cookie('currentUser', currentUserToken, { maxAge: 1800000, httpOnly: true });
+            var currentUserToken = jwt.sign({ userUuid: userUuid }, secret, { expiresIn: 3600 });
+            res.cookie('currentUser', currentUserToken, { maxAge: 3600000, httpOnly: true });
+            if (role === 'shopper')
+                users.restoreCart(userIndex);
             res.send({ title: "Welcome back, " + username + "!", text: "Enjoy your visit!", storeUuid: stores[0], isLoggedIn: true });
         }
         else
@@ -90,8 +90,8 @@ function updateQuantity(req, res) {
         var _a = req.body, productUuid = _a.productUuid, productQuantity = _a.productQuantity, allStoresInfo = _a.allStoresInfo;
         var users = new Users();
         var userIndex = req.userIndex, cartProductIndex = req.cartProductIndex, storeUuid = req.storeUuid, storeIndex = req.storeIndex, productIndex = req.productIndex;
-        var cartProducts = users.updateCartProductQuantity(userIndex, cartProductIndex, storeUuid, storeIndex, productUuid, productIndex, productQuantity);
-        var shippingAddress = users.users[userIndex].shippingAddress;
+        var cartProducts = users.updateCartProductQuantity(userIndex, cartProductIndex, storeIndex, storeUuid, productUuid, productIndex, productQuantity);
+        var savedProducts = users.users[userIndex].savedForLater;
         var stores = new Stores();
         var allMallProducts_1;
         if (allStoresInfo) {
@@ -99,7 +99,8 @@ function updateQuantity(req, res) {
             stores.stores.forEach(function (store) { allMallProducts_1 = allMallProducts_1.concat(store.products); });
         }
         var storeProducts = allMallProducts_1 !== null && allMallProducts_1 !== void 0 ? allMallProducts_1 : stores.stores[storeIndex].products;
-        res.send({ cartProducts: cartProducts, storeProducts: storeProducts, shippingAddress: shippingAddress });
+        var shippingAddress = users.users[userIndex].shippingAddress;
+        res.send({ cartProducts: cartProducts, storeProducts: storeProducts, savedProducts: savedProducts, shippingAddress: shippingAddress });
     }
     catch (error) {
         console.error(error);

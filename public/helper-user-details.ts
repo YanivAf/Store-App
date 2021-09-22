@@ -22,6 +22,7 @@ async function getUserDetails() {
 let isCartEmpty: boolean = true;
 let cartProductsToRender: Array<any>;
 let shopperPurchasedCartsToRender: Array<any>;
+let savedProducts: Array<string>;
 
 function renderUserDetails(user: any, isAdmin: boolean) {
     try {
@@ -35,6 +36,7 @@ function renderUserDetails(user: any, isAdmin: boolean) {
             cartProductsToRender = user.cart;
             shopperPurchasedCartsToRender = user.purchasedCarts;
             renderShopperCart(cartProductsToRender);
+            savedProducts = user.savedForLater;
         } else {
             const navBar: any = {
                 purchased: { aOrDiv: 'a', href: ` href="./purchased.html"` },
@@ -60,9 +62,9 @@ function renderUserDetails(user: any, isAdmin: boolean) {
             additionalHeaderElementsHtml = `
             <${navBar.store.aOrDiv}${navBar.store.href} class="header__item header__item--store">
                 <img src="./images/store.png" title="Your store" />
-            </${navBar.purchased.aOrDiv}>
+            </${navBar.store.aOrDiv}>
             <${navBar.purchased.aOrDiv}${navBar.purchased.href} class="header__item header__item--purchased">
-                <img src="./images/store.png" title="Your store" />
+                <img src="./images/history-cart.png" title="Purchased carts" />
             </${navBar.purchased.aOrDiv}>
             ${addProductHtml}`;
         }
@@ -157,7 +159,8 @@ function logout(ev: any) {
         } else {
             swal({
                 title: `You have items in your cart!`,
-                text: `What do you wanna do?`,
+                text: `Your cart will be saved, but we can't promise the products will stay in stock`,
+                icon: "warning",
                 buttons: ['Logout anyway', 'Go to Cart'],
             }).then((willGoToCart) => {
                 if (willGoToCart) window.location.href = `./cart.html`;

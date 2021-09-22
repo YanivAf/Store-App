@@ -61,7 +61,11 @@ exports.editStoreName = function (req, res) {
 };
 exports.addProduct = function (req, res) {
     try {
-        var _a = req.body, storeUuid = _a.storeUuid, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, precentsOff = _a.precentsOff, productImage = _a.productImage, productInStock = _a.productInStock;
+        var _a = req.body, storeUuid = _a.storeUuid, productName = _a.productName, productDescription = _a.productDescription;
+        var _b = req.body, productPrice = _b.productPrice, precentsOff = _b.precentsOff, productInStock = _b.productInStock;
+        productPrice = Number(productPrice);
+        precentsOff = Number(precentsOff);
+        productInStock = Number(productInStock);
         var stores = new Stores();
         var filename = (req.file) ? req.file.filename : undefined;
         var store = stores.addProduct(storeUuid, productName, productDescription, productPrice, precentsOff, filename, productInStock);
@@ -74,7 +78,11 @@ exports.addProduct = function (req, res) {
 };
 exports.editProduct = function (req, res) {
     try {
-        var _a = req.body, storeUuid = _a.storeUuid, productName = _a.productName, productDescription = _a.productDescription, productPrice = _a.productPrice, precentsOff = _a.precentsOff, productImage = _a.productImage, productInStock = _a.productInStock;
+        var _a = req.body, storeUuid = _a.storeUuid, productName = _a.productName, productDescription = _a.productDescription;
+        var _b = req.body, productPrice = _b.productPrice, precentsOff = _b.precentsOff, productInStock = _b.productInStock;
+        productPrice = Number(productPrice);
+        precentsOff = Number(precentsOff);
+        productInStock = Number(productInStock);
         var userUuid = req.userUuid;
         var stores = new Stores();
         var productUuid = req.params.productUuid;

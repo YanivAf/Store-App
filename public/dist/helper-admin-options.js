@@ -183,7 +183,7 @@ var readURL = function (input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
         reader.onload = function (ev) {
-            document.querySelector('#productImg').setAttribute("src", "" + ev.target.result);
+            document.querySelector('#product-preview').setAttribute("src", "" + ev.target.result);
             return ev.target.result;
         };
         reader.readAsDataURL(input.files[0]);

@@ -1,6 +1,6 @@
 export {};
 
-const { secret } = require('../../secret/dist/secret');
+const { secret } = require('../../secret/dist/secret'); // TODO convert secret to be used from env
 const { User, Users } = require("../../models/dist/usersModel");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');

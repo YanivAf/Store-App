@@ -16,9 +16,11 @@ var readUsersJson = function () {
     }
 };
 var CartProduct = /** @class */ (function () {
-    function CartProduct(storeUuid, productUuid) {
+    function CartProduct(storeUuid, productUuid, productName, inStockMirror) {
         this.storeUuid = storeUuid;
         this.productUuid = productUuid;
+        this.productName = productName;
+        this.inStockMirror = inStockMirror;
         this.quantity = 1;
         this.status = 'Awaiting Shipping';
         this.statusUpdatedAt = new Date();
@@ -45,6 +47,8 @@ var User = /** @class */ (function () {
         this.password = password;
         this.stores = [];
         this.cart = [];
+        this.savedForLater = [];
+        this.loved = [];
         this.purchasedCarts = [];
     }
     return User;
@@ -99,11 +103,38 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Users.prototype.addCartProduct = function (shopperIndex, productUuid, storeUuid) {
+    Users.prototype.restoreCart = function (shopperIndex) {
+        var _this = this;
         try {
-            var cartProduct = new CartProduct(storeUuid, productUuid);
+            var stores_1 = new Stores();
+            var storeIndex_1;
+            var productIndex_1;
+            var cantBackup_1 = [];
+            this.users[shopperIndex].cartBackup.forEach(function (cartProduct) {
+                storeIndex_1 = stores_1.findStoreIndex(cartProduct.storeUuid);
+                productIndex_1 = stores_1.findStoreProductIndex(storeIndex_1, cartProduct.productUuid);
+                if (stores_1.stores[storeIndex_1].products[productIndex_1].inStock >= cartProduct.quantity) {
+                    stores_1.stores[storeIndex_1].products[productIndex_1].inStock -= cartProduct.quantity;
+                    _this.users[shopperIndex].cart.push(cartProduct);
+                }
+                else
+                    cantBackup_1.push(cartProduct);
+            });
+            this.users[shopperIndex].cartBackup = [];
+            stores_1.updateStoresJson();
+            this.updateUsersJson();
+            return cantBackup_1;
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    };
+    Users.prototype.addCartProduct = function (shopperIndex, storeUuid, productUuid, productName, inStock) {
+        try {
+            var cartProduct = new CartProduct(storeUuid, productUuid, productName, inStock);
             this.users[shopperIndex].cart.push(cartProduct);
             var cartProductIndex = this.users[shopperIndex].cart.length - 1;
+            this.users[shopperIndex].savedForLater = this.users[shopperIndex].savedForLater.filter(function (savedProductUuid) { return savedProductUuid !== productUuid; });
             this.updateUsersJson();
             return cartProductIndex;
         }
@@ -129,27 +160,34 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Users.prototype.updateCartProductQuantity = function (shopperIndex, cartProductIndex, storeUuid, storeIndex, productUuid, productIndex, productQuantity) {
+    Users.prototype.saveForLater = function (shopperIndex, productUuid) {
         try {
-            var isNew = (cartProductIndex === -1) ? true : false;
-            if (isNew)
-                cartProductIndex = this.addCartProduct(shopperIndex, productUuid, storeUuid);
+            this.users[shopperIndex].savedForLater.unshift(productUuid);
+            this.updateUsersJson();
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    };
+    Users.prototype.updateCartProductQuantity = function (shopperIndex, cartProductIndex, storeIndex, storeUuid, productUuid, productIndex, productQuantity) {
+        try {
             var stores = new Stores();
+            var isNew = (cartProductIndex === -1) ? true : false;
+            cartProductIndex = (isNew) ? this.users[shopperIndex].cart.length - 1 : cartProductIndex;
             var cartQuantityChange = (isNew) ? productQuantity : productQuantity - this.users[shopperIndex].cart[cartProductIndex].quantity;
-            if (productQuantity === -1) {
-                stores.stores[storeIndex].products[productIndex].inStock += this.users[shopperIndex].cart[cartProductIndex].quantity;
+            if (productQuantity < 0) {
                 this.deleteCartProduct(shopperIndex, productUuid);
+                if (productQuantity === -2)
+                    this.saveForLater(shopperIndex, productUuid);
             }
             else {
-                stores.stores[storeIndex].products[productIndex].inStock -= cartQuantityChange;
+                this.users[shopperIndex].cart[cartProductIndex].inStockMirror -= cartQuantityChange;
                 this.users[shopperIndex].cart[cartProductIndex].quantity = productQuantity;
                 var cartProductQuantity = this.users[shopperIndex].cart[cartProductIndex].quantity;
                 var productPrice = stores.stores[storeIndex].products[productIndex].productPrice;
                 var productPrecentsOff = stores.stores[storeIndex].products[productIndex].precentsOff;
                 var cartProductPrice = productPrice - productPrice * (productPrecentsOff / 100);
-                var cartProductName = stores.stores[storeIndex].products[productIndex].productName;
                 this.users[shopperIndex].cart[cartProductIndex].totalPrice = cartProductQuantity * cartProductPrice;
-                this.users[shopperIndex].cart[cartProductIndex].productName = cartProductName;
             }
             stores.updateStoresJson();
             this.updateUsersJson();
@@ -159,9 +197,29 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
+    Users.prototype.backupCartProducts = function (shopperIndex) {
+        var _this = this;
+        try {
+            var stores_2 = new Stores();
+            var storeIndex_2;
+            var productIndex_2;
+            this.users[shopperIndex].cart.forEach(function (cartProduct) {
+                storeIndex_2 = stores_2.findStoreIndex(cartProduct.storeUuid);
+                productIndex_2 = stores_2.findStoreProductIndex(storeIndex_2, cartProduct.productUuid);
+                stores_2.stores[storeIndex_2].products[productIndex_2].inStock += cartProduct.quantity;
+                _this.users[shopperIndex].cartBackup.push(cartProduct);
+            });
+            this.users[shopperIndex].cart = [];
+            stores_2.updateStoresJson();
+            this.updateUsersJson();
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    };
     Users.prototype.addPurchesedCart = function (shopperIndex) {
         try {
-            var purchasedCartProducts = this.users[shopperIndex].cart.filter(function (cartProduct) { return cartProduct.quantity > 0; });
+            var purchasedCartProducts = this.users[shopperIndex].cart;
             var shippingAddress = this.users[shopperIndex].shippingAddress;
             var purchasedCart = new PurchasedCart(purchasedCartProducts, shippingAddress);
             this.users[shopperIndex].purchasedCarts.unshift(purchasedCart);
@@ -178,7 +236,7 @@ var Users = /** @class */ (function () {
     Users.prototype.emptyCart = function (userIndex) {
         try {
             this.addPurchesedCart(userIndex);
-            this.users[userIndex].cart = this.users[userIndex].cart.filter(function (cartProduct) { return cartProduct.quantity === 0; });
+            this.users[userIndex].cart = [];
             this.updateUsersJson();
         }
         catch (error) {

@@ -66,6 +66,7 @@ function getUserDetails() {
 var isCartEmpty = true;
 var cartProductsToRender;
 var shopperPurchasedCartsToRender;
+var savedProducts;
 function renderUserDetails(user, isAdmin) {
     try {
         var usernameElement = document.querySelector('.header__item--username');
@@ -76,6 +77,7 @@ function renderUserDetails(user, isAdmin) {
             cartProductsToRender = user.cart;
             shopperPurchasedCartsToRender = user.purchasedCarts;
             renderShopperCart(cartProductsToRender);
+            savedProducts = user.savedForLater;
         }
         else {
             var navBar = {
@@ -94,7 +96,7 @@ function renderUserDetails(user, isAdmin) {
                     navBar.store.href = '';
                     break;
             }
-            additionalHeaderElementsHtml = "\n            <" + navBar.store.aOrDiv + navBar.store.href + " class=\"header__item header__item--store\">\n                <img src=\"./images/store.png\" title=\"Your store\" />\n            </" + navBar.purchased.aOrDiv + ">\n            <" + navBar.purchased.aOrDiv + navBar.purchased.href + " class=\"header__item header__item--purchased\">\n                <img src=\"./images/store.png\" title=\"Your store\" />\n            </" + navBar.purchased.aOrDiv + ">\n            " + addProductHtml;
+            additionalHeaderElementsHtml = "\n            <" + navBar.store.aOrDiv + navBar.store.href + " class=\"header__item header__item--store\">\n                <img src=\"./images/store.png\" title=\"Your store\" />\n            </" + navBar.store.aOrDiv + ">\n            <" + navBar.purchased.aOrDiv + navBar.purchased.href + " class=\"header__item header__item--purchased\">\n                <img src=\"./images/history-cart.png\" title=\"Purchased carts\" />\n            </" + navBar.purchased.aOrDiv + ">\n            " + addProductHtml;
         }
         var headerTitleElement = document.querySelector('.header__item--h1');
         headerTitleElement.insertAdjacentHTML("afterend", additionalHeaderElementsHtml);
@@ -160,7 +162,8 @@ function logout(ev) {
         else {
             swal({
                 title: "You have items in your cart!",
-                text: "What do you wanna do?",
+                text: "Your cart will be saved, but we can't promise the products will stay in stock",
+                icon: "warning",
                 buttons: ['Logout anyway', 'Go to Cart']
             }).then(function (willGoToCart) {
                 if (willGoToCart)

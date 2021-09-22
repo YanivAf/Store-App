@@ -1,6 +1,5 @@
 export {};
 
-const { secret } = require('../../secret/dist/secret'); // TODO convert secret to be used from env
 const { Product, Store, Stores } = require("../../models/dist/storesModel");
 const { CartProduct, User, Users } = require("../../models/dist/usersModel");
 
@@ -9,13 +8,30 @@ export function doesStoreExist(req, res, next) {
         const stores = new Stores();
 
         let storeUuid: string = req.params.storeUuid ?? req.body.storeUuid;
+        let storeIndex: number;
 
         if (storeUuid === 'mall') {
             next();
             return;
         }
         
-        const storeIndex: number = stores.findStoreIndex(storeUuid);
+        if (storeUuid === 'all cart products stores') {
+            const users = new Users();
+            const userIndex: number = req.userIndex;
+    
+            users.users[userIndex].cart.forEach(cartProduct => {
+                storeUuid = cartProduct.storeUuid;
+                storeIndex = stores.findStoreIndex(storeUuid);
+                if (storeIndex === -1) {
+                    res.status(404).send({ message: `Store of "${cartProduct.productName}" doesn't exist anymore. To continue, please delete it from your cart.` });
+                    return;
+                }
+            });
+            next();
+            return;
+        }
+        
+        storeIndex = stores.findStoreIndex(storeUuid);
 
         if (storeIndex === -1) res.status(404).send({ message: `Store doesn't exist. Apologies for the inconvenience.` });
         else {
@@ -35,11 +51,32 @@ export function doesProductExist(req, res, next) {
     try {
         const stores = new Stores();
         const users = new Users();
-        const productUuid: string = req.params.productUuid ?? req.body.productUuid;
 
-        const storeIndex: number = req.storeIndex;
         const userIndex: number = req.userIndex;
-        const productIndex: number = stores.findStoreProductIndex(storeIndex, productUuid);
+        let productUuid: string = req.params.productUuid ?? req.body.productUuid;
+        let storeIndex: number = req.storeIndex;
+        let productIndex: number;
+        
+        if (productUuid === 'all cart products') {
+            let storeUuid: string;
+
+            users.users[userIndex].cart.forEach(cartProduct => {
+                storeUuid = cartProduct.storeUuid;
+                productUuid = cartProduct.productUuid;
+                storeIndex = stores.findStoreIndex(storeUuid);
+
+                productIndex = stores.findStoreProductIndex(storeIndex, productUuid);
+
+                if (productIndex === -1) {
+                    res.status(404).send({ message: `"${cartProduct.productName}" doesn't exist anymore. To continue, please delete it from your cart.` });
+                    return;
+                }
+            });
+            next();
+            return;
+        }
+
+        productIndex = stores.findStoreProductIndex(storeIndex, productUuid);
         const cartProductIndex: number = users.findCartProduct(userIndex, productUuid);
 
         if (productIndex === -1) res.status(404).send({ message: `Product doesn't exist. Apologies for the inconvenience.` });
@@ -60,15 +97,44 @@ export function enoughInStock(req, res, next) {
     try {
         const stores = new Stores();
         const users = new Users();
-        const { productQuantity } = req.body;
 
-        const storeIndex: number = req.storeIndex;
         const userIndex: number = req.userIndex;
-        const productIndex: number = req.productIndex;
-        const cartProductIndex: number = req.cartProductIndex;
-        
-        const cartProductQuantity: number = (cartProductIndex === -1) ? 0 : users.users[userIndex].cart[cartProductIndex].quantity;
-        if (stores.stores[storeIndex].products[productIndex].inStock + cartProductQuantity < productQuantity) res.status(409).send({ message: `Not enough items in stock. Apologies for the inconvenience.` });
+        const { productQuantity } = req.body;
+        let storeIndex: number = req.storeIndex;
+        let productIndex: number = req.productIndex;
+        let cartProductIndex: number = req.cartProductIndex;
+        let storeUuid: string = req.storeUuid;
+        let productUuid: string = req.params.productUuid ?? req.body.productUuid;
+
+        if (productUuid === 'all cart products') {
+            let cartProductIndex: number = 0;
+
+            users.users[userIndex].cart.forEach(cartProduct => {
+                storeUuid = cartProduct.storeUuid;
+                productUuid = cartProduct.productUuid;
+                storeIndex = stores.findStoreIndex(storeUuid);
+                
+                productIndex = stores.findStoreProductIndex(storeIndex, productUuid);
+                cartProduct.inStockMirror = stores.stores[storeIndex].products[productIndex].inStock;
+
+                if (stores.stores[storeIndex].products[productIndex].inStockMirror < productQuantity) {
+                    res.status(409).send({ message: `There are only ${cartProduct.inStockMirror} "${stores.stores[storeIndex].products[productIndex].productName}"s in stock. To continue, please adjust quantity (or save the product for later!)` });
+                    return;
+                }
+
+                cartProductIndex++;
+            });
+            next();
+            return;
+        }
+
+        const inStock: number = stores.stores[storeIndex].products[productIndex].inStock;
+        const productName: string = stores.stores[storeIndex].products[productIndex].productName;
+
+        cartProductIndex = (cartProductIndex === -1) ? users.addCartProduct(userIndex, storeUuid, productUuid, productName, inStock) : cartProductIndex;
+
+        users.users[userIndex].cart[cartProductIndex].inStockMirror = stores.stores[storeIndex].products[productIndex].inStock;
+        if (users.users[userIndex].cart[cartProductIndex].inStockMirror < productQuantity) res.status(409).send({ message: `There are only ${users.users[userIndex].cart[cartProductIndex].inStockMirror} "${stores.stores[storeIndex].products[productIndex].productName}"s in stock. To continue, please adjust quantity (or save the product for later!)` });
         else next();
         return;
 
