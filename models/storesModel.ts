@@ -70,12 +70,13 @@ export class Store {
     storeName: string; // set after registration
     createdAt: Date;
     storeAdminsUuids: Array<string>;
+    contactEmail: string;
     lastEditedAt: Date;
     lastEditedBy: string;  
     products: Array<Product>;
     purchasedCarts: Array<PurchasedCart>;
     
-    constructor(storeAdminsUuids) {
+    constructor(storeAdminsUuids, contactEmail) {
         this.storeUuid = uuidv4();
         this.storeName = 'Untitled Store';
         this.createdAt = new Date();
@@ -84,6 +85,7 @@ export class Store {
         this.lastEditedBy = null;
         this.products = [];
         this.purchasedCarts = [];
+        this.contactEmail = contactEmail;
     }
 }
 
@@ -113,9 +115,9 @@ export class Stores {
         }
     }
 
-    addStore(storeAdminsUuids: Array<string>): number {
+    addStore(storeAdminsUuids: Array<string>, contactEmail: string): number {
         try {
-            const store = new Store(storeAdminsUuids);
+            const store = new Store(storeAdminsUuids, contactEmail);
             
             this.stores.push(store);
             const storeIndex = this.stores.length - 1;

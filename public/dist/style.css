@@ -68,6 +68,19 @@ a:hover {
   margin-bottom: 10px;
 }
 
+#contact i {
+  background-color: goldenrod;
+  color: white;
+  padding: 4px 5px;
+  border-radius: 50%;
+  position: sticky;
+  bottom: 10px;
+  left: 10px;
+}
+#contact i:hover {
+  color: yellow;
+}
+
 .header {
   display: grid;
   align-items: center;
@@ -558,6 +571,13 @@ a:hover {
 }
 .product-buttons__item--store:hover {
   color: gray;
+}
+.product-buttons__item--love-product {
+  color: pink;
+  cursor: pointer;
+}
+.product-buttons__item--love-product:hover {
+  color: hotpink;
 }
 .product-buttons__item--delete {
   color: darkred;

@@ -1,16 +1,16 @@
 async function getProduct() {
     try {
         const getProductDetails = await axios.get(`/store/${storeUuid}/product/${productUuid}`);
-        const { storeProduct, cartProduct } = getProductDetails.data;
+        const { storeProduct, cartProduct, storeName, contactEmail } = getProductDetails.data;
 
-        renderProduct(storeProduct, cartProduct, isAdmin);
+        renderProduct(storeProduct, cartProduct, storeName, contactEmail, isAdmin);
 
     } catch (error) {
         console.error(error.message);
     }
 }
 
-function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boolean) {
+function renderProduct(storeProduct: any, cartProduct: any, storeName: string, contactEmail: string, isAdmin: boolean) {
     try {
         const updateProductForm: HTMLFormElement = document.querySelector('#edit-product-form');
         const pageTitle: HTMLElement = document.querySelector('title');
@@ -70,6 +70,7 @@ function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boolean) {
             if (cartProduct === undefined) {
                 buttonsByRole = `
                 <i class="product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart" title="Add ${storeProduct.productName} to cart"></i>
+                <i class="product-buttons__item product-buttons__item--love-product far fa-heart love-product" title="Love ${storeProduct.productName}"></i>
                 <a href="./store.html?storeUuid=${storeProduct.storeUuid}" class="product-buttons__item product-buttons__item--store">
                     <i class="fas fa-store" title="Go to ${storeProduct.productName}'s store"></i>
                 </a>`;
@@ -122,6 +123,11 @@ function renderProduct(storeProduct: any, cartProduct: any, isAdmin: boolean) {
             mainElement.insertAdjacentHTML('beforeend', productHtml);
 
             magnifyImg();
+
+            const contactStoreElement: HTMLElement = document.querySelector('#contact');
+            contactStoreElement.setAttribute('href', `mailto:${contactEmail}?subject=${storeName} - Inquiry about ${storeProduct.productName}`)
+            contactStoreElement.innerHTML = `<i class="far fa-envelope" title="Contact us!"></i>`;
+
         }
         
     } catch (error) {

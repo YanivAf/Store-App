@@ -27,10 +27,15 @@ function renderStore(stores: any, store: any, isAdmin: boolean) {
         storeNameElement.innerText = storeName;
         
         const pageTitle: HTMLElement = document.querySelector('title');
-        pageTitle.innerText= storeName;
+        pageTitle.innerText = storeName;
         
         renderStoreProducts(products, cartProductsToRender, isAdmin);
         if (isAdmin) renderProductForm();
+        else if (store) {
+            const contactStoreElement: HTMLElement = document.querySelector('#contact');
+            contactStoreElement.setAttribute('href', `mailto:${store.contactEmail}?subject=${store.storeName} - General Inquiry`)
+            contactStoreElement.innerHTML = `<i class="far fa-envelope" title="Contact us!"></i>`;
+        }
 
     } catch (error) {
         console.error(error.message);
@@ -58,11 +63,16 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
                 </a>`;
 
                 const cartProductIndex = cartProducts.findIndex(cartProduct => cartProduct.productUuid === product.productUuid);
-                if (cartProductIndex === -1) buttonsByRole = `<i class="product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart" title="Add ${product.productName} to cart"></i>${buttonsByRole}`;
+                if (cartProductIndex === -1) buttonsByRole =
+                `<i class="product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart" title="Add ${product.productName} to cart"></i>
+                <i class="product-buttons__item product-buttons__item--love-product far fa-heart love-product" title="Love ${product.productName}"></i>
+                ${buttonsByRole}`;
                 else buttonsByRole = `
                 <a href="./cart.html" class="product-buttons__item product-buttons__item--cart-added">
                     <i class="fas fa-shopping-cart" title="See ${product.productName} in your cart"></i>
-                </a>${buttonsByRole}`;
+                </a>
+                <i class="product-buttons__item product-buttons__item--love-product far fa-heart love-product" title="Love ${product.productName}"></i>
+                ${buttonsByRole}`;
             }
             
             let inStockText: string;

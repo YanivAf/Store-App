@@ -83,7 +83,7 @@ var Users = /** @class */ (function () {
             var storeUuid = undefined;
             if (role === 'admin') {
                 var stores = new Stores();
-                var storeIndex = stores.addStore([userUuid]);
+                var storeIndex = stores.addStore([userUuid], userEmail);
                 storeUuid = stores.stores[storeIndex].storeUuid;
                 if (shopperToAdmin) {
                     this.users[userIndex].stores.push(storeUuid); // convert shopper to admin
@@ -98,32 +98,6 @@ var Users = /** @class */ (function () {
                 this.users.push(user); // add shopper
             this.updateUsersJson();
             return { userUuid: userUuid, storeUuid: storeUuid };
-        }
-        catch (error) {
-            console.error(error.message);
-        }
-    };
-    Users.prototype.restoreCart = function (shopperIndex) {
-        var _this = this;
-        try {
-            var stores_1 = new Stores();
-            var storeIndex_1;
-            var productIndex_1;
-            var cantBackup_1 = [];
-            this.users[shopperIndex].cartBackup.forEach(function (cartProduct) {
-                storeIndex_1 = stores_1.findStoreIndex(cartProduct.storeUuid);
-                productIndex_1 = stores_1.findStoreProductIndex(storeIndex_1, cartProduct.productUuid);
-                if (stores_1.stores[storeIndex_1].products[productIndex_1].inStock >= cartProduct.quantity) {
-                    stores_1.stores[storeIndex_1].products[productIndex_1].inStock -= cartProduct.quantity;
-                    _this.users[shopperIndex].cart.push(cartProduct);
-                }
-                else
-                    cantBackup_1.push(cartProduct);
-            });
-            this.users[shopperIndex].cartBackup = [];
-            stores_1.updateStoresJson();
-            this.updateUsersJson();
-            return cantBackup_1;
         }
         catch (error) {
             console.error(error.message);
@@ -169,6 +143,16 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
+    Users.prototype.unsaveForLater = function (shopperIndex, productUuid) {
+        try {
+            this.users[shopperIndex].savedForLater = this.users[shopperIndex].savedForLater.filter(function (savedProduct) { return savedProduct !== productUuid; });
+            this.updateUsersJson();
+            return this.users[shopperIndex].savedForLater;
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    };
     Users.prototype.updateCartProductQuantity = function (shopperIndex, cartProductIndex, storeIndex, storeUuid, productUuid, productIndex, productQuantity) {
         try {
             var stores = new Stores();
@@ -192,26 +176,6 @@ var Users = /** @class */ (function () {
             stores.updateStoresJson();
             this.updateUsersJson();
             return this.users[shopperIndex].cart;
-        }
-        catch (error) {
-            console.error(error.message);
-        }
-    };
-    Users.prototype.backupCartProducts = function (shopperIndex) {
-        var _this = this;
-        try {
-            var stores_2 = new Stores();
-            var storeIndex_2;
-            var productIndex_2;
-            this.users[shopperIndex].cart.forEach(function (cartProduct) {
-                storeIndex_2 = stores_2.findStoreIndex(cartProduct.storeUuid);
-                productIndex_2 = stores_2.findStoreProductIndex(storeIndex_2, cartProduct.productUuid);
-                stores_2.stores[storeIndex_2].products[productIndex_2].inStock += cartProduct.quantity;
-                _this.users[shopperIndex].cartBackup.push(cartProduct);
-            });
-            this.users[shopperIndex].cart = [];
-            stores_2.updateStoresJson();
-            this.updateUsersJson();
         }
         catch (error) {
             console.error(error.message);

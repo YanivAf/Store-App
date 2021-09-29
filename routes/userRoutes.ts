@@ -6,7 +6,7 @@ const { userSchema } = require('../../schemas/dist/userSchema');
 const { validateBody } = require('../../middlewares/dist/validateBody');
 const { isLoggedInAndAuthenticated, doesUserExist, encryptPassword, validatePassword, isAdmin, onlyShopper } = require('../../middlewares/dist/userMiddlewares');
 const { doesStoreExist, doesProductExist, enoughInStock, allMallProducts } = require('../../middlewares/dist/storeMiddlewares');
-const { welcome, register, login, logout, details, updateQuantity, deleteFromCart, purchaseCart } = require('../../controllers/dist/userControllers');
+const { welcome, register, login, logout, details, updateQuantity, updateSaved, purchaseCart } = require('../../controllers/dist/userControllers');
 
 router
     .post('/register', validateBody(userSchema), doesUserExist, validatePassword, encryptPassword, register)
@@ -22,10 +22,12 @@ router
 router.use('/cart', onlyShopper, doesStoreExist, doesProductExist, enoughInStock);
 
 router
-    .put('/cart', updateQuantity)
-    .put('/cart/purchase', purchaseCart);
+.put('/cart', updateQuantity)
+.put('/cart/purchase', purchaseCart);
 
-    function isWorking(req, res, next) {console.log('working');console.log(req.body);next();}
+router.put('/saved', onlyShopper, updateSaved);
+
+// function isWorking(req, res, next) {console.log('working');console.log(req.body);next();}
 module.exports = router;
 
 // TODO for registered admins - option to join existing store with storeUuid + joinStoreToken (expires after 6h per store)

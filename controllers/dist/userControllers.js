@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.purchaseCart = exports.deleteFromCart = exports.updateQuantity = exports.details = exports.logout = exports.login = exports.register = exports.welcome = void 0;
+exports.purchaseCart = exports.updateSaved = exports.updateQuantity = exports.details = exports.logout = exports.login = exports.register = exports.welcome = void 0;
 var secret = require('../../secret/dist/secret').secret;
 var jwt = require('jsonwebtoken');
 var _a = require('../../models/dist/usersModel'), Users = _a.Users, User = _a.User, CartProduct = _a.CartProduct;
@@ -46,8 +46,6 @@ function login(req, res) {
             ((adminLoginForm) && (role === 'admin'))) { // and admin uses admin-login
             var currentUserToken = jwt.sign({ userUuid: userUuid }, secret, { expiresIn: 3600 });
             res.cookie('currentUser', currentUserToken, { maxAge: 3600000, httpOnly: true });
-            if (role === 'shopper')
-                users.restoreCart(userIndex);
             res.send({ title: "Welcome back, " + username + "!", text: "Enjoy your visit!", storeUuid: stores[0], isLoggedIn: true });
         }
         else
@@ -73,7 +71,7 @@ function logout(req, res) {
     }
 }
 exports.logout = logout;
-exports.details = function (req, res) {
+function details(req, res) {
     try {
         var userIndex = req.userIndex, isAdmin = req.isAdmin;
         var users = new Users();
@@ -84,7 +82,8 @@ exports.details = function (req, res) {
         console.error(error);
         res.status(500).send(error.message);
     }
-};
+}
+exports.details = details;
 function updateQuantity(req, res) {
     try {
         var _a = req.body, productUuid = _a.productUuid, productQuantity = _a.productQuantity, allStoresInfo = _a.allStoresInfo;
@@ -108,24 +107,32 @@ function updateQuantity(req, res) {
     }
 }
 exports.updateQuantity = updateQuantity;
-function deleteFromCart(req, res) {
+function updateSaved(req, res) {
     try {
-        var _a = req.body, productUuid = _a.productUuid, productName = _a.productName;
+        var productUuid = req.body.productUuid;
         var users = new Users();
-        var userUuid = req.userUuid.userUuid;
-        users.deleteCartProduct(userUuid, productUuid);
-        res.send({ title: "You have delete " + productName + " from your cart", deleteFromCart: true });
+        var userIndex = req.userIndex;
+        var cartProducts = users.users[userIndex].cart;
+        var savedProducts = users.unsaveForLater(userIndex, productUuid);
+        var stores = new Stores();
+        var allMallProducts_2;
+        allMallProducts_2 = [];
+        stores.stores.forEach(function (store) { allMallProducts_2 = allMallProducts_2.concat(store.products); });
+        var storeProducts = allMallProducts_2;
+        var shippingAddress = users.users[userIndex].shippingAddress;
+        res.send({ cartProducts: cartProducts, storeProducts: storeProducts, savedProducts: savedProducts, shippingAddress: shippingAddress });
     }
     catch (error) {
         console.error(error);
         res.status(500).send(error.message);
     }
 }
-exports.deleteFromCart = deleteFromCart;
+exports.updateSaved = updateSaved;
 function purchaseCart(req, res) {
     try {
         var users = new Users();
         var userIndex = req.userIndex;
+        console.log('hi');
         users.emptyCart(userIndex);
         res.send({ title: "Cart purchase completed", purchaseCart: true });
     }

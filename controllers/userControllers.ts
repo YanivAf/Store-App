@@ -53,7 +53,6 @@ export function login(req, res) { // index.html
       const currentUserToken: any = jwt.sign({ userUuid }, secret, { expiresIn: 3600 });
 
       res.cookie('currentUser', currentUserToken, { maxAge: 3600000, httpOnly: true });
-      if (role === 'shopper') users.restoreCart(userIndex);
       res.send({ title: `Welcome back, ${username}!`, text: `Enjoy your visit!`, storeUuid: stores[0], isLoggedIn: true});
     } else res.send({ title: `${username}, you are not a${roleText}!`, text: `Please use the right login form!`, isLoggedIn: false});
 
@@ -79,7 +78,7 @@ export function logout(req, res) { // index.html
   }
 }
 
-export const details = (req, res)=> { // all htmls except for index.html,  register.html, shopper-register.html
+export function details(req, res) { // all htmls except for index.html,  register.html, shopper-register.html
   try {
     const { userIndex, isAdmin } = req;
         
@@ -123,16 +122,25 @@ export function updateQuantity(req, res) { // store.html + cart.html
   }
 }
 
-export function deleteFromCart(req, res) { // cart.html
+export function updateSaved(req, res) { // cart.html
   try {
-    const { productUuid, productName } = req.body;
-
+    const { productUuid } = req.body;
     const users = new Users();
-    const { userUuid } = req.userUuid;
+    
+    const { userIndex } = req;
 
-    users.deleteCartProduct(userUuid, productUuid);
+    const cartProducts: Array<CartProduct> = users.users[userIndex].cart;
+    const savedProducts: Array<string> = users.unsaveForLater(userIndex, productUuid);
+    const stores = new Stores();
 
-    res.send({ title: `You have delete ${productName} from your cart`, deleteFromCart: true});
+    let allMallProducts: Array<Product>;
+    allMallProducts = [];
+    stores.stores.forEach(store => {allMallProducts = allMallProducts.concat(store.products)});
+
+    const storeProducts: Array<Product> = allMallProducts;
+    const shippingAddress: string = users.users[userIndex].shippingAddress;
+
+    res.send({ cartProducts, storeProducts, savedProducts, shippingAddress });
 
   } catch (error) {
     console.error(error);
@@ -144,7 +152,7 @@ export function purchaseCart(req, res) { // cart.html
   try {
     const users = new Users();
     const { userIndex } = req;
-
+    console.log('hi');
     users.emptyCart(userIndex);
 
     res.send({ title: `Cart purchase completed`, purchaseCart: true});

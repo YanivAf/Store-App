@@ -47,8 +47,10 @@ export const showProduct = (req, res)=> { // product.html
     const storeProduct: Product = store.products[productIndex];
     let cartProduct: CartProduct = undefined;
     if ((!isAdmin) && (cartProductIndex !== -1)) cartProduct = users.users[userIndex].cart[cartProductIndex];
+    const contactEmail: string = store.contactEmail;
+    const storeName: string = store.storeName;
 
-    res.send({ storeProduct, cartProduct });
+    res.send({ storeProduct, cartProduct, storeName, contactEmail });
 
   } catch (error) {
     console.error(error);

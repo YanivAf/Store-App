@@ -46,7 +46,7 @@ var PurchasedCart = /** @class */ (function () {
 }());
 exports.PurchasedCart = PurchasedCart;
 var Store = /** @class */ (function () {
-    function Store(storeAdminsUuids) {
+    function Store(storeAdminsUuids, contactEmail) {
         this.storeUuid = uuidv4();
         this.storeName = 'Untitled Store';
         this.createdAt = new Date();
@@ -55,6 +55,7 @@ var Store = /** @class */ (function () {
         this.lastEditedBy = null;
         this.products = [];
         this.purchasedCarts = [];
+        this.contactEmail = contactEmail;
     }
     return Store;
 }());
@@ -80,9 +81,9 @@ var Stores = /** @class */ (function () {
             console.error(error.message);
         }
     };
-    Stores.prototype.addStore = function (storeAdminsUuids) {
+    Stores.prototype.addStore = function (storeAdminsUuids, contactEmail) {
         try {
-            var store = new Store(storeAdminsUuids);
+            var store = new Store(storeAdminsUuids, contactEmail);
             this.stores.push(store);
             var storeIndex = this.stores.length - 1;
             return storeIndex;

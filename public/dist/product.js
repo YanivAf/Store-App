@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 function getProduct() {
     return __awaiter(this, void 0, void 0, function () {
-        var getProductDetails, _a, storeProduct, cartProduct, error_1;
+        var getProductDetails, _a, storeProduct, cartProduct, storeName, contactEmail, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -44,8 +44,8 @@ function getProduct() {
                     return [4 /*yield*/, axios.get("/store/" + storeUuid + "/product/" + productUuid)];
                 case 1:
                     getProductDetails = _b.sent();
-                    _a = getProductDetails.data, storeProduct = _a.storeProduct, cartProduct = _a.cartProduct;
-                    renderProduct(storeProduct, cartProduct, isAdmin);
+                    _a = getProductDetails.data, storeProduct = _a.storeProduct, cartProduct = _a.cartProduct, storeName = _a.storeName, contactEmail = _a.contactEmail;
+                    renderProduct(storeProduct, cartProduct, storeName, contactEmail, isAdmin);
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _b.sent();
@@ -56,7 +56,7 @@ function getProduct() {
         });
     });
 }
-function renderProduct(storeProduct, cartProduct, isAdmin) {
+function renderProduct(storeProduct, cartProduct, storeName, contactEmail, isAdmin) {
     try {
         var updateProductForm = document.querySelector('#edit-product-form');
         var pageTitle = document.querySelector('title');
@@ -90,7 +90,7 @@ function renderProduct(storeProduct, cartProduct, isAdmin) {
                 inStockColor = 'red';
             }
             if (cartProduct === undefined) {
-                buttonsByRole = "\n                <i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart\" title=\"Add " + storeProduct.productName + " to cart\"></i>\n                <a href=\"./store.html?storeUuid=" + storeProduct.storeUuid + "\" class=\"product-buttons__item product-buttons__item--store\">\n                    <i class=\"fas fa-store\" title=\"Go to " + storeProduct.productName + "'s store\"></i>\n                </a>";
+                buttonsByRole = "\n                <i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart\" title=\"Add " + storeProduct.productName + " to cart\"></i>\n                <i class=\"product-buttons__item product-buttons__item--love-product far fa-heart love-product\" title=\"Love " + storeProduct.productName + "\"></i>\n                <a href=\"./store.html?storeUuid=" + storeProduct.storeUuid + "\" class=\"product-buttons__item product-buttons__item--store\">\n                    <i class=\"fas fa-store\" title=\"Go to " + storeProduct.productName + "'s store\"></i>\n                </a>";
                 cartProductQuantity = 0;
             }
             else {
@@ -111,6 +111,9 @@ function renderProduct(storeProduct, cartProduct, isAdmin) {
             var mainElement = document.querySelector('.main');
             mainElement.insertAdjacentHTML('beforeend', productHtml);
             magnifyImg();
+            var contactStoreElement = document.querySelector('#contact');
+            contactStoreElement.setAttribute('href', "mailto:" + contactEmail + "?subject=" + storeName + " - Inquiry about " + storeProduct.productName);
+            contactStoreElement.innerHTML = "<i class=\"far fa-envelope\" title=\"Contact us!\"></i>";
         }
     }
     catch (error) {

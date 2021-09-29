@@ -18,22 +18,28 @@ export function doesStoreExist(req, res, next) {
         if (storeUuid === 'all cart products stores') {
             const users = new Users();
             const userIndex: number = req.userIndex;
-    
+            let isNotFound: boolean = false;
+            let notFoundCartProductsNames: string = '';
+
             users.users[userIndex].cart.forEach(cartProduct => {
                 storeUuid = cartProduct.storeUuid;
                 storeIndex = stores.findStoreIndex(storeUuid);
                 if (storeIndex === -1) {
-                    res.status(404).send({ message: `Store of "${cartProduct.productName}" doesn't exist anymore. To continue, please delete it from your cart.` });
-                    return;
+                    isNotFound = true;
+                    notFoundCartProductsNames += `"${cartProduct.productName}", `;
                 }
             });
-            next();
+
+            if (isNotFound) {
+                notFoundCartProductsNames.replace(/[,][ ]$/g,'')
+                res.status(404).send({ message: `Store of ${notFoundCartProductsNames} doesn't exist anymore. To continue, please adjust your cart accordingly.` });
+            } else next();
             return;
         }
         
         storeIndex = stores.findStoreIndex(storeUuid);
 
-        if (storeIndex === -1) res.status(404).send({ message: `Store doesn't exist. Apologies for the inconvenience.` });
+        if (storeIndex === -1) res.status(404).send({ message: `Store doesn't exist anymore. Apologies for the inconvenience.` });
         else {
             req.storeUuid = storeUuid;
             req.storeIndex = storeIndex;
@@ -59,6 +65,8 @@ export function doesProductExist(req, res, next) {
         
         if (productUuid === 'all cart products') {
             let storeUuid: string;
+            let notFoundCounter: number = 0;
+            let notFoundCartProductsNames: string = '';
 
             users.users[userIndex].cart.forEach(cartProduct => {
                 storeUuid = cartProduct.storeUuid;
@@ -68,18 +76,23 @@ export function doesProductExist(req, res, next) {
                 productIndex = stores.findStoreProductIndex(storeIndex, productUuid);
 
                 if (productIndex === -1) {
-                    res.status(404).send({ message: `"${cartProduct.productName}" doesn't exist anymore. To continue, please delete it from your cart.` });
-                    return;
+                    notFoundCounter++;
+                    notFoundCartProductsNames = `"${cartProduct.productName}", `;
                 }
             });
-            next();
+            
+            if (notFoundCounter > 0) {
+                const dontVsDoesnt: string = (notFoundCounter > 1) ? `don't` : `doesn't`
+                notFoundCartProductsNames.replace(/[,][ ]$/g,'')
+                res.status(404).send({ message: `${notFoundCartProductsNames} ${dontVsDoesnt} exist anymore. To continue, please adjust your cart accordingly.` });
+            } else next();
             return;
         }
 
         productIndex = stores.findStoreProductIndex(storeIndex, productUuid);
         const cartProductIndex: number = users.findCartProduct(userIndex, productUuid);
 
-        if (productIndex === -1) res.status(404).send({ message: `Product doesn't exist. Apologies for the inconvenience.` });
+        if (productIndex === -1) res.status(404).send({ message: `"${users.users[userIndex].cart[cartProductIndex].productName}" doesn't exist anymore. Apologies for the inconvenience.` });
         else {
             req.productIndex = productIndex;
             req.cartProductIndex = cartProductIndex;
@@ -107,7 +120,10 @@ export function enoughInStock(req, res, next) {
         let productUuid: string = req.params.productUuid ?? req.body.productUuid;
 
         if (productUuid === 'all cart products') {
-            let cartProductIndex: number = 0;
+            cartProductIndex = 0;
+            let isConflict: boolean = false;
+            let conflicCartProduct: CartProduct;
+            let conflictStoreProduct: Product;
 
             users.users[userIndex].cart.forEach(cartProduct => {
                 storeUuid = cartProduct.storeUuid;
@@ -116,15 +132,19 @@ export function enoughInStock(req, res, next) {
                 
                 productIndex = stores.findStoreProductIndex(storeIndex, productUuid);
                 cartProduct.inStockMirror = stores.stores[storeIndex].products[productIndex].inStock;
-
-                if (stores.stores[storeIndex].products[productIndex].inStockMirror < productQuantity) {
-                    res.status(409).send({ message: `There are only ${cartProduct.inStockMirror} "${stores.stores[storeIndex].products[productIndex].productName}"s in stock. To continue, please adjust quantity (or save the product for later!)` });
-                    return;
+                
+                if (cartProduct.inStockMirror < cartProduct.quantity) {
+                    isConflict = true;
+                    conflicCartProduct = cartProduct;
+                    conflictStoreProduct = stores.stores[storeIndex].products[productIndex];
                 }
-
+                
                 cartProductIndex++;
             });
-            next();
+            
+            if (isConflict) {
+                res.status(409).send({ message: `There are ${conflicCartProduct.inStockMirror} "${conflictStoreProduct.productName}"s in stock. To continue, please adjust quantity (or save the product for later!)` });
+            } else next();
             return;
         }
 
@@ -134,7 +154,7 @@ export function enoughInStock(req, res, next) {
         cartProductIndex = (cartProductIndex === -1) ? users.addCartProduct(userIndex, storeUuid, productUuid, productName, inStock) : cartProductIndex;
 
         users.users[userIndex].cart[cartProductIndex].inStockMirror = stores.stores[storeIndex].products[productIndex].inStock;
-        if (users.users[userIndex].cart[cartProductIndex].inStockMirror < productQuantity) res.status(409).send({ message: `There are only ${users.users[userIndex].cart[cartProductIndex].inStockMirror} "${stores.stores[storeIndex].products[productIndex].productName}"s in stock. To continue, please adjust quantity (or save the product for later!)` });
+        if (users.users[userIndex].cart[cartProductIndex].inStockMirror < productQuantity) res.status(409).send({ message: `There are ${users.users[userIndex].cart[cartProductIndex].inStockMirror} "${stores.stores[storeIndex].products[productIndex].productName}"s in stock. To continue, please adjust quantity (or save the product for later!)` });
         else next();
         return;
 

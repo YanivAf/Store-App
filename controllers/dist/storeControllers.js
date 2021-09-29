@@ -43,7 +43,9 @@ exports.showProduct = function (req, res) {
         var cartProduct = undefined;
         if ((!isAdmin) && (cartProductIndex !== -1))
             cartProduct = users.users[userIndex].cart[cartProductIndex];
-        res.send({ storeProduct: storeProduct, cartProduct: cartProduct });
+        var contactEmail = store.contactEmail;
+        var storeName = store.storeName;
+        res.send({ storeProduct: storeProduct, cartProduct: cartProduct, storeName: storeName, contactEmail: contactEmail });
     }
     catch (error) {
         console.error(error);

@@ -75,6 +75,11 @@ function renderStore(stores, store, isAdmin) {
         renderStoreProducts(products_1, cartProductsToRender, isAdmin);
         if (isAdmin)
             renderProductForm();
+        else if (store) {
+            var contactStoreElement = document.querySelector('#contact');
+            contactStoreElement.setAttribute('href', "mailto:" + store.contactEmail + "?subject=" + store.storeName + " - General Inquiry");
+            contactStoreElement.innerHTML = "<i class=\"far fa-envelope\" title=\"Contact us!\"></i>";
+        }
     }
     catch (error) {
         console.error(error.message);
@@ -96,9 +101,10 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
                             buttonsByRole = "\n                <a href=\"./store.html?storeUuid=" + product.storeUuid + "\" class=\"product-buttons__item product-buttons__item--store\">\n                    <i class=\"fas fa-store\" title=\"Go to " + product.productName + "'s store\"></i>\n                </a>";
                         var cartProductIndex = cartProducts.findIndex(function (cartProduct) { return cartProduct.productUuid === product.productUuid; });
                         if (cartProductIndex === -1)
-                            buttonsByRole = "<i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart\" title=\"Add " + product.productName + " to cart\"></i>" + buttonsByRole;
+                            buttonsByRole =
+                                "<i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart\" title=\"Add " + product.productName + " to cart\"></i>\n                <i class=\"product-buttons__item product-buttons__item--love-product far fa-heart love-product\" title=\"Love " + product.productName + "\"></i>\n                " + buttonsByRole;
                         else
-                            buttonsByRole = "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + product.productName + " in your cart\"></i>\n                </a>" + buttonsByRole;
+                            buttonsByRole = "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + product.productName + " in your cart\"></i>\n                </a>\n                <i class=\"product-buttons__item product-buttons__item--love-product far fa-heart love-product\" title=\"Love " + product.productName + "\"></i>\n                " + buttonsByRole;
                     }
                     var inStockText;
                     var inStockColor;

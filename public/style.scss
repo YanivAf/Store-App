@@ -73,6 +73,22 @@ a {
     }
 }
 
+#contact {
+    i {
+        background-color: goldenrod;
+        color: white;
+        padding: 4px 5px;
+        border-radius: 50%;
+        position: sticky;
+        bottom: 10px;
+        left: 10px;
+    
+        &:hover {
+            color: yellow;
+        }
+    }
+}
+
 .header {
     display: grid;
     align-items: center;
@@ -665,12 +681,21 @@ a {
             }
         }
 
+        &--love-product {
+            color:  pink;
+            cursor: pointer;
+
+            &:hover {
+                color: hotpink;
+            }            
+        }
+
         &--delete {
             color: darkred;
             cursor: pointer;
 
             &:hover {
-                color:red;
+                color: red;
             }
         }
     }

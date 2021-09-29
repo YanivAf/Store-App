@@ -115,7 +115,7 @@ export class Users {
 
             if (role === 'admin') {
                 const stores = new Stores();
-                const storeIndex: number = stores.addStore([userUuid]);
+                const storeIndex: number = stores.addStore([userUuid], userEmail);
                 storeUuid = stores.stores[storeIndex].storeUuid;
 
                 if (shopperToAdmin) {                        
@@ -133,36 +133,6 @@ export class Users {
             this.updateUsersJson();
 
             return { userUuid, storeUuid }; 
-
-        } catch (error) {
-            console.error(error.message);
-        }
-    }
-
-    restoreCart(shopperIndex: string): Array<CartProduct> {
-        try {
-            const stores = new Stores();
-            let storeIndex: number;
-            let productIndex: number;
-            let cantBackup: Array<CartProduct> = [];
-
-            this.users[shopperIndex].cartBackup.forEach(cartProduct => {
-                storeIndex = stores.findStoreIndex(cartProduct.storeUuid);
-                productIndex = stores.findStoreProductIndex(storeIndex, cartProduct.productUuid);
-
-                if (stores.stores[storeIndex].products[productIndex].inStock >= cartProduct.quantity) {
-                    stores.stores[storeIndex].products[productIndex].inStock -= cartProduct.quantity;
-                    this.users[shopperIndex].cart.push(cartProduct);
-                }
-                else cantBackup.push(cartProduct);
-            });
-
-            this.users[shopperIndex].cartBackup = [];
-
-            stores.updateStoresJson();
-            this.updateUsersJson();
-
-            return cantBackup;
 
         } catch (error) {
             console.error(error.message);
@@ -220,6 +190,19 @@ export class Users {
         }
     }
 
+    unsaveForLater(shopperIndex: number, productUuid: string) {
+        try {
+            this.users[shopperIndex].savedForLater = this.users[shopperIndex].savedForLater.filter(savedProduct => savedProduct !== productUuid);
+
+            this.updateUsersJson();
+
+            return this.users[shopperIndex].savedForLater;
+
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
     updateCartProductQuantity(shopperIndex: number, cartProductIndex: number, storeIndex: number, storeUuid: string, productUuid: string, productIndex: number, productQuantity: number): Array<CartProduct> {
         try {
             const stores = new Stores();
@@ -250,30 +233,6 @@ export class Users {
             this.updateUsersJson();
 
             return this.users[shopperIndex].cart;
-
-        } catch (error) {
-            console.error(error.message);
-        }
-    }
-
-    backupCartProducts(shopperIndex: number) {
-        try {
-            const stores = new Stores();
-            let storeIndex: number;
-            let productIndex: number;
-
-            this.users[shopperIndex].cart.forEach(cartProduct => {
-                storeIndex = stores.findStoreIndex(cartProduct.storeUuid);
-                productIndex = stores.findStoreProductIndex(storeIndex, cartProduct.productUuid);
-
-                stores.stores[storeIndex].products[productIndex].inStock += cartProduct.quantity;
-                this.users[shopperIndex].cartBackup.push(cartProduct);
-            });
-
-            this.users[shopperIndex].cart = [];
-
-            stores.updateStoresJson();
-            this.updateUsersJson();
 
         } catch (error) {
             console.error(error.message);

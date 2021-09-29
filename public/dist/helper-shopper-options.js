@@ -126,34 +126,20 @@ function updateQuantity(ev) {
 }
 function updateSaved(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var saveOrRemove, productDiv, storeA, updateCartProductQuantity, _a, cartProducts, storeProducts, savedProducts, shippingAddress, error_2;
+        var productDiv, updateSavedList, _a, cartProducts, storeProducts, savedProducts, shippingAddress, error_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
-                    if ((!ev.target.classList.contains('save-for-later')) && (!ev.target.classList.contains('remove-from-saved')))
+                    if ((!ev.target.classList.contains('remove-from-saved')))
                         return [2 /*return*/];
-                    saveOrRemove = (ev.target.classList.contains('save-for-later')) ? 1 : 0;
                     productDiv = ev.target.parentElement.parentElement;
-                    productUuid = url.searchParams.get("productUuid");
-                    productUuid = productUuid !== null && productUuid !== void 0 ? productUuid : productDiv.getAttribute('id');
-                    storeA = productDiv.querySelector('.product__item--img');
-                    if (whichHtmlFile === '/product.html')
-                        storeA = productDiv.querySelector('.product-large__item--img');
-                    else if (whichHtmlFile === '/cart.html')
-                        storeA = productDiv.querySelector('.product-row__item--img');
-                    storeUuid = url.searchParams.get("storeUuid");
-                    storeUuid = ((!storeUuid) || (storeUuid === 'mall')) ? storeA.getAttribute('href').replace(/^(.)*storeUuid=/g, '').replace(/[&](.)*$/g, '') : storeUuid;
-                    return [4 /*yield*/, axios.put('/user/saved', { storeUuid: storeUuid, productUuid: productUuid, saveOrRemove: saveOrRemove })];
+                    productUuid = productDiv.getAttribute('id');
+                    return [4 /*yield*/, axios.put('/user/saved', { productUuid: productUuid })];
                 case 1:
-                    updateCartProductQuantity = _b.sent();
-                    _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts, savedProducts = _a.savedProducts, shippingAddress = _a.shippingAddress;
-                    if ((ev.target.classList.contains('add-to-cart')) && (whichHtmlFile === '/store.html'))
-                        renderStoreProducts(storeProducts, cartProducts, false);
-                    else if (whichHtmlFile === '/product.html')
-                        getProduct();
-                    else if (whichHtmlFile === '/cart.html')
-                        renderCartPageProducts(storeProducts, cartProducts, savedProducts, shippingAddress);
+                    updateSavedList = _b.sent();
+                    _a = updateSavedList.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts, savedProducts = _a.savedProducts, shippingAddress = _a.shippingAddress;
+                    renderCartPageProducts(storeProducts, cartProducts, savedProducts, shippingAddress);
                     return [3 /*break*/, 3];
                 case 2:
                     error_2 = _b.sent();
@@ -182,14 +168,16 @@ function purchaseCart(ev) {
                             icon: "warning",
                             buttons: ['Nope', 'Yup']
                         }).then(function (willPurchase) { return __awaiter(_this, void 0, void 0, function () {
-                            var updateCartProductQuantity;
+                            var payForCart, purchaseCart_1;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0:
                                         if (!willPurchase) return [3 /*break*/, 3];
                                         return [4 /*yield*/, axios.put('/user/cart/purchase', { storeUuid: 'all cart products stores', productUuid: 'all cart products' })];
                                     case 1:
-                                        updateCartProductQuantity = _a.sent();
+                                        payForCart = _a.sent();
+                                        purchaseCart_1 = payForCart.data.purchaseCart;
+                                        if (!(purchaseCart_1 === true)) return [3 /*break*/, 3];
                                         return [4 /*yield*/, swal({
                                                 title: "Congrats!",
                                                 text: "You've completed the purchase",
