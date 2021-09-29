@@ -95,6 +95,8 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
                 salePriceHtml = `<br /><span style="font-size: 12px; color: lightgrey; text-decoration: line-through;">${(Math.round(product.productPrice * 100) / 100).toFixed(2)}$</span>`;
             }
 
+            const soldText: string = ((product.sold < 10) && (!isAdmin)) ? 'New product!' : `${product.sold} sold`;
+
             const productHtml: string = ((!isAdmin) && (!isInStock)) ? ''
             :
             `<div class="products__item product" id="${product.productUuid}">
@@ -105,6 +107,7 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
                 </a>
                 <a href="./product.html?storeUuid=${product.storeUuid}&productUuid=${product.productUuid}" title="Click for full description" class="product__item product__item--description">${product.productDescription}</a>
                 <h4 class="product__item product__item--price">${(Math.round((product.productPrice - product.productPrice * (product.precentsOff / 100)) * 100) / 100).toFixed(2)}$${salePriceHtml}</h4>
+                <div class="product__item product__item--sold">${soldText}</div>
                 <div class="product__item product__item--stock" style="color:${inStockColor}">${inStockText}</div>
                 <div class="product__item product-buttons">${buttonsByRole}</div>
                 

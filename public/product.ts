@@ -21,6 +21,7 @@ function renderProduct(storeProduct: any, cartProduct: any, storeName: string, c
         
         let productHtml: string;
         
+        let soldText: string = `${storeProduct.sold} sold`;
         let buttonsByRole: string;
         let cartProductQuantity: number;
         if (isAdmin) {
@@ -39,6 +40,7 @@ function renderProduct(storeProduct: any, cartProduct: any, storeName: string, c
                     <label for="precentsOff">% Off</label>
                 </div>
                 <textarea class="details__item details__item--description" name="productDescription" minLength="10" maxLength="300" placeholder="Product Description (10-300 characters)" required>${storeProduct.productDescription}</textarea>
+                <div class="details__item details__item--sold">${soldText}</div>
                 <div class="details__item details__item--price">
                     <input type="number" name="productPrice" min="0" max="5000" placeholder="Price ($)" step=".01" pattern="^\\d+(?:\\.\\d{1,2})?$" value="${(Math.round(storeProduct.productPrice * 100) / 100).toFixed(2)}" required />
                     <label for="productPrice">Price ($)</label>
@@ -54,6 +56,8 @@ function renderProduct(storeProduct: any, cartProduct: any, storeName: string, c
 
         } else {
             if (updateProductForm) updateProductForm.remove();
+
+            soldText = (storeProduct.sold < 10) ? 'New product!' : `${storeProduct.sold} sold`;
 
             let inStockText: string;
             let inStockColor: string;
@@ -105,6 +109,7 @@ function renderProduct(storeProduct: any, cartProduct: any, storeName: string, c
                     ${saleTagHtml}
                     
                     <article class="details__item details__item--description" title="Product Description">${storeProduct.productDescription}</article>
+                    <div class="details__item details__item--sold">${soldText}</div>
                     <div class="details__item details__item--price">
                         <h3>${(Math.round((storeProduct.productPrice - storeProduct.productPrice * (storeProduct.precentsOff / 100)) * 100) / 100).toFixed(2)}$<span style="font-size: 12px; font-weight: normal;"> per unit</span>${salePriceHtml}</h3>
                     </div>

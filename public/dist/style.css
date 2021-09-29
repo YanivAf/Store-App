@@ -375,6 +375,10 @@ a:hover {
 .main .product-large .details__item--price h3, .main .product-large .details__item--price p {
   margin: 0;
 }
+.main .product-large .details__item--sold {
+  color: royalblue;
+  font-size: 14px;
+}
 .main .product-large .details__item--quantity input {
   font-size: clamp(12px, 2vw, 16px);
   width: 7.5vw;
@@ -461,6 +465,10 @@ a:hover {
   -webkit-line-clamp: 1;
   width: 70%;
   -webkit-box-orient: vertical;
+}
+.products .product__item--sold, .carts .product__item--sold, .saved .product__item--sold, .cart .product__item--sold {
+  color: royalblue;
+  font-size: 12px;
 }
 .products .product-row, .carts .product-row, .saved .product-row, .cart .product-row {
   margin: 0 auto;

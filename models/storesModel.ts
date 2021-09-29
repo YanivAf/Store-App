@@ -28,6 +28,7 @@ export class Product {
     precentsOff: number;
     productImage: string;
     inStock: number;
+    sold: number;
     ratings: Array<Review>;
 
     constructor (storeUuid: string, productUuid: string, productName: string, createdAt: Date, lastEditedAt: Date, lastEditedBy: string, productDescription: string, productPrice: number, precentsOff: number, productImage: string, inStock: number) {
@@ -42,6 +43,7 @@ export class Product {
         this.precentsOff = precentsOff ?? 0;
         this.productImage = (productImage) ? `images/${productImage}` : 'images/cart-wp.png';
         this.inStock = inStock;
+        this.sold = 0;
     }
 }
 
@@ -208,7 +210,10 @@ export class Stores {
                 purchasedStoreProducts = purchasedCartProducts.filter(cartProduct => cartProduct.storeUuid === store.storeUuid);
                 purchasedStoreProducts.forEach(purchasedStoreProduct => {
                     store.products.forEach(product => {
-                        if (purchasedStoreProduct.productUuid === product.productUuid) product.inStock -= purchasedStoreProduct.quantity;
+                        if (purchasedStoreProduct.productUuid === product.productUuid) {
+                            product.inStock -= purchasedStoreProduct.quantity;
+                            product.sold += purchasedStoreProduct.quantity;
+                        }
                     });
                 });
                 purchasedCart = new PurchasedCart(shopperPurchasedCartUuid, purchasedStoreProducts, shippingAddress, shopperEmail, shopperUsername, shopperUuid);

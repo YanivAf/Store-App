@@ -439,6 +439,11 @@ a {
                     }
                 }
 
+                &--sold {
+                    color: royalblue;
+                    font-size: 14px;
+                }
+
                 &--quantity {
                     input {
                         font-size: clamp(12px, 2vw, 16px);
@@ -541,6 +546,11 @@ a {
                 -webkit-line-clamp: 1;
                 width: 70%;
                 -webkit-box-orient: vertical;
+            }
+
+            &--sold {
+                color: royalblue;
+                font-size: 12px;
             }
         }
     }

@@ -28,6 +28,7 @@ var Product = /** @class */ (function () {
         this.precentsOff = precentsOff !== null && precentsOff !== void 0 ? precentsOff : 0;
         this.productImage = (productImage) ? "images/" + productImage : 'images/cart-wp.png';
         this.inStock = inStock;
+        this.sold = 0;
     }
     return Product;
 }());
@@ -156,8 +157,10 @@ var Stores = /** @class */ (function () {
                 purchasedStoreProducts_1 = purchasedCartProducts.filter(function (cartProduct) { return cartProduct.storeUuid === store.storeUuid; });
                 purchasedStoreProducts_1.forEach(function (purchasedStoreProduct) {
                     store.products.forEach(function (product) {
-                        if (purchasedStoreProduct.productUuid === product.productUuid)
+                        if (purchasedStoreProduct.productUuid === product.productUuid) {
                             product.inStock -= purchasedStoreProduct.quantity;
+                            product.sold += purchasedStoreProduct.quantity;
+                        }
                     });
                 });
                 purchasedCart_1 = new PurchasedCart(shopperPurchasedCartUuid, purchasedStoreProducts_1, shippingAddress, shopperEmail, shopperUsername, shopperUuid);
