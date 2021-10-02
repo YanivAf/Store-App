@@ -29,7 +29,7 @@ function renderStore(stores: any, store: any, isAdmin: boolean) {
         const pageTitle: HTMLElement = document.querySelector('title');
         pageTitle.innerText = storeName;
         
-        renderStoreProducts(products, cartProductsToRender, isAdmin);
+        renderStoreProducts(products, cartProductsToRender, lovedProducts, isAdmin);
         if (isAdmin) renderProductForm();
         else if (store) {
             const contactStoreElement: HTMLElement = document.querySelector('#contact');
@@ -42,7 +42,7 @@ function renderStore(stores: any, store: any, isAdmin: boolean) {
     }
 }
 
-function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isAdmin: boolean) {
+function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, lovedProducts: Array<string>, isAdmin: boolean) {
     try {
         const productsElement: HTMLElement = document.querySelector('.products');
         let productsHtml: string;
@@ -52,26 +52,27 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
         :
         products.map((product) => {
             let buttonsByRole: string = ``;
-            if (isAdmin) buttonsByRole =`
-                <a href="./product.html?productUuid=${product.productUuid}" class="product-buttons__item product-buttons__item--info fas fa-info" >
-                    <i title="View & change ${product.productName}"></i>
-                </a>`;
+            if (isAdmin) buttonsByRole =``;
             else {
                 if (storeUuid) buttonsByRole = `
                 <a href="./store.html?storeUuid=${product.storeUuid}" class="product-buttons__item product-buttons__item--store">
                     <i class="fas fa-store" title="Go to ${product.productName}'s store"></i>
                 </a>`;
 
+                const lovedProductIndex: number = lovedProducts.findIndex(lovedProduct => lovedProduct === product.productUuid);
+                const isLoved: boolean = (lovedProductIndex !== -1) ? true : false;
+                const lovedBtnHtml: string = (isLoved) ? `<i class="product-buttons__item product-buttons__item--product-loved fas fa-heart product-loved" title="Unlove ${product.productName}"></i>` : `<i class="product-buttons__item product-buttons__item--love-product far fa-heart love-product" title="Love ${product.productName}"></i>`;
+
                 const cartProductIndex = cartProducts.findIndex(cartProduct => cartProduct.productUuid === product.productUuid);
                 if (cartProductIndex === -1) buttonsByRole =
                 `<i class="product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart" title="Add ${product.productName} to cart"></i>
-                <i class="product-buttons__item product-buttons__item--love-product far fa-heart love-product" title="Love ${product.productName}"></i>
+                ${lovedBtnHtml}
                 ${buttonsByRole}`;
                 else buttonsByRole = `
                 <a href="./cart.html" class="product-buttons__item product-buttons__item--cart-added">
                     <i class="fas fa-shopping-cart" title="See ${product.productName} in your cart"></i>
                 </a>
-                <i class="product-buttons__item product-buttons__item--love-product far fa-heart love-product" title="Love ${product.productName}"></i>
+                ${lovedBtnHtml}
                 ${buttonsByRole}`;
             }
             
@@ -95,7 +96,8 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
                 salePriceHtml = `<br /><span style="font-size: 12px; color: lightgrey; text-decoration: line-through;">${(Math.round(product.productPrice * 100) / 100).toFixed(2)}$</span>`;
             }
 
-            const soldText: string = ((product.sold < 10) && (!isAdmin)) ? 'New product!' : `${product.sold} sold`;
+            const soldHtml: string = ((product.sold < 10) && (!isAdmin)) ? '<div class="sold">New product!</div>' : `<div class="sold">${product.sold} sold</div>`;
+            const lovedHtml: string = (!isAdmin) ? '' : `<div class="loved">${product.loved} <i class="fas fa-heart"></i></div>`;
 
             const productHtml: string = ((!isAdmin) && (!isInStock)) ? ''
             :
@@ -107,7 +109,10 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, isA
                 </a>
                 <a href="./product.html?storeUuid=${product.storeUuid}&productUuid=${product.productUuid}" title="Click for full description" class="product__item product__item--description">${product.productDescription}</a>
                 <h4 class="product__item product__item--price">${(Math.round((product.productPrice - product.productPrice * (product.precentsOff / 100)) * 100) / 100).toFixed(2)}$${salePriceHtml}</h4>
-                <div class="product__item product__item--sold">${soldText}</div>
+                <div class="product__item product__item--stats">
+                    ${soldHtml}
+                    ${lovedHtml}
+                </div>
                 <div class="product__item product__item--stock" style="color:${inStockColor}">${inStockText}</div>
                 <div class="product__item product-buttons">${buttonsByRole}</div>
                 

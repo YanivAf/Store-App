@@ -67,10 +67,11 @@ var isCartEmpty = true;
 var cartProductsToRender;
 var shopperPurchasedCartsToRender;
 var savedProducts;
+var lovedProducts;
 function renderUserDetails(user, isAdmin) {
     try {
         var usernameElement = document.querySelector('.header__item--username');
-        usernameElement.innerText = "Logged in as " + user.username;
+        usernameElement.innerHTML = "<i class=\"far fa-user\"></i> " + user.username;
         var additionalHeaderElementsHtml = '';
         if (!isAdmin) {
             isCartEmpty = (user.cart.length === 0) ? true : false;
@@ -78,6 +79,7 @@ function renderUserDetails(user, isAdmin) {
             shopperPurchasedCartsToRender = user.purchasedCarts;
             renderShopperCart(cartProductsToRender);
             savedProducts = user.savedForLater;
+            lovedProducts = user.loved;
         }
         else {
             var navBar = {

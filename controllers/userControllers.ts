@@ -78,7 +78,7 @@ export function logout(req, res) { // index.html
   }
 }
 
-export function details(req, res) { // all htmls except for index.html,  register.html, shopper-register.html
+export function details(req, res) { // all htmls except for index.html, register.html, shopper-register.html
   try {
     const { userIndex, isAdmin } = req;
         
@@ -94,7 +94,7 @@ export function details(req, res) { // all htmls except for index.html,  registe
   }
 }
 
-export function updateQuantity(req, res) { // store.html + cart.html
+export function updateQuantity(req, res) { // store.html + product.html + cart.html // TODO add to store cartsCounter for the admin to see abandoned carts ratio
   try {
     const { productUuid, productQuantity, allStoresInfo } = req.body;
     const users = new Users();
@@ -103,6 +103,7 @@ export function updateQuantity(req, res) { // store.html + cart.html
 
     const cartProducts: Array<CartProduct> = users.updateCartProductQuantity(userIndex, cartProductIndex, storeIndex, storeUuid, productUuid, productIndex, productQuantity);
     const savedProducts: Array<string> = users.users[userIndex].savedForLater;
+    const lovedProducts: Array<string> = users.users[userIndex].loved;
     const stores = new Stores();
 
     let allMallProducts: Array<Product>;
@@ -114,7 +115,7 @@ export function updateQuantity(req, res) { // store.html + cart.html
     const storeProducts: Array<Product> = allMallProducts ?? stores.stores[storeIndex].products;
     const shippingAddress: string = users.users[userIndex].shippingAddress;
 
-    res.send({ cartProducts, storeProducts, savedProducts, shippingAddress });
+    res.send({ cartProducts, storeProducts, savedProducts, lovedProducts, shippingAddress });
 
   } catch (error) {
     console.error(error);
@@ -148,11 +149,37 @@ export function updateSaved(req, res) { // cart.html
   }
 }
 
+export function updateLoved(req, res) { // store.html + product.html // TODO add to store product lovedCounter for the admin to see which products shoppers love
+  try {
+    const { productUuid, allStoresInfo } = req.body;
+    const users = new Users();
+    
+    const { userIndex, storeIndex, productIndex } = req;
+
+    const cartProducts: Array<CartProduct> = users.users[userIndex].cart;
+    const lovedProducts: Array<string> = users.updateLovedProducts(userIndex, productUuid, storeIndex, productIndex);
+    const stores = new Stores();
+
+    let allMallProducts: Array<Product>;
+    if (allStoresInfo) {
+      allMallProducts = [];
+      stores.stores.forEach(store => {allMallProducts = allMallProducts.concat(store.products)});
+    }
+
+    const storeProducts: Array<Product> = allMallProducts ?? stores.stores[storeIndex].products;
+
+    res.send({ cartProducts, storeProducts, lovedProducts });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+}
+
 export function purchaseCart(req, res) { // cart.html
   try {
     const users = new Users();
     const { userIndex } = req;
-    console.log('hi');
     users.emptyCart(userIndex);
 
     res.send({ title: `Cart purchase completed`, purchaseCart: true});

@@ -79,7 +79,7 @@ a {
         color: white;
         padding: 4px 5px;
         border-radius: 50%;
-        position: sticky;
+        position: fixed;
         bottom: 10px;
         left: 10px;
     
@@ -137,7 +137,7 @@ a {
             img {
                 background-color: lightgreen;
                 padding: 1vw;
-                border-radius: 50px;
+                border-radius: 50%;
                 width: clamp(80%, 4vw, 100%);;
 
                 &:hover {
@@ -155,7 +155,7 @@ a {
             img {
                 background-color: white;
                 padding: 1vw;
-                border-radius: 50px;
+                border-radius: 50%;
                 width: clamp(80%, 4vw, 100%);;
 
                 &:hover {
@@ -189,7 +189,7 @@ a {
             img {
                 background-color: white;
                 padding: 1vw;
-                border-radius: 50px;
+                border-radius: 50%;
                 width: clamp(80%, 4vw, 100%);;
 
                 &:hover {
@@ -206,7 +206,7 @@ a {
             img {
                 background-color: white;
                 padding: 1vw;
-                border-radius: 50px;
+                border-radius: 50%;
                 width: clamp(80%, 4vw, 100%);;
 
                 &:hover {
@@ -223,7 +223,7 @@ a {
             img {
                 background-color: white;
                 padding: 1vw;
-                border-radius: 50px;
+                border-radius: 50%;
                 width: clamp(80%, 4vw, 100%);;
 
                 &:hover {
@@ -240,7 +240,7 @@ a {
             img {
                 background-color: white;
                 padding: 1vw;
-                border-radius: 50px;
+                border-radius: 50%;
                 width: clamp(80%, 4vw, 100%);;
 
                 &:hover {
@@ -287,7 +287,7 @@ a {
             color: white;
             font-weight: bold;
             width: fit-content;
-            border-radius: 20px;
+            border-radius: 5px;
             background-color: darkred;
             cursor: pointer;
 
@@ -342,10 +342,10 @@ a {
         align-items: center;
         width: 90vw;
         margin-top: 20px;
-        border-radius: 5%;
+        border-radius: 5px;
     
         &__item {
-            border-radius: 5%;
+            border-radius: 5px;
             width: 45vw;
             min-width: 300px;
 
@@ -396,7 +396,7 @@ a {
                     background-color: mediumvioletred;
                     color: white;
                     font-weight: bold;
-                    border-radius: 3px;
+                    border-radius: 5px;
                     position: absolute;
                     top: 0;
                     right: 0;
@@ -426,7 +426,7 @@ a {
                 &--description {
                     text-align: left;
                     border: 1px solid var(--main-color);
-                    border-radius: 10px;
+                    border-radius: 5px;
                     resize: none;
                     width: 90%;
                     max-height: 50%;
@@ -439,9 +439,19 @@ a {
                     }
                 }
 
-                &--sold {
-                    color: royalblue;
+                &--stats {
+                    width: 70%;
+                    display: flex;
+                    justify-content: space-around;
                     font-size: 14px;
+
+                    .sold {
+                        color: royalblue;
+                    }
+
+                    .loved {
+                        color:  hotpink;
+                    }
                 }
 
                 &--quantity {
@@ -505,7 +515,7 @@ a {
     .product {
         margin: 10px;
         padding: 15px 0;
-        border-radius: 10px;
+        border-radius: 5px;
         height: 20vw;
         width: 20vw;
         min-height: 250px;
@@ -524,7 +534,7 @@ a {
                 position: absolute;
                 background-color: mediumvioletred;
                 color: white;
-                border-radius: 2px;
+                border-radius: 5px;
                 font-weight: bold;
                 padding: 2px;
                 top: 0;
@@ -548,9 +558,19 @@ a {
                 -webkit-box-orient: vertical;
             }
 
-            &--sold {
-                color: royalblue;
+            &--stats {
+                width: 70%;
+                display: flex;
+                justify-content: space-around;
                 font-size: 12px;
+
+                .sold {
+                    color: royalblue;
+                }
+
+                .loved {
+                    color:  hotpink;
+                }
             }
         }
     }
@@ -658,14 +678,6 @@ a {
         padding: 0;
         margin-right: 5px;
 
-        &--info {
-            color: gray;
-
-            &:hover {
-                color: lightgray;
-            }
-        }
-
         &--cart-add {
             color: darkgreen;
             cursor: pointer;
@@ -697,6 +709,15 @@ a {
 
             &:hover {
                 color: hotpink;
+            }            
+        }
+
+        &--product-loved {
+            color:  hotpink;
+            cursor: pointer;
+
+            &:hover {
+                color: pink;
             }            
         }
 

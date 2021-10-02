@@ -16,6 +16,32 @@ export const readStoresJson = () => {
     }
 }
 
+export class Review {
+    reviewUuid: string;
+    createdAt: Date;
+    lastEditedAt: Date;
+    rating: number;
+    feedback: string;
+    shopperEmail: string;
+    shopperUsername: string;
+    shopperUuid: string;
+    response: string;
+    responseAt: Date;
+
+    constructor(rating: number, feedback: string, shopperEmail: string, shopperUsername: string, shopperUuid: string, response: string) {
+        this.reviewUuid = uuidv4();
+        this.createdAt = new Date();
+        this.lastEditedAt = null;
+        this.rating = rating;
+        this.feedback = feedback;
+        this.shopperEmail = shopperEmail;
+        this.shopperUsername = shopperUsername;
+        this.shopperUuid = shopperUuid;
+        this.response = response;
+        this.responseAt = new Date();
+    }
+}
+
 export class Product {
     storeUuid: string;
     productUuid: string;
@@ -29,7 +55,8 @@ export class Product {
     productImage: string;
     inStock: number;
     sold: number;
-    ratings: Array<Review>;
+    loved: number;
+    reviews: Array<Review>;
 
     constructor (storeUuid: string, productUuid: string, productName: string, createdAt: Date, lastEditedAt: Date, lastEditedBy: string, productDescription: string, productPrice: number, precentsOff: number, productImage: string, inStock: number) {
         this.storeUuid = storeUuid;
@@ -44,6 +71,8 @@ export class Product {
         this.productImage = (productImage) ? `images/${productImage}` : 'images/cart-wp.png';
         this.inStock = inStock;
         this.sold = 0;
+        this.loved = 0;
+        this.reviews = []
     }
 }
 
@@ -74,20 +103,24 @@ export class Store {
     storeAdminsUuids: Array<string>;
     contactEmail: string;
     lastEditedAt: Date;
-    lastEditedBy: string;  
+    lastEditedBy: string;
     products: Array<Product>;
     purchasedCarts: Array<PurchasedCart>;
+    createdCartsCounter: number;
+    reviews: Array<Review>;
     
     constructor(storeAdminsUuids, contactEmail) {
         this.storeUuid = uuidv4();
         this.storeName = 'Untitled Store';
         this.createdAt = new Date();
         this.storeAdminsUuids = storeAdminsUuids;
+        this.contactEmail = contactEmail;
         this.lastEditedAt = null;
         this.lastEditedBy = null;
         this.products = [];
         this.purchasedCarts = [];
-        this.contactEmail = contactEmail;
+        this.createdCartsCounter = 0;
+        this.reviews = []
     }
 }
 

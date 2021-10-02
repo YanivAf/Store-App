@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.purchaseCart = exports.updateSaved = exports.updateQuantity = exports.details = exports.logout = exports.login = exports.register = exports.welcome = void 0;
+exports.purchaseCart = exports.updateLoved = exports.updateSaved = exports.updateQuantity = exports.details = exports.logout = exports.login = exports.register = exports.welcome = void 0;
 var secret = require('../../secret/dist/secret').secret;
 var jwt = require('jsonwebtoken');
 var _a = require('../../models/dist/usersModel'), Users = _a.Users, User = _a.User, CartProduct = _a.CartProduct;
@@ -91,6 +91,7 @@ function updateQuantity(req, res) {
         var userIndex = req.userIndex, cartProductIndex = req.cartProductIndex, storeUuid = req.storeUuid, storeIndex = req.storeIndex, productIndex = req.productIndex;
         var cartProducts = users.updateCartProductQuantity(userIndex, cartProductIndex, storeIndex, storeUuid, productUuid, productIndex, productQuantity);
         var savedProducts = users.users[userIndex].savedForLater;
+        var lovedProducts = users.users[userIndex].loved;
         var stores = new Stores();
         var allMallProducts_1;
         if (allStoresInfo) {
@@ -99,7 +100,7 @@ function updateQuantity(req, res) {
         }
         var storeProducts = allMallProducts_1 !== null && allMallProducts_1 !== void 0 ? allMallProducts_1 : stores.stores[storeIndex].products;
         var shippingAddress = users.users[userIndex].shippingAddress;
-        res.send({ cartProducts: cartProducts, storeProducts: storeProducts, savedProducts: savedProducts, shippingAddress: shippingAddress });
+        res.send({ cartProducts: cartProducts, storeProducts: storeProducts, savedProducts: savedProducts, lovedProducts: lovedProducts, shippingAddress: shippingAddress });
     }
     catch (error) {
         console.error(error);
@@ -128,11 +129,32 @@ function updateSaved(req, res) {
     }
 }
 exports.updateSaved = updateSaved;
+function updateLoved(req, res) {
+    try {
+        var _a = req.body, productUuid = _a.productUuid, allStoresInfo = _a.allStoresInfo;
+        var users = new Users();
+        var userIndex = req.userIndex, storeIndex = req.storeIndex, productIndex = req.productIndex;
+        var cartProducts = users.users[userIndex].cart;
+        var lovedProducts = users.updateLovedProducts(userIndex, productUuid, storeIndex, productIndex);
+        var stores = new Stores();
+        var allMallProducts_3;
+        if (allStoresInfo) {
+            allMallProducts_3 = [];
+            stores.stores.forEach(function (store) { allMallProducts_3 = allMallProducts_3.concat(store.products); });
+        }
+        var storeProducts = allMallProducts_3 !== null && allMallProducts_3 !== void 0 ? allMallProducts_3 : stores.stores[storeIndex].products;
+        res.send({ cartProducts: cartProducts, storeProducts: storeProducts, lovedProducts: lovedProducts });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send(error.message);
+    }
+}
+exports.updateLoved = updateLoved;
 function purchaseCart(req, res) {
     try {
         var users = new Users();
         var userIndex = req.userIndex;
-        console.log('hi');
         users.emptyCart(userIndex);
         res.send({ title: "Cart purchase completed", purchaseCart: true });
     }

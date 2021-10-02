@@ -179,6 +179,30 @@ export class Users {
         }
     }
 
+    updateLovedProducts(shopperIndex: number, productUuid: string, storeIndex: number, productIndex: number) {
+        try {
+            const stores = new Stores();
+            const lovedProductIndex: number = this.users[shopperIndex].loved.findIndex(lovedProduct => lovedProduct === productUuid);
+            if (lovedProductIndex === -1) {
+                this.users[shopperIndex].loved.unshift(productUuid);
+                stores.stores[storeIndex].products[productIndex].loved++;
+            } else {
+                this.users[shopperIndex].loved.splice(lovedProductIndex, 1);
+                stores.stores[storeIndex].products[productIndex].loved--;
+            }
+
+            this.updateUsersJson();
+            stores.updateStoresJson();
+
+
+
+            return this.users[shopperIndex].loved;
+
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
     saveForLater(shopperIndex: number, productUuid: string) {
         try {
             this.users[shopperIndex].savedForLater.unshift(productUuid);
@@ -208,6 +232,12 @@ export class Users {
             const stores = new Stores();
 
             const isNew: boolean = (cartProductIndex === -1) ? true : false;
+
+            if (isNew) { // count as created cart for store, if cartProduct is the first from that store
+                const cartProductsFromStore: number = this.users[shopperIndex].cart.filter(cartProduct => cartProduct.storeUuid === storeUuid).length;
+                const isFirstFromStore: boolean = (cartProductsFromStore === 1) ? true : false;
+                if (isFirstFromStore) stores.stores[storeIndex].createdCartsCounter++;
+            }
 
             cartProductIndex = (isNew) ? this.users[shopperIndex].cart.length - 1 : cartProductIndex;
             const cartQuantityChange: number = (isNew) ? productQuantity : productQuantity - this.users[shopperIndex].cart[cartProductIndex].quantity;

@@ -134,6 +134,26 @@ var Users = /** @class */ (function () {
             console.error(error.message);
         }
     };
+    Users.prototype.updateLovedProducts = function (shopperIndex, productUuid, storeIndex, productIndex) {
+        try {
+            var stores = new Stores();
+            var lovedProductIndex = this.users[shopperIndex].loved.findIndex(function (lovedProduct) { return lovedProduct === productUuid; });
+            if (lovedProductIndex === -1) {
+                this.users[shopperIndex].loved.unshift(productUuid);
+                stores.stores[storeIndex].products[productIndex].loved++;
+            }
+            else {
+                this.users[shopperIndex].loved.splice(lovedProductIndex, 1);
+                stores.stores[storeIndex].products[productIndex].loved--;
+            }
+            this.updateUsersJson();
+            stores.updateStoresJson();
+            return this.users[shopperIndex].loved;
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    };
     Users.prototype.saveForLater = function (shopperIndex, productUuid) {
         try {
             this.users[shopperIndex].savedForLater.unshift(productUuid);
@@ -157,6 +177,12 @@ var Users = /** @class */ (function () {
         try {
             var stores = new Stores();
             var isNew = (cartProductIndex === -1) ? true : false;
+            if (isNew) { // count as created cart for store, if cartProduct is the first from that store
+                var cartProductsFromStore = this.users[shopperIndex].cart.filter(function (cartProduct) { return cartProduct.storeUuid === storeUuid; }).length;
+                var isFirstFromStore = (cartProductsFromStore === 1) ? true : false;
+                if (isFirstFromStore)
+                    stores.stores[storeIndex].createdCartsCounter++;
+            }
             cartProductIndex = (isNew) ? this.users[shopperIndex].cart.length - 1 : cartProductIndex;
             var cartQuantityChange = (isNew) ? productQuantity : productQuantity - this.users[shopperIndex].cart[cartProductIndex].quantity;
             if (productQuantity < 0) {

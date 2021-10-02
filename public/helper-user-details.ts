@@ -23,11 +23,12 @@ let isCartEmpty: boolean = true;
 let cartProductsToRender: Array<any>;
 let shopperPurchasedCartsToRender: Array<any>;
 let savedProducts: Array<string>;
+let lovedProducts: Array<any>;
 
 function renderUserDetails(user: any, isAdmin: boolean) {
     try {
         const usernameElement: HTMLElement = document.querySelector('.header__item--username');
-        usernameElement.innerText = `Logged in as ${user.username}`;
+        usernameElement.innerHTML = `<i class="far fa-user"></i> ${user.username}`;
 
         let additionalHeaderElementsHtml: string = '';
 
@@ -37,6 +38,7 @@ function renderUserDetails(user: any, isAdmin: boolean) {
             shopperPurchasedCartsToRender = user.purchasedCarts;
             renderShopperCart(cartProductsToRender);
             savedProducts = user.savedForLater;
+            lovedProducts = user.loved;
         } else {
             const navBar: any = {
                 purchased: { aOrDiv: 'a', href: ` href="./purchased.html"` },

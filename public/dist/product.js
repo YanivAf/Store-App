@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-function getProduct() {
+function getProduct(updatedLovedProducts) {
     return __awaiter(this, void 0, void 0, function () {
         var getProductDetails, _a, storeProduct, cartProduct, storeName, contactEmail, error_1;
         return __generator(this, function (_b) {
@@ -45,7 +45,8 @@ function getProduct() {
                 case 1:
                     getProductDetails = _b.sent();
                     _a = getProductDetails.data, storeProduct = _a.storeProduct, cartProduct = _a.cartProduct, storeName = _a.storeName, contactEmail = _a.contactEmail;
-                    renderProduct(storeProduct, cartProduct, storeName, contactEmail, isAdmin);
+                    lovedProducts = (updatedLovedProducts) ? updatedLovedProducts : lovedProducts;
+                    renderProduct(storeProduct, cartProduct, lovedProducts, storeName, contactEmail, isAdmin);
                     return [3 /*break*/, 3];
                 case 2:
                     error_1 = _b.sent();
@@ -56,7 +57,7 @@ function getProduct() {
         });
     });
 }
-function renderProduct(storeProduct, cartProduct, storeName, contactEmail, isAdmin) {
+function renderProduct(storeProduct, cartProduct, lovedProducts, storeName, contactEmail, isAdmin) {
     try {
         var updateProductForm = document.querySelector('#edit-product-form');
         var pageTitle = document.querySelector('title');
@@ -64,19 +65,23 @@ function renderProduct(storeProduct, cartProduct, storeName, contactEmail, isAdm
         pageTitle.innerText = storeProduct.productName;
         productNameElement.innerHTML = storeProduct.productName;
         var productHtml = void 0;
-        var soldText = storeProduct.sold + " sold";
+        var soldHtml = "<div class=\"sold\">" + storeProduct.sold + " sold</div>";
+        var lovedHtml = "<div class=\"loved\">" + storeProduct.loved + " <i class=\"fas fa-heart\"></i></div>";
         var buttonsByRole = void 0;
         var cartProductQuantity = void 0;
         if (isAdmin) {
             updateProductForm.style.display = 'flex';
             buttonsByRole = "<i class=\"product-buttons__item product-buttons__item--delete fas fa-trash\" id=\"delete-from-store\" onclick=\"deleteProduct(event)\" title=\"Delete " + storeProduct.productName + "\"></i>";
-            productHtml = "\n            <div class=\"product-large__item product-large__item--img\">\n                <img id=\"productImg\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n                <input id=\"product-image\" class=\"button\" type=\"file\" name=\"productImage\" accept=\"image/*\" onchange=\"readURL(this)\" />\n            </div>\n            <div class=\"product-large__item details\">\n                <input class=\"details__item details__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" value=\"" + storeProduct.productName + "\" required />\n                <div class=\"details__item details__item--buttons product-buttons\">" + buttonsByRole + "</div>\n                <div class=\"details__item details__item--sale\">\n                    <input type=\"number\" name=\"precentsOff\" min=\"0\" max=\"100\" placeholder=\"% Off\" value=\"" + storeProduct.precentsOff + "\" />\n                    <label for=\"precentsOff\">% Off</label>\n                </div>\n                <textarea class=\"details__item details__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required>" + storeProduct.productDescription + "</textarea>\n                <div class=\"details__item details__item--sold\">" + soldText + "</div>\n                <div class=\"details__item details__item--price\">\n                    <input type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" value=\"" + (Math.round(storeProduct.productPrice * 100) / 100).toFixed(2) + "\" required />\n                    <label for=\"productPrice\">Price ($)</label>\n                </div>\n                <div class=\"details__item details__item--in-stock\">\n                    <input type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" value=\"" + storeProduct.inStock + "\" required />\n                    <label for=\"productInStock\">In Stock</label>\n                </div>\n                <input class=\"details__item details__item--submit button\" type=\"submit\" value=\"Update\" />\n            </div>";
+            productHtml = "\n            <div class=\"product-large__item product-large__item--img\">\n                <img id=\"productImg\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n                <input id=\"product-image\" class=\"button\" type=\"file\" name=\"productImage\" accept=\"image/*\" onchange=\"readURL(this)\" />\n            </div>\n            <div class=\"product-large__item details\">\n                <input class=\"details__item details__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" value=\"" + storeProduct.productName + "\" required />\n                <div class=\"details__item details__item--buttons product-buttons\">" + buttonsByRole + "</div>\n                <div class=\"details__item details__item--sale\">\n                    <input type=\"number\" name=\"precentsOff\" min=\"0\" max=\"100\" placeholder=\"% Off\" value=\"" + storeProduct.precentsOff + "\" />\n                    <label for=\"precentsOff\">% Off</label>\n                </div>\n                <textarea class=\"details__item details__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required>" + storeProduct.productDescription + "</textarea>\n                <div class=\"details__item details__item--stats\">\n                    " + soldHtml + "\n                    " + lovedHtml + "\n                </div>\n                <div class=\"details__item details__item--price\">\n                    <input type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" value=\"" + (Math.round(storeProduct.productPrice * 100) / 100).toFixed(2) + "\" required />\n                    <label for=\"productPrice\">Price ($)</label>\n                </div>\n                <div class=\"details__item details__item--in-stock\">\n                    <input type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" value=\"" + storeProduct.inStock + "\" required />\n                    <label for=\"productInStock\">In Stock</label>\n                </div>\n                <input class=\"details__item details__item--submit button\" type=\"submit\" value=\"Update\" />\n            </div>";
             updateProductForm.innerHTML = productHtml;
         }
         else {
             if (updateProductForm)
                 updateProductForm.remove();
-            soldText = (storeProduct.sold < 10) ? 'New product!' : storeProduct.sold + " sold";
+            var lovedProductIndex = lovedProducts.findIndex(function (lovedProduct) { return lovedProduct === storeProduct.productUuid; });
+            var isLoved = (lovedProductIndex !== -1) ? true : false;
+            var lovedHtml_1 = (isLoved) ? "<i class=\"product-buttons__item product-buttons__item--product-loved fas fa-heart product-loved\" title=\"Unlove " + storeProduct.productName + "\"></i>" : "<i class=\"product-buttons__item product-buttons__item--love-product far fa-heart love-product\" title=\"Love " + storeProduct.productName + "\"></i>";
+            soldHtml = (storeProduct.sold < 10) ? '<div class="sold">New product!</div>' : "<div class=\"sold\">" + storeProduct.sold + " sold</div>";
             var inStockText = void 0;
             var inStockColor = void 0;
             var isInStock = (storeProduct.inStock > 0) ? true : false;
@@ -92,12 +97,12 @@ function renderProduct(storeProduct, cartProduct, storeName, contactEmail, isAdm
                 inStockColor = 'red';
             }
             if (cartProduct === undefined) {
-                buttonsByRole = "\n                <i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart\" title=\"Add " + storeProduct.productName + " to cart\"></i>\n                <i class=\"product-buttons__item product-buttons__item--love-product far fa-heart love-product\" title=\"Love " + storeProduct.productName + "\"></i>\n                <a href=\"./store.html?storeUuid=" + storeProduct.storeUuid + "\" class=\"product-buttons__item product-buttons__item--store\">\n                    <i class=\"fas fa-store\" title=\"Go to " + storeProduct.productName + "'s store\"></i>\n                </a>";
+                buttonsByRole = "\n                <i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart\" title=\"Add " + storeProduct.productName + " to cart\"></i>\n                " + lovedHtml_1 + "\n                <a href=\"./store.html?storeUuid=" + storeProduct.storeUuid + "\" class=\"product-buttons__item product-buttons__item--store\">\n                    <i class=\"fas fa-store\" title=\"Go to " + storeProduct.productName + "'s store\"></i>\n                </a>";
                 cartProductQuantity = 0;
             }
             else {
                 cartProductQuantity = cartProduct.quantity;
-                buttonsByRole = "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + storeProduct.productName + " in your cart\"></i>\n                </a>\n                <a href=\"./store.html?storeUuid=" + storeProduct.storeUuid + "\" class=\"product-buttons__item product-buttons__item--store\">\n                    <i class=\"fas fa-store\" title=\"Go to " + storeProduct.productName + "'s store\"></i>\n                </a>";
+                buttonsByRole = "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + storeProduct.productName + " in your cart\"></i>\n                </a>\n                " + lovedHtml_1 + "\n                <a href=\"./store.html?storeUuid=" + storeProduct.storeUuid + "\" class=\"product-buttons__item product-buttons__item--store\">\n                    <i class=\"fas fa-store\" title=\"Go to " + storeProduct.productName + "'s store\"></i>\n                </a>";
             }
             var saleTagHtml = "";
             var salePriceHtml = "";
@@ -106,7 +111,7 @@ function renderProduct(storeProduct, cartProduct, storeName, contactEmail, isAdm
                 saleTagHtml = "<h5 class=\"details__item details__item--sale\">" + storeProduct.precentsOff + "% off!</h5>";
                 salePriceHtml = "<br /><span style=\"font-size: 14px; color: lightgrey; text-decoration: line-through;\">" + (Math.round(storeProduct.productPrice * 100) / 100).toFixed(2) + "$</span>";
             }
-            productHtml = "\n            <div class=\"main__item product-large\">\n                <div class=\"product-large__item product-large__item--img\">\n                    <img id=\"productImg\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n                </div>\n                <div class=\"product-large__item details\">\n                    <h3 class=\"details__item details__item--name\">Product Details</h3>\n                    <div class=\"details__item details__item--buttons product-buttons\">" + buttonsByRole + "</div>\n                    " + saleTagHtml + "\n                    \n                    <article class=\"details__item details__item--description\" title=\"Product Description\">" + storeProduct.productDescription + "</article>\n                    <div class=\"details__item details__item--sold\">" + soldText + "</div>\n                    <div class=\"details__item details__item--price\">\n                        <h3>" + (Math.round((storeProduct.productPrice - storeProduct.productPrice * (storeProduct.precentsOff / 100)) * 100) / 100).toFixed(2) + "$<span style=\"font-size: 12px; font-weight: normal;\"> per unit</span>" + salePriceHtml + "</h3>\n                    </div>\n                    <p class=\"details__item details__item--in-stock\" title=\"In Stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</p>\n                    <div class=\"details__item details__item--quantity\">\n                        <input type=\"number\" class=\"update-cart-qunatity\" name=\"cartQuantity\" min=\"0\" max=\"" + storeProduct.inStock + "\" value=\"" + cartProductQuantity + "\" />\n                        <label for=\"cartQuantity\"> in your cart</label>\n                    </div>\n                </div>\n            </div>";
+            productHtml = "\n            <div class=\"main__item product-large\">\n                <div class=\"product-large__item product-large__item--img\">\n                    <img id=\"productImg\" src=\"" + storeProduct.productImage + "\" title=\"" + storeProduct.productName + "\">\n                </div>\n                <div class=\"product-large__item details\">\n                    <h3 class=\"details__item details__item--name\">Product Details</h3>\n                    <div class=\"details__item details__item--buttons product-buttons\">" + buttonsByRole + "</div>\n                    " + saleTagHtml + "\n                    \n                    <article class=\"details__item details__item--description\" title=\"Product Description\">" + storeProduct.productDescription + "</article>\n                    <div class=\"details__item details__item--stats\">\n                        " + soldHtml + "\n                    </div>\n                    <div class=\"details__item details__item--price\">\n                        <h3>" + (Math.round((storeProduct.productPrice - storeProduct.productPrice * (storeProduct.precentsOff / 100)) * 100) / 100).toFixed(2) + "$<span style=\"font-size: 12px; font-weight: normal;\"> per unit</span>" + salePriceHtml + "</h3>\n                    </div>\n                    <p class=\"details__item details__item--in-stock\" title=\"In Stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</p>\n                    <div class=\"details__item details__item--quantity\">\n                        <input type=\"number\" class=\"update-cart-qunatity\" name=\"cartQuantity\" min=\"0\" max=\"" + storeProduct.inStock + "\" value=\"" + cartProductQuantity + "\" />\n                        <label for=\"cartQuantity\"> in your cart</label>\n                    </div>\n                </div>\n            </div>";
             var productElement = document.querySelector('.product-large');
             if (productElement)
                 productElement.remove();

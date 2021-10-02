@@ -72,7 +72,7 @@ function renderStore(stores, store, isAdmin) {
         storeNameElement.innerText = storeName;
         var pageTitle = document.querySelector('title');
         pageTitle.innerText = storeName;
-        renderStoreProducts(products_1, cartProductsToRender, isAdmin);
+        renderStoreProducts(products_1, cartProductsToRender, lovedProducts, isAdmin);
         if (isAdmin)
             renderProductForm();
         else if (store) {
@@ -85,7 +85,7 @@ function renderStore(stores, store, isAdmin) {
         console.error(error.message);
     }
 }
-function renderStoreProducts(products, cartProducts, isAdmin) {
+function renderStoreProducts(products, cartProducts, lovedProducts, isAdmin) {
     try {
         var productsElement = document.querySelector('.products');
         var productsHtml = void 0;
@@ -95,16 +95,19 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
                 products.map(function (product) {
                     var buttonsByRole = "";
                     if (isAdmin)
-                        buttonsByRole = "\n                <a href=\"./product.html?productUuid=" + product.productUuid + "\" class=\"product-buttons__item product-buttons__item--info fas fa-info\" >\n                    <i title=\"View & change " + product.productName + "\"></i>\n                </a>";
+                        buttonsByRole = "";
                     else {
                         if (storeUuid)
                             buttonsByRole = "\n                <a href=\"./store.html?storeUuid=" + product.storeUuid + "\" class=\"product-buttons__item product-buttons__item--store\">\n                    <i class=\"fas fa-store\" title=\"Go to " + product.productName + "'s store\"></i>\n                </a>";
+                        var lovedProductIndex = lovedProducts.findIndex(function (lovedProduct) { return lovedProduct === product.productUuid; });
+                        var isLoved = (lovedProductIndex !== -1) ? true : false;
+                        var lovedBtnHtml = (isLoved) ? "<i class=\"product-buttons__item product-buttons__item--product-loved fas fa-heart product-loved\" title=\"Unlove " + product.productName + "\"></i>" : "<i class=\"product-buttons__item product-buttons__item--love-product far fa-heart love-product\" title=\"Love " + product.productName + "\"></i>";
                         var cartProductIndex = cartProducts.findIndex(function (cartProduct) { return cartProduct.productUuid === product.productUuid; });
                         if (cartProductIndex === -1)
                             buttonsByRole =
-                                "<i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart\" title=\"Add " + product.productName + " to cart\"></i>\n                <i class=\"product-buttons__item product-buttons__item--love-product far fa-heart love-product\" title=\"Love " + product.productName + "\"></i>\n                " + buttonsByRole;
+                                "<i class=\"product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart\" title=\"Add " + product.productName + " to cart\"></i>\n                " + lovedBtnHtml + "\n                " + buttonsByRole;
                         else
-                            buttonsByRole = "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + product.productName + " in your cart\"></i>\n                </a>\n                <i class=\"product-buttons__item product-buttons__item--love-product far fa-heart love-product\" title=\"Love " + product.productName + "\"></i>\n                " + buttonsByRole;
+                            buttonsByRole = "\n                <a href=\"./cart.html\" class=\"product-buttons__item product-buttons__item--cart-added\">\n                    <i class=\"fas fa-shopping-cart\" title=\"See " + product.productName + " in your cart\"></i>\n                </a>\n                " + lovedBtnHtml + "\n                " + buttonsByRole;
                     }
                     var inStockText;
                     var inStockColor;
@@ -127,10 +130,11 @@ function renderStoreProducts(products, cartProducts, isAdmin) {
                         saleTagHtml = "<h5 class=\"product__item product__item--sale\">" + product.precentsOff + "% off!</h5>";
                         salePriceHtml = "<br /><span style=\"font-size: 12px; color: lightgrey; text-decoration: line-through;\">" + (Math.round(product.productPrice * 100) / 100).toFixed(2) + "$</span>";
                     }
-                    var soldText = ((product.sold < 10) && (!isAdmin)) ? 'New product!' : product.sold + " sold";
+                    var soldHtml = ((product.sold < 10) && (!isAdmin)) ? '<div class="sold">New product!</div>' : "<div class=\"sold\">" + product.sold + " sold</div>";
+                    var lovedHtml = (!isAdmin) ? '' : "<div class=\"loved\">" + product.loved + " <i class=\"fas fa-heart\"></i></div>";
                     var productHtml = ((!isAdmin) && (!isInStock)) ? ''
                         :
-                            "<div class=\"products__item product\" id=\"" + product.productUuid + "\">\n                " + saleTagHtml + "\n                <h3 class=\"product__item product__item--name\">" + product.productName + "</h3>\n                <a href=\"./product.html?storeUuid=" + product.storeUuid + "&productUuid=" + product.productUuid + "\" class=\"product__item product__item--img\">\n                    <img src=\"" + product.productImage + "\" title=\"" + product.productName + "\"/>\n                </a>\n                <a href=\"./product.html?storeUuid=" + product.storeUuid + "&productUuid=" + product.productUuid + "\" title=\"Click for full description\" class=\"product__item product__item--description\">" + product.productDescription + "</a>\n                <h4 class=\"product__item product__item--price\">" + (Math.round((product.productPrice - product.productPrice * (product.precentsOff / 100)) * 100) / 100).toFixed(2) + "$" + salePriceHtml + "</h4>\n                <div class=\"product__item product__item--sold\">" + soldText + "</div>\n                <div class=\"product__item product__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                <div class=\"product__item product-buttons\">" + buttonsByRole + "</div>\n                \n            </div>";
+                            "<div class=\"products__item product\" id=\"" + product.productUuid + "\">\n                " + saleTagHtml + "\n                <h3 class=\"product__item product__item--name\">" + product.productName + "</h3>\n                <a href=\"./product.html?storeUuid=" + product.storeUuid + "&productUuid=" + product.productUuid + "\" class=\"product__item product__item--img\">\n                    <img src=\"" + product.productImage + "\" title=\"" + product.productName + "\"/>\n                </a>\n                <a href=\"./product.html?storeUuid=" + product.storeUuid + "&productUuid=" + product.productUuid + "\" title=\"Click for full description\" class=\"product__item product__item--description\">" + product.productDescription + "</a>\n                <h4 class=\"product__item product__item--price\">" + (Math.round((product.productPrice - product.productPrice * (product.precentsOff / 100)) * 100) / 100).toFixed(2) + "$" + salePriceHtml + "</h4>\n                <div class=\"product__item product__item--stats\">\n                    " + soldHtml + "\n                    " + lovedHtml + "\n                </div>\n                <div class=\"product__item product__item--stock\" style=\"color:" + inStockColor + "\">" + inStockText + "</div>\n                <div class=\"product__item product-buttons\">" + buttonsByRole + "</div>\n                \n            </div>";
                     return productHtml;
                 }).join('');
         productsElement.innerHTML = productsHtml;

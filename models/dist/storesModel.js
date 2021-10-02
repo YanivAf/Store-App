@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.Stores = exports.Store = exports.PurchasedCart = exports.Product = exports.readStoresJson = void 0;
+exports.Stores = exports.Store = exports.PurchasedCart = exports.Product = exports.Review = exports.readStoresJson = void 0;
 var uuidv4 = require("uuid").v4;
 var fs = require("fs");
 var path = require("path");
@@ -15,6 +15,22 @@ exports.readStoresJson = function () {
         console.error(error.message);
     }
 };
+var Review = /** @class */ (function () {
+    function Review(rating, feedback, shopperEmail, shopperUsername, shopperUuid, response) {
+        this.reviewUuid = uuidv4();
+        this.createdAt = new Date();
+        this.lastEditedAt = null;
+        this.rating = rating;
+        this.feedback = feedback;
+        this.shopperEmail = shopperEmail;
+        this.shopperUsername = shopperUsername;
+        this.shopperUuid = shopperUuid;
+        this.response = response;
+        this.responseAt = new Date();
+    }
+    return Review;
+}());
+exports.Review = Review;
 var Product = /** @class */ (function () {
     function Product(storeUuid, productUuid, productName, createdAt, lastEditedAt, lastEditedBy, productDescription, productPrice, precentsOff, productImage, inStock) {
         this.storeUuid = storeUuid;
@@ -29,6 +45,8 @@ var Product = /** @class */ (function () {
         this.productImage = (productImage) ? "images/" + productImage : 'images/cart-wp.png';
         this.inStock = inStock;
         this.sold = 0;
+        this.loved = 0;
+        this.reviews = [];
     }
     return Product;
 }());
@@ -52,11 +70,13 @@ var Store = /** @class */ (function () {
         this.storeName = 'Untitled Store';
         this.createdAt = new Date();
         this.storeAdminsUuids = storeAdminsUuids;
+        this.contactEmail = contactEmail;
         this.lastEditedAt = null;
         this.lastEditedBy = null;
         this.products = [];
         this.purchasedCarts = [];
-        this.contactEmail = contactEmail;
+        this.createdCartsCounter = 0;
+        this.reviews = [];
     }
     return Store;
 }());

@@ -73,7 +73,7 @@ a:hover {
   color: white;
   padding: 4px 5px;
   border-radius: 50%;
-  position: sticky;
+  position: fixed;
   bottom: 10px;
   left: 10px;
 }
@@ -123,7 +123,7 @@ a:hover {
 .header__item--add-product img {
   background-color: lightgreen;
   padding: 1vw;
-  border-radius: 50px;
+  border-radius: 50%;
   width: clamp(80%, 4vw, 100%);
 }
 .header__item--add-product img:hover {
@@ -138,7 +138,7 @@ a:hover {
 .header__item--cart img {
   background-color: white;
   padding: 1vw;
-  border-radius: 50px;
+  border-radius: 50%;
   width: clamp(80%, 4vw, 100%);
 }
 .header__item--cart img:hover {
@@ -168,7 +168,7 @@ a:hover {
 .header__item--store img {
   background-color: white;
   padding: 1vw;
-  border-radius: 50px;
+  border-radius: 50%;
   width: clamp(80%, 4vw, 100%);
 }
 .header__item--store img:hover {
@@ -182,7 +182,7 @@ a:hover {
 .header__item--purchased img {
   background-color: white;
   padding: 1vw;
-  border-radius: 50px;
+  border-radius: 50%;
   width: clamp(80%, 4vw, 100%);
 }
 .header__item--purchased img:hover {
@@ -196,7 +196,7 @@ a:hover {
 .header__item--mall img {
   background-color: white;
   padding: 1vw;
-  border-radius: 50px;
+  border-radius: 50%;
   width: clamp(80%, 4vw, 100%);
 }
 .header__item--mall img:hover {
@@ -210,7 +210,7 @@ a:hover {
 .header__item--stores-list img {
   background-color: white;
   padding: 1vw;
-  border-radius: 50px;
+  border-radius: 50%;
   width: clamp(80%, 4vw, 100%);
 }
 .header__item--stores-list img:hover {
@@ -248,7 +248,7 @@ a:hover {
   color: white;
   font-weight: bold;
   width: fit-content;
-  border-radius: 20px;
+  border-radius: 5px;
   background-color: darkred;
   cursor: pointer;
 }
@@ -291,10 +291,10 @@ a:hover {
   align-items: center;
   width: 90vw;
   margin-top: 20px;
-  border-radius: 5%;
+  border-radius: 5px;
 }
 .main .product-large__item {
-  border-radius: 5%;
+  border-radius: 5px;
   width: 45vw;
   min-width: 300px;
 }
@@ -341,7 +341,7 @@ a:hover {
   background-color: mediumvioletred;
   color: white;
   font-weight: bold;
-  border-radius: 3px;
+  border-radius: 5px;
   position: absolute;
   top: 0;
   right: 0;
@@ -366,7 +366,7 @@ a:hover {
 .main .product-large .details__item--description {
   text-align: left;
   border: 1px solid var(--main-color);
-  border-radius: 10px;
+  border-radius: 5px;
   resize: none;
   width: 90%;
   max-height: 50%;
@@ -375,9 +375,17 @@ a:hover {
 .main .product-large .details__item--price h3, .main .product-large .details__item--price p {
   margin: 0;
 }
-.main .product-large .details__item--sold {
-  color: royalblue;
+.main .product-large .details__item--stats {
+  width: 70%;
+  display: flex;
+  justify-content: space-around;
   font-size: 14px;
+}
+.main .product-large .details__item--stats .sold {
+  color: royalblue;
+}
+.main .product-large .details__item--stats .loved {
+  color: hotpink;
 }
 .main .product-large .details__item--quantity input {
   font-size: clamp(12px, 2vw, 16px);
@@ -427,7 +435,7 @@ a:hover {
 .products .product, .carts .product, .saved .product, .cart .product {
   margin: 10px;
   padding: 15px 0;
-  border-radius: 10px;
+  border-radius: 5px;
   height: 20vw;
   width: 20vw;
   min-height: 250px;
@@ -446,7 +454,7 @@ a:hover {
   position: absolute;
   background-color: mediumvioletred;
   color: white;
-  border-radius: 2px;
+  border-radius: 5px;
   font-weight: bold;
   padding: 2px;
   top: 0;
@@ -466,9 +474,17 @@ a:hover {
   width: 70%;
   -webkit-box-orient: vertical;
 }
-.products .product__item--sold, .carts .product__item--sold, .saved .product__item--sold, .cart .product__item--sold {
-  color: royalblue;
+.products .product__item--stats, .carts .product__item--stats, .saved .product__item--stats, .cart .product__item--stats {
+  width: 70%;
+  display: flex;
+  justify-content: space-around;
   font-size: 12px;
+}
+.products .product__item--stats .sold, .carts .product__item--stats .sold, .saved .product__item--stats .sold, .cart .product__item--stats .sold {
+  color: royalblue;
+}
+.products .product__item--stats .loved, .carts .product__item--stats .loved, .saved .product__item--stats .loved, .cart .product__item--stats .loved {
+  color: hotpink;
 }
 .products .product-row, .carts .product-row, .saved .product-row, .cart .product-row {
   margin: 0 auto;
@@ -555,12 +571,6 @@ a:hover {
   padding: 0;
   margin-right: 5px;
 }
-.product-buttons__item--info {
-  color: gray;
-}
-.product-buttons__item--info:hover {
-  color: lightgray;
-}
 .product-buttons__item--cart-add {
   color: darkgreen;
   cursor: pointer;
@@ -586,6 +596,13 @@ a:hover {
 }
 .product-buttons__item--love-product:hover {
   color: hotpink;
+}
+.product-buttons__item--product-loved {
+  color: hotpink;
+  cursor: pointer;
+}
+.product-buttons__item--product-loved:hover {
+  color: pink;
 }
 .product-buttons__item--delete {
   color: darkred;

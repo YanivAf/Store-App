@@ -1,16 +1,17 @@
-async function getProduct() {
+async function getProduct(updatedLovedProducts) {
     try {
         const getProductDetails = await axios.get(`/store/${storeUuid}/product/${productUuid}`);
         const { storeProduct, cartProduct, storeName, contactEmail } = getProductDetails.data;
+        lovedProducts = (updatedLovedProducts) ? updatedLovedProducts : lovedProducts;
 
-        renderProduct(storeProduct, cartProduct, storeName, contactEmail, isAdmin);
+        renderProduct(storeProduct, cartProduct, lovedProducts, storeName, contactEmail, isAdmin);
 
     } catch (error) {
         console.error(error.message);
     }
 }
 
-function renderProduct(storeProduct: any, cartProduct: any, storeName: string, contactEmail: string, isAdmin: boolean) {
+function renderProduct(storeProduct: any, cartProduct: any, lovedProducts: Array<string>, storeName: string, contactEmail: string, isAdmin: boolean) {
     try {
         const updateProductForm: HTMLFormElement = document.querySelector('#edit-product-form');
         const pageTitle: HTMLElement = document.querySelector('title');
@@ -21,7 +22,8 @@ function renderProduct(storeProduct: any, cartProduct: any, storeName: string, c
         
         let productHtml: string;
         
-        let soldText: string = `${storeProduct.sold} sold`;
+        let soldHtml: string = `<div class="sold">${storeProduct.sold} sold</div>`;
+        let lovedHtml: string = `<div class="loved">${storeProduct.loved} <i class="fas fa-heart"></i></div>`;
         let buttonsByRole: string;
         let cartProductQuantity: number;
         if (isAdmin) {
@@ -40,7 +42,10 @@ function renderProduct(storeProduct: any, cartProduct: any, storeName: string, c
                     <label for="precentsOff">% Off</label>
                 </div>
                 <textarea class="details__item details__item--description" name="productDescription" minLength="10" maxLength="300" placeholder="Product Description (10-300 characters)" required>${storeProduct.productDescription}</textarea>
-                <div class="details__item details__item--sold">${soldText}</div>
+                <div class="details__item details__item--stats">
+                    ${soldHtml}
+                    ${lovedHtml}
+                </div>
                 <div class="details__item details__item--price">
                     <input type="number" name="productPrice" min="0" max="5000" placeholder="Price ($)" step=".01" pattern="^\\d+(?:\\.\\d{1,2})?$" value="${(Math.round(storeProduct.productPrice * 100) / 100).toFixed(2)}" required />
                     <label for="productPrice">Price ($)</label>
@@ -57,7 +62,11 @@ function renderProduct(storeProduct: any, cartProduct: any, storeName: string, c
         } else {
             if (updateProductForm) updateProductForm.remove();
 
-            soldText = (storeProduct.sold < 10) ? 'New product!' : `${storeProduct.sold} sold`;
+            const lovedProductIndex: number = lovedProducts.findIndex(lovedProduct => lovedProduct === storeProduct.productUuid);
+            const isLoved: boolean = (lovedProductIndex !== -1) ? true : false;
+            const lovedHtml: string = (isLoved) ? `<i class="product-buttons__item product-buttons__item--product-loved fas fa-heart product-loved" title="Unlove ${storeProduct.productName}"></i>` : `<i class="product-buttons__item product-buttons__item--love-product far fa-heart love-product" title="Love ${storeProduct.productName}"></i>`;
+
+            soldHtml = (storeProduct.sold < 10) ? '<div class="sold">New product!</div>' : `<div class="sold">${storeProduct.sold} sold</div>`;
 
             let inStockText: string;
             let inStockColor: string;
@@ -74,7 +83,7 @@ function renderProduct(storeProduct: any, cartProduct: any, storeName: string, c
             if (cartProduct === undefined) {
                 buttonsByRole = `
                 <i class="product-buttons__item product-buttons__item--cart-add fas fa-cart-plus add-to-cart" title="Add ${storeProduct.productName} to cart"></i>
-                <i class="product-buttons__item product-buttons__item--love-product far fa-heart love-product" title="Love ${storeProduct.productName}"></i>
+                ${lovedHtml}
                 <a href="./store.html?storeUuid=${storeProduct.storeUuid}" class="product-buttons__item product-buttons__item--store">
                     <i class="fas fa-store" title="Go to ${storeProduct.productName}'s store"></i>
                 </a>`;
@@ -85,6 +94,7 @@ function renderProduct(storeProduct: any, cartProduct: any, storeName: string, c
                 <a href="./cart.html" class="product-buttons__item product-buttons__item--cart-added">
                     <i class="fas fa-shopping-cart" title="See ${storeProduct.productName} in your cart"></i>
                 </a>
+                ${lovedHtml}
                 <a href="./store.html?storeUuid=${storeProduct.storeUuid}" class="product-buttons__item product-buttons__item--store">
                     <i class="fas fa-store" title="Go to ${storeProduct.productName}'s store"></i>
                 </a>`;
@@ -109,7 +119,9 @@ function renderProduct(storeProduct: any, cartProduct: any, storeName: string, c
                     ${saleTagHtml}
                     
                     <article class="details__item details__item--description" title="Product Description">${storeProduct.productDescription}</article>
-                    <div class="details__item details__item--sold">${soldText}</div>
+                    <div class="details__item details__item--stats">
+                        ${soldHtml}
+                    </div>
                     <div class="details__item details__item--price">
                         <h3>${(Math.round((storeProduct.productPrice - storeProduct.productPrice * (storeProduct.precentsOff / 100)) * 100) / 100).toFixed(2)}$<span style="font-size: 12px; font-weight: normal;"> per unit</span>${salePriceHtml}</h3>
                     </div>

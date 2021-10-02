@@ -34,22 +34,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var updateAncestor;
-if (whichHtmlFile === '/store.html') {
-    updateAncestor = document.querySelector('.products');
-    updateAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
-    updateAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
-    updateAncestor.addEventListener('click', function (ev) { return updateSaved(ev); });
-}
-else {
-    updateAncestor = document.querySelector('.main');
-    updateAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
-    updateAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
-    updateAncestor.addEventListener('click', function (ev) { return updateSaved(ev); });
-}
+var updateAncestor = (whichHtmlFile === '/store.html') ? document.querySelector('.products') : document.querySelector('.main');
+updateAncestor.addEventListener('click', function (ev) { return updateQuantity(ev); });
+updateAncestor.addEventListener('change', function (ev) { return updateQuantity(ev); });
+updateAncestor.addEventListener('click', function (ev) { return updateSaved(ev); });
+updateAncestor.addEventListener('click', function (ev) { return updateLoved(ev); });
 function updateQuantity(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var productQuantity, cancelDelete, productDiv, storeA, allStoresInfo, updateCartProductQuantity, _a, cartProducts, storeProducts, savedProducts, shippingAddress, error_1;
+        var productQuantity, cancelDelete, productDiv, storeA, allStoresInfo, updateCartProductQuantity, _a, cartProducts, storeProducts, savedProducts, lovedProducts, shippingAddress, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -104,12 +96,12 @@ function updateQuantity(ev) {
                     return [4 /*yield*/, axios.put('/user/cart', { allStoresInfo: allStoresInfo, storeUuid: storeUuid, productUuid: productUuid, productQuantity: productQuantity })];
                 case 5:
                     updateCartProductQuantity = _b.sent();
-                    _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts, savedProducts = _a.savedProducts, shippingAddress = _a.shippingAddress;
+                    _a = updateCartProductQuantity.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts, savedProducts = _a.savedProducts, lovedProducts = _a.lovedProducts, shippingAddress = _a.shippingAddress;
                     return [4 /*yield*/, renderShopperCart(cartProducts)];
                 case 6:
                     _b.sent();
                     if ((ev.target.classList.contains('add-to-cart')) && (whichHtmlFile === '/store.html'))
-                        renderStoreProducts(storeProducts, cartProducts, false);
+                        renderStoreProducts(storeProducts, cartProducts, lovedProducts, false);
                     else if (whichHtmlFile === '/product.html')
                         getProduct();
                     else if (whichHtmlFile === '/cart.html')
@@ -150,13 +142,50 @@ function updateSaved(ev) {
         });
     });
 }
+function updateLoved(ev) {
+    return __awaiter(this, void 0, void 0, function () {
+        var productDiv, storeA, allStoresInfo, updateLovedList, _a, cartProducts, storeProducts, lovedProducts, error_3;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _b.trys.push([0, 3, , 4]);
+                    if ((!ev.target.classList.contains('love-product')) && (!ev.target.classList.contains('product-loved')))
+                        return [2 /*return*/];
+                    productDiv = ev.target.parentElement.parentElement;
+                    productUuid = url.searchParams.get("productUuid");
+                    productUuid = productUuid !== null && productUuid !== void 0 ? productUuid : productDiv.getAttribute('id');
+                    storeA = (whichHtmlFile === '/store.html') ? productDiv.querySelector('.product__item--img') : productDiv.querySelector('.product-large__item--img');
+                    storeUuid = url.searchParams.get("storeUuid");
+                    allStoresInfo = (storeUuid === 'mall') ? true : false;
+                    storeUuid = (storeUuid === 'mall') ? storeA.getAttribute('href').replace(/^(.)*storeUuid=/g, '').replace(/[&](.)*$/g, '') : storeUuid;
+                    return [4 /*yield*/, axios.put('/user/loved', { allStoresInfo: allStoresInfo, storeUuid: storeUuid, productUuid: productUuid })];
+                case 1:
+                    updateLovedList = _b.sent();
+                    _a = updateLovedList.data, cartProducts = _a.cartProducts, storeProducts = _a.storeProducts, lovedProducts = _a.lovedProducts;
+                    return [4 /*yield*/, renderShopperCart(cartProducts)];
+                case 2:
+                    _b.sent();
+                    if (whichHtmlFile === '/store.html')
+                        renderStoreProducts(storeProducts, cartProducts, lovedProducts, false);
+                    else if (whichHtmlFile === '/product.html')
+                        getProduct(lovedProducts);
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_3 = _b.sent();
+                    console.error(error_3.message);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
 if (whichHtmlFile === '/cart.html') {
     var payBtn = document.querySelector('#pay');
     payBtn.addEventListener('click', function (ev) { return purchaseCart(ev); });
 }
 function purchaseCart(ev) {
     return __awaiter(this, void 0, void 0, function () {
-        var error_3;
+        var error_4;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -197,8 +226,8 @@ function purchaseCart(ev) {
                     _a.sent();
                     return [3 /*break*/, 3];
                 case 2:
-                    error_3 = _a.sent();
-                    console.error(error_3.message);
+                    error_4 = _a.sent();
+                    console.error(error_4.message);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }

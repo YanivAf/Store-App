@@ -1,18 +1,9 @@
-let updateAncestor: HTMLElement;
+const updateAncestor: HTMLElement = (whichHtmlFile === '/store.html') ? document.querySelector('.products') : document.querySelector('.main');
 
-if (whichHtmlFile === '/store.html') {
-  updateAncestor = document.querySelector('.products');
-  updateAncestor.addEventListener('click', ev => updateQuantity(ev));
-  updateAncestor.addEventListener('change', ev => updateQuantity(ev));
-  updateAncestor.addEventListener('click', ev => updateSaved(ev));
-
-} else {
-  updateAncestor = document.querySelector('.main');
-  updateAncestor.addEventListener('click', ev => updateQuantity(ev));
-  updateAncestor.addEventListener('change', ev => updateQuantity(ev));
-  updateAncestor.addEventListener('click', ev => updateSaved(ev));
-
-}
+updateAncestor.addEventListener('click', ev => updateQuantity(ev));
+updateAncestor.addEventListener('change', ev => updateQuantity(ev));
+updateAncestor.addEventListener('click', ev => updateSaved(ev));
+updateAncestor.addEventListener('click', ev => updateLoved(ev));
 
 async function updateQuantity(ev: any) {
   try {
@@ -54,9 +45,9 @@ async function updateQuantity(ev: any) {
     storeUuid = ((!storeUuid) || (storeUuid === 'mall')) ? storeA.getAttribute('href').replace(/^(.)*storeUuid=/g, '').replace(/[&](.)*$/g, '') : storeUuid;
 
     const updateCartProductQuantity = await axios.put('/user/cart', { allStoresInfo, storeUuid, productUuid, productQuantity });
-    const { cartProducts, storeProducts, savedProducts, shippingAddress } = updateCartProductQuantity.data;
+    const { cartProducts, storeProducts, savedProducts, lovedProducts, shippingAddress } = updateCartProductQuantity.data;
     await renderShopperCart(cartProducts);
-    if ((ev.target.classList.contains('add-to-cart')) && (whichHtmlFile === '/store.html')) renderStoreProducts(storeProducts, cartProducts, false);
+    if ((ev.target.classList.contains('add-to-cart')) && (whichHtmlFile === '/store.html')) renderStoreProducts(storeProducts, cartProducts, lovedProducts, false);
     else if (whichHtmlFile === '/product.html') getProduct();
     else if  (whichHtmlFile === '/cart.html') renderCartPageProducts(storeProducts, cartProducts, savedProducts, shippingAddress);
     
@@ -75,6 +66,32 @@ async function updateSaved(ev: any) {
     const updateSavedList = await axios.put('/user/saved', { productUuid });
     const { cartProducts, storeProducts, savedProducts, shippingAddress } = updateSavedList.data;
     renderCartPageProducts(storeProducts, cartProducts, savedProducts, shippingAddress);
+    
+  } catch (error) {
+      console.error(error.message);
+  }
+}
+
+async function updateLoved(ev: any) {
+  try {
+    if ((!ev.target.classList.contains('love-product')) && (!ev.target.classList.contains('product-loved'))) return;
+
+    const productDiv: HTMLElement = ev.target.parentElement.parentElement;
+    
+    productUuid = url.searchParams.get("productUuid");
+    productUuid = productUuid ?? productDiv.getAttribute('id');
+
+    const storeA: HTMLElement = (whichHtmlFile === '/store.html') ? productDiv.querySelector('.product__item--img') : productDiv.querySelector('.product-large__item--img');
+    
+    storeUuid = url.searchParams.get("storeUuid");
+    const allStoresInfo: boolean = (storeUuid === 'mall') ? true : false;
+    storeUuid = (storeUuid === 'mall') ? storeA.getAttribute('href').replace(/^(.)*storeUuid=/g, '').replace(/[&](.)*$/g, '') : storeUuid;
+
+    const updateLovedList = await axios.put('/user/loved', { allStoresInfo, storeUuid, productUuid });
+    const { cartProducts, storeProducts, lovedProducts } = updateLovedList.data;
+    await renderShopperCart(cartProducts);
+    if (whichHtmlFile === '/store.html') renderStoreProducts(storeProducts, cartProducts, lovedProducts, false);
+    else if (whichHtmlFile === '/product.html') getProduct(lovedProducts);
     
   } catch (error) {
       console.error(error.message);
