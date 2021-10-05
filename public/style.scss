@@ -101,6 +101,7 @@ a {
     position: sticky;
     height: fit-content;
     height: 20vh;
+    width: 100vw;
     background-image: url('../images/cart-wp.png'), linear-gradient(#2c2c2c, #2c2c2c);;
     background-blend-mode: normal; 
     background-repeat: repeat;
@@ -327,6 +328,42 @@ a {
             padding: 2.5vw;
         }
 
+        &--add-product-modal {
+            display: none;
+            align-items: center;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+
+            .modal-content {
+                display: flex;
+                flex-direction: column;
+                background-color: white;
+                margin: auto;
+                padding: 0 20px;
+                border-radius:5px;
+
+                .close {
+                    margin: 0;
+                    color: pink;
+                    float: right;
+                    font-size: 28px;
+                    font-weight: bold;
+
+                    &:hover,&:focus {
+                        color: red;
+                        text-decoration: none;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+
         &--pay {
             width: 20vw;
             margin: 20px auto;
@@ -341,7 +378,6 @@ a {
         justify-content: center;
         align-items: center;
         width: 90vw;
-        margin-top: 20px;
         border-radius: 5px;
     
         &__item {

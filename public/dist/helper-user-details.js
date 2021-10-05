@@ -93,7 +93,7 @@ function renderUserDetails(user, isAdmin) {
                     navBar.purchased.href = '';
                     break;
                 case '/store.html':
-                    addProductHtml = "\n                    <a href=\"#add-product-form\" class=\"header__item header__item--add-product\" title=\"Add new product\">\n                        <img src=\"./images/add-product.png\" title=\"Add new product\" />\n                    </a>";
+                    addProductHtml = "\n                    <div class=\"header__item header__item--add-product\" id=\"add-product\" title=\"Add new product\">\n                        <img src=\"./images/add-product.png\" title=\"Add new product\" />\n                    </div>";
                     navBar.store.aOrDiv = 'div';
                     navBar.store.href = '';
                     break;

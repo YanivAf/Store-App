@@ -73,9 +73,7 @@ function renderStore(stores, store, isAdmin) {
         var pageTitle = document.querySelector('title');
         pageTitle.innerText = storeName;
         renderStoreProducts(products_1, cartProductsToRender, lovedProducts, isAdmin);
-        if (isAdmin)
-            renderProductForm();
-        else if (store) {
+        if ((!isAdmin) && (store)) {
             var contactStoreElement = document.querySelector('#contact');
             contactStoreElement.setAttribute('href', "mailto:" + store.contactEmail + "?subject=" + store.storeName + " - General Inquiry");
             contactStoreElement.innerHTML = "<i class=\"far fa-envelope\" title=\"Contact us!\"></i>";
@@ -143,10 +141,21 @@ function renderStoreProducts(products, cartProducts, lovedProducts, isAdmin) {
         console.error(error.message);
     }
 }
-function renderProductForm() {
+var modalElement = document.querySelector('#add-product-modal');
+if (isAdmin) {
+    var addProductElement = document.querySelector("#add-product");
+    addProductElement.addEventListener('click', function (ev) { return renderProductForm(ev); });
+    var closeModalElement = document.querySelector(".close");
+    closeModalElement.addEventListener('click', function (ev) { return modalElement.style.display = "none"; });
+    window.onclick = function (ev) {
+        if (ev.target == modalElement) {
+            modalElement.style.display = "none";
+        }
+    };
+}
+function renderProductForm(ev) {
     try {
-        var addProductForm = document.querySelector('#add-product-form');
-        addProductForm.style.display = 'flex';
+        modalElement.style.display = 'flex';
         var formInnerHTML = "\n        <div class=\"product-large__item product-large__item--img\">\n            <img id=\"product-preview\" src=\"./images/cart-wp.png\">\n            <input id=\"product-image\" class=\"button\" type=\"file\" name=\"productImage\" accept=\"image/*\" onchange=\"readURL(this)\" />\n        </div>\n        <div class=\"product-large__item details\">\n            <input class=\"details__item details__item--name\" type=\"text\" name=\"productName\" minLength=\"2\" maxLength=\"40\" placeholder=\"Product Name\" required />\n            <div class=\"details__item details__item--sale\">\n                <input type=\"number\" name=\"precentsOff\" min=\"0\" max=\"100\" placeholder=\"% Off\" />\n                <label for=\"precentsOff\">% Off</label>\n            </div>\n            <textarea class=\"details__item details__item--description\" name=\"productDescription\" minLength=\"10\" maxLength=\"300\" placeholder=\"Product Description (10-300 characters)\" required></textarea>\n            <div class=\"details__item details__item--price\">\n                <input type=\"number\" name=\"productPrice\" min=\"0\" max=\"5000\" placeholder=\"Price ($)\" step=\".01\" pattern=\"^\\d+(?:\\.\\d{1,2})?$\" required />\n                <label for=\"productPrice\">Price ($)</label>\n            </div>\n            <div class=\"details__item details__item--in-stock\">\n                <input type=\"number\" name=\"productInStock\" min=\"0\" max=\"500\" placeholder=\"In Stock\" required />\n                <label for=\"productInStock\">In Stock</label>\n            </div>        \n            <input class=\"details__item details__item--submit button\" type=\"submit\" value=\"Add\" />\n        </div>";
         addProductForm.innerHTML = formInnerHTML;
     }

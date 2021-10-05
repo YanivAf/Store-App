@@ -90,6 +90,7 @@ a:hover {
   position: sticky;
   height: fit-content;
   height: 20vh;
+  width: 100vw;
   background-image: url("../images/cart-wp.png"), linear-gradient(#2c2c2c, #2c2c2c);
   background-blend-mode: normal;
   background-repeat: repeat;
@@ -278,6 +279,38 @@ a:hover {
   margin: 0;
   padding: 2.5vw;
 }
+.main__item--add-product-modal {
+  display: none;
+  align-items: center;
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.main__item--add-product-modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  margin: auto;
+  padding: 0 20px;
+  border-radius: 5px;
+}
+.main__item--add-product-modal .modal-content .close {
+  margin: 0;
+  color: pink;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+.main__item--add-product-modal .modal-content .close:hover, .main__item--add-product-modal .modal-content .close:focus {
+  color: red;
+  text-decoration: none;
+  cursor: pointer;
+}
 .main__item--pay {
   width: 20vw;
   margin: 20px auto;
@@ -290,7 +323,6 @@ a:hover {
   justify-content: center;
   align-items: center;
   width: 90vw;
-  margin-top: 20px;
   border-radius: 5px;
 }
 .main .product-large__item {

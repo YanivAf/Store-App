@@ -53,9 +53,9 @@ function renderUserDetails(user: any, isAdmin: boolean) {
                     break;
                 case '/store.html':
                     addProductHtml = `
-                    <a href="#add-product-form" class="header__item header__item--add-product" title="Add new product">
+                    <div class="header__item header__item--add-product" id="add-product" title="Add new product">
                         <img src="./images/add-product.png" title="Add new product" />
-                    </a>`;
+                    </div>`;
                     navBar.store.aOrDiv = 'div';
                     navBar.store.href = '';
                     break;

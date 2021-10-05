@@ -30,8 +30,7 @@ function renderStore(stores: any, store: any, isAdmin: boolean) {
         pageTitle.innerText = storeName;
         
         renderStoreProducts(products, cartProductsToRender, lovedProducts, isAdmin);
-        if (isAdmin) renderProductForm();
-        else if (store) {
+        if ((!isAdmin) && (store)) {
             const contactStoreElement: HTMLElement = document.querySelector('#contact');
             contactStoreElement.setAttribute('href', `mailto:${store.contactEmail}?subject=${store.storeName} - General Inquiry`)
             contactStoreElement.innerHTML = `<i class="far fa-envelope" title="Contact us!"></i>`;
@@ -127,11 +126,25 @@ function renderStoreProducts(products: Array<any>, cartProducts: Array<any>, lov
     }
 }
 
+const modalElement: HTMLElement = document.querySelector('#add-product-modal');
 
-function renderProductForm() {
+if (isAdmin) {
+    const addProductElement: HTMLElement = document.querySelector("#add-product");
+    addProductElement.addEventListener('click', ev => renderProductForm(ev));
+
+    const closeModalElement: HTMLElement = document.querySelector(".close");
+    closeModalElement.addEventListener('click', ev => modalElement.style.display = "none");
+
+    window.onclick = ev => {
+        if (ev.target == modalElement) {
+            modalElement.style.display = "none";
+        }
+      }
+}
+
+function renderProductForm(ev) {
     try {
-        const addProductForm: HTMLFormElement = document.querySelector('#add-product-form')
-        addProductForm.style.display = 'flex';
+        modalElement.style.display = 'flex';
         
         const formInnerHTML: string = `
         <div class="product-large__item product-large__item--img">
