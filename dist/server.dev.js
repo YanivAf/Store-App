@@ -9,6 +9,10 @@ var pathToFile = path.resolve(__dirname, './public');
 var express = require('express');
 
 var app = express();
+
+var cors = require('cors');
+
+app.use(cors());
 var port = process.env.PORT || 555;
 app.use(express.json());
 app.use(express["static"](pathToFile));
