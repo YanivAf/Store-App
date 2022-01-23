@@ -1,4 +1,4 @@
-# Shop Shop Shop - Store App with Vanilla JS
+# Shop Shop Shop - Store App with Vanilla JS (TS)
 - [Deployed App](https://yanivsapp.herokuapp.com/)
 
 ## Features
